@@ -8,8 +8,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis.min.js"></script>
     <style>
         #network {
-            width: 600px;
-            height: 400px;
+            width: 50%;
+            height: 50vh;
             border: 1px solid lightgray;
             margin: 20px auto;
         }
@@ -34,7 +34,7 @@
 </head>
 <body>
 
-<div id="network" style="width: 100%; height: 100vh;"></div>
+<div id="network" style="width: 50%; height: 50vh;"></div>
 <div id="announcement"></div>
 <div id="cardSelection">
     <form id="cardForm">
@@ -46,7 +46,7 @@
     <strong>Tutorial:</strong>
     <ul>
         <li>Each player announces a card in turn.</li>
-        <li>If a player announces a red card and another following player only believes the opposite color of that card, the follower unfollows the announcer.</li>
+        <li>If a player announces a card, red or black, and another following player only believes the opposite color of that card, the follower unfollows the announcer.</li>
         <li>A player believes a color of a card if it holds a card of the same color, or announced a card of the same color or received a card of the same color from a player he is following.</li>
         <li>If a player announces a card and another non-following player has the same color of that card, the non-follower starts following the announcer.</li>
         <li>Players who lose all followers are defeated.</li>
