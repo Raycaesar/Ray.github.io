@@ -171,8 +171,6 @@ function announceCard(player, card) {
         }
     }
 
-    // Update the graph to reflect the new following relationships
-    updateGraph();
 }
 
 function defeatPlayer(defeatedPlayer) {
@@ -260,37 +258,6 @@ function updateGraph() {
     new vis.Network(container, data, options);
 }
 
-const options = {
-    physics: {
-        stabilization: false,
-        barnesHut: {
-            gravitationalConstant: -30000,
-            springConstant: 0.04,
-            springLength: 200
-        }
-    },
-    nodes: {
-        shape: 'dot',
-        scaling: {
-            min: 10,
-            max: 30
-        },
-        font: {
-            size: 12,
-            face: 'Tahoma'
-        }
-    },
-    edges: {
-        width: 0.15,
-        color: { inherit: 'from' },
-        smooth: {
-            type: 'continuous'
-        }
-    },
-    interaction: {
-        tooltipDelay: 200,
-        hideEdgesOnDrag: true
-    }
-};
+
 updateGraph();
 nextPlayerTurn();

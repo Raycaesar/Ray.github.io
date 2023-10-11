@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Card Game</title>
@@ -29,30 +30,11 @@
             font-weight: bold;
             margin-top: 20px;
         }
-        #rotate-device {
-    display: none;
-}
-        @media screen and (orientation:portrait) and (max-width: 768px) {
-    #rotate-device {
-        display: block;
-    }
-    /* Hide other elements when in portrait mode */
-    #network, #announcement, #cardSelection, button, #tutorial, #beliefState {
-        display: none;
-    }
-}
-
-
-
-    
-
     </style>
     <script src="game.js" defer></script>
 </head>
 <body>
-<div id="rotate-device" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.8); color: white; text-align: center; padding-top: 20%;">
-    Please rotate your device to landscape mode.
-</div>
+
 <div id="network" style="width: 50%; height: 50vh;"></div>
 <div id="announcement"></div>
 <div id="cardSelection">
