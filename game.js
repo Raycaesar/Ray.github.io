@@ -1,26 +1,30 @@
-
+// Flag to check if the game is over
 let isGameOver = false;
 
+// Add an event listener to the window to update the graph whenever the window is resized
 window.addEventListener('resize', function() {
     updateGraph();
 });
 
+// Define the Card class
 class Card {
- 
+    // Constructor for the Card class
     constructor(suit, value) {
         this.suit = suit;  // Suit of the card (e.g., Hearts, Diamonds, etc.)
         this.value = value;  // Value of the card (e.g., 2, 3, J, Q, etc.)
     }
-
+    // Method to convert the card object to a string representation
     toString() {
-       
+        // Mapping of suits to their respective abbreviations
         const suitMap = {'Hearts': 'H', 'Diamonds': 'D', 'Clubs': 'C', 'Spades': 'S'};
+        // Return the abbreviation of the suit followed by the value
         return `${suitMap[this.suit]}${this.value}`;
     }
 }
 
-
+// Define the Player class
 class Player {
+    // Constructor for the Player class
     constructor(name) {
         this.name = name;  // Name of the player (e.g., 'a', 'b', etc.)
         this.cards = [];  // Cards held by the player
@@ -28,15 +32,15 @@ class Player {
         this.beliefs = [];  // Cards that the player believes to be true based on announcements
         this.announcements = [];  // Cards that the player has announced
     }
-
+    // Method to assign cards to the player
     receiveCards(cards) {
         this.cards = cards;
     }
-  
+    // Method to add a follower to the player's followers set
     addFollower(player) {
         this.followers.add(player.name);
     }
-
+    // Method to remove a follower from the player's followers set
     removeFollower(player) {
         this.followers.delete(player.name);
     }
@@ -45,7 +49,7 @@ class Player {
 // Define the suits and values for the cards
 const suits = ["Hearts", "Diamonds", "Clubs", "Spades"];
 const values = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A"];
-const deck = [];  
+const deck = [];  // Initialize an empty deck
 
 // Populate the deck with cards for each suit and value combination
 for (let suit of suits) {
@@ -84,6 +88,7 @@ function getColorOfCard(card) {
     return (card.suit === 'Hearts' || card.suit === 'Diamonds') ? 'red' : 'black';
 }
 
+// Function to check if a player believes in a particular color
 function believesColor(player, color) {
     for (let card of [...player.cards, ...player.beliefs]) {
         if (getColorOfCard(card) === color) {
@@ -93,28 +98,33 @@ function believesColor(player, color) {
     return false;
 }
 
+// Function to handle the logic when a player announces a card
 function announceCard(player, card) {
     const announcedColor = getColorOfCard(card);  // Determine the color of the announced card
     const oppositeColor = announcedColor === 'red' ? 'black' : 'red';  // Determine the opposite color
 
+    // Remove the announced card from the player's hand
     const cardIndex = player.cards.findIndex(c => c.suit === card.suit && c.value === card.value);
     if (cardIndex > -1) {
         player.cards.splice(cardIndex, 1);
     }
 
-
+    // Add the announced card to the player's announcements and beliefs
     player.announcements.push(card);
 
 
+    // Logic to handle following and unfollowing based on the announced card
     for (let otherPlayer of players) {
         if (otherPlayer !== player) {
+            // Check if otherPlayer has a card with the same number but different color
             const hasOppositeColorSameNumber = otherPlayer.cards.some(c => c.value === card.value && getColorOfCard(c) !== announcedColor);
             
-
+            // If the other player has a card with the same number but different color, unfollow
             if (player.followers.has(otherPlayer.name) && hasOppositeColorSameNumber) {
                 player.followers.delete(otherPlayer.name);
             }
     
+            // If a non-follower has a card of the announced color and same number, start following
             if (!player.followers.has(otherPlayer.name) && otherPlayer.cards.some(c => c.value === card.value && getColorOfCard(c) === announcedColor)) {
                 player.followers.add(otherPlayer.name);
             }
@@ -146,18 +156,19 @@ function announceCard(player, card) {
 
 // Function to handle the next player's turn
 function nextPlayerTurn() {
+    // If the game is over, don't proceed
     if (isGameOver) {
         return;
     }
-
+    // Get the current player based on the index
     const player = players[currentPlayerIndex];
-
+    // Update the announcement div to indicate whose turn it is
     document.getElementById('announcement').textContent = `${player.name}'s turn to announce a card.`;
-
+    // Populate the card selection form for the current player
     populateCardSelection(player);
-
+    // Display the card selection form
     document.getElementById('cardSelection').style.display = 'block';
-
+    // Update the belief state for the current player
     updateBeliefState(player);
 }
 
