@@ -29,17 +29,35 @@
             font-weight: bold;
             margin-top: 20px;
         }
-    @media (max-width: 768px) {
-    #network {
-        width: 100vw; /* This will make it take the full width of the viewport */
-        height: 50vh; /* Adjust this value as needed */
+        #rotate-device {
+    display: none;
+}
+        @media screen and (orientation:portrait) and (max-width: 768px) {
+    #rotate-device {
+        display: block;
+    }
+    /* Hide other elements when in portrait mode */
+    #network, #announcement, #cardSelection, button, #tutorial, #beliefState {
+        display: none;
     }
 }
+JavaScript: No changes are needed in the JavaScript.
+Now, when users open the game on their mobile devices in portrait mode, they'll see a message prompting them to rotate their device to landscape mode. Once they do, the game will display as intended.
+
+
+
+
+
+
+    
+
     </style>
     <script src="game.js" defer></script>
 </head>
 <body>
-
+<div id="rotate-device" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.8); color: white; text-align: center; padding-top: 20%;">
+    Please rotate your device to landscape mode.
+</div>
 <div id="network" style="width: 50%; height: 50vh;"></div>
 <div id="announcement"></div>
 <div id="cardSelection">
