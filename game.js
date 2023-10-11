@@ -1,6 +1,11 @@
 // game.js
 let isGameOver = false;
 
+
+window.addEventListener('resize', function() {
+    // Any operations or adjustments you want to perform when the window is resized
+    updateGraph(); // Optionally, you can call updateGraph to refresh the network
+});
 // Define Card and Player classes
 class Card {
     constructor(suit, value) {
