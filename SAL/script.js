@@ -98,7 +98,9 @@ function intersection(setA, setB) {
 }
 
 function union(setA, setB) {
-    return [...new Set([...setA, ...setB])];
+    const combined = [...setA, ...setB];
+    const uniqueSets = new Set(combined.map(JSON.stringify));
+    return Array.from(uniqueSets).map(JSON.parse);
 }
 
 function arraysEqual(arr1, arr2) {
@@ -109,100 +111,31 @@ function arraysEqual(arr1, arr2) {
     return true;
 }
 
+// ... [rest of the code]
+
 function tokenize(formula) {
     const tokens = [];
     let currentToken = '';
-    for (let i = 0; i < formula.length; i++) {
+    let i = 0;
+
+    while (i < formula.length) {
         const char = formula[i];
-        if (['~', '&', '+', '(', ')'].includes(char)) {
+        if (['~', '&', '+', '(', ')', '>'].includes(char)) {
             if (currentToken) {
                 tokens.push(currentToken.trim());
                 currentToken = '';
             }
             tokens.push(char);
-        } else if (char === '-' && formula[i + 1] === '>') {
-            if (currentToken) {
-                tokens.push(currentToken.trim());
-                currentToken = '';
-            }
-            tokens.push('->');
-            i++;  // Skip the next character
+            i++;
         } else {
             currentToken += char;
+            i++;
         }
     }
     if (currentToken) tokens.push(currentToken.trim());
     return tokens;
 }
 
-
-function parse(tokens) {
-    if (tokens.length === 1) {
-        return { type: 'atom', value: tokens[0] };
-    }
-    if (tokens[0] === '~') {
-        return { type: 'negation', subformula: parse(tokens.slice(1)) };
-    }
-    for (let i = tokens.length - 1; i >= 0; i--) {
-        if (tokens[i] === '&') {
-            return {
-                type: 'conjunction',
-                left: parse(tokens.slice(0, i)),
-                right: parse(tokens.slice(i + 1))
-            };
-        } else if (tokens[i] === '+') {
-            return {
-                type: 'disjunction',
-                left: parse(tokens.slice(0, i)),
-                right: parse(tokens.slice(i + 1))
-            };
-        } else if (tokens[i] === '->') {
-            return {
-                type: 'implication',
-                left: parse(tokens.slice(0, i)),
-                right: parse(tokens.slice(i + 1))
-            };
-        }
-    }
-    return null;  // Invalid formula
-}
-
-
-function denotation(formula) {
-    const parsedFormula = parse(tokenize(formula));
-    if (!parsedFormula) return [];
-
-    switch (parsedFormula.type) {
-        case 'atom':
-            return powerSet(Prop).filter(subset => subset.includes(parsedFormula.value));
-        case 'negation':
-            const negatedDenotation = denotation(parsedFormula.subformula.value);
-            return difference(powerSet(Prop), negatedDenotation);
-        case 'conjunction':
-            return intersection(denotation(parsedFormula.left.value), denotation(parsedFormula.right.value));
-        case 'disjunction':
-            return union(denotation(parsedFormula.left.value), denotation(parsedFormula.right.value));
-        case 'implication':
-            return union(denotation(`~${parsedFormula.left.value}`), denotation(parsedFormula.right.value));
-        default:
-            return [];
-    }
-}
-
-
-
-
-
-function isValidFormula(formula) {
-    // Basic validation for now
-    const validChars = new Set([...Prop.join(''), '~', '&', '+', '-', '>', '(', ')']);
-    for (let char of formula) {
-        if (!validChars.has(char)) {
-            return false;
-        }
-    }
-    return true;
-}
 function addBelief() {
     const agent = document.getElementById('agentSelect').value;
     let formula = document.getElementById('formulaInput').value;
@@ -232,6 +165,77 @@ function addBelief() {
     document.getElementById('formulaInput').value = '';
 }
 
+// ... [rest of the code]
+
+
+function parse(tokens) {
+    if (tokens.length === 1) {
+        return { type: 'atom', value: tokens[0] };
+    }
+    if (tokens[0] === '~') {
+        if (tokens[1] === '(') {
+            let depth = 1;
+            let i = 2;
+            while (depth > 0 && i < tokens.length) {
+                if (tokens[i] === '(') depth++;
+                if (tokens[i] === ')') depth--;
+                i++;
+            }
+            return { type: 'negation', subformula: parse(tokens.slice(1, i)) };
+        } else {
+            return { type: 'negation', subformula: parse(tokens.slice(1)) };
+        }
+    }
+    let depth = 0;
+    for (let i = 0; i < tokens.length; i++) {
+        if (tokens[i] === '(') depth++;
+        if (tokens[i] === ')') depth--;
+        if (depth === 0) {
+            if (tokens[i] === '&') {
+                return {
+                    type: 'conjunction',
+                    left: parse(tokens.slice(0, i)),
+                    right: parse(tokens.slice(i + 1))
+                };
+            } else if (tokens[i] === '+') {
+                return {
+                    type: 'disjunction',
+                    left: parse(tokens.slice(0, i)),
+                    right: parse(tokens.slice(i + 1))
+                };
+            } else if (tokens[i] === '>') {
+                return {
+                    type: 'implication',
+                    left: parse(tokens.slice(0, i)),
+                    right: parse(tokens.slice(i + 1))
+                };
+            }
+        }
+    }
+    return null;  // Invalid formula
+}
+
+function denotation(formula) {
+    const parsedFormula = parse(tokenize(formula));
+    if (!parsedFormula) return [];
+
+    switch (parsedFormula.type) {
+        case 'atom':
+            return powerSet(Prop).filter(subset => subset.includes(parsedFormula.value));
+        case 'negation':
+            return difference(powerSet(Prop), denotation(parsedFormula.subformula.value));
+        case 'conjunction':
+            return intersection(denotation(parsedFormula.left.value), denotation(parsedFormula.right.value));
+        case 'disjunction':
+            return union(denotation(parsedFormula.left.value), denotation(parsedFormula.right.value));
+        case 'implication':
+            const notLeftDenotation = difference(powerSet(Prop), denotation(parsedFormula.left.value));
+            const rightDenotation = denotation(parsedFormula.right.value);
+            return union(notLeftDenotation, rightDenotation);
+        default:
+            return [];
+    }
+}
 
 
 
@@ -244,8 +248,16 @@ function addBelief() {
 
 
 
-
-
+function isValidFormula(formula) {
+    // Basic validation for now
+    const validChars = new Set([...Prop.join(''), '~', '&', '+', '-', '>', '(', ')']);
+    for (let char of formula) {
+        if (!validChars.has(char)) {
+            return false;
+        }
+    }
+    return true;
+}
 
 
 
