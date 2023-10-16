@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prop Set Generator</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="script.js" defer></script>
+</head>
+<body>
+<div class="container">
+    <label for="variableCount">Enter number of variables:</label>
+    <input type="number" id="variableCount" min="1">
+    <button onclick="generateProp()">Generate Prop</button>
+    <div id="result"></div>
+
+    <label for="agentCount">Enter number of agents:</label>
+    <input type="number" id="agentCount" min="1">
+    <button onclick="generateAgt()">Generate Agt</button>
+    <div id="agentResult"></div>
+
+    <label for="chosenAgent">Choose an agent:</label>
+    <select id="chosenAgent" onchange="showFollowersOptions()"></select>
+
+    <div id="followersDiv" style="display: none;">
+        <label for="followers">Choose followers for the agent (use Ctrl or Shift to select multiple):</label>
+        <select id="followers" multiple></select>
+        <button onclick="addToModel()">Add to Model</button>
+    </div>
+
+    <button onclick="displayModel()">Display Complete Model</button>
+    <div id="currentF"></div>
+    <div id="modelResult"></div>
+
+    <label for="agentSelect">Choose an agent to add belief:</label>
+    <select id="agentSelect"></select>
+
+    <label for="formulaInput">Enter a formula:</label>
+    <input type="text" id="formulaInput">
+
+    <button onclick="addBelief()">Add Belief</button>
+    <button onclick="confirmBeliefs()">Confirm Beliefs</button>
+    <div id="beliefDisplay"></div>
+</div>
+</body>
+</html>
