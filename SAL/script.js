@@ -165,7 +165,6 @@ function addBelief() {
     document.getElementById('formulaInput').value = '';
 }
 
-// ... [rest of the code]
 
 
 function parse(tokens) {
