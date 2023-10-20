@@ -227,32 +227,39 @@ function assignBelief() {
     const parsed = parse(tokenize(beliefFormula));
     const denotationResult = replaceWithDenotation(parsed);
 
-    // Store the belief for the agent
-    agentBeliefs[selectedAgent] = {
-        formula: beliefFormula,
-        denotation: denotationResult
-    };
+    // Check if the agent already has beliefs
+    if (agentBeliefs[selectedAgent]) {
+        // Append new formula to the beliefs
+        agentBeliefs[selectedAgent].formulas.push(beliefFormula);
+        
+        // Intersect the new denotation with the previous one
+        let oldDenotation = agentBeliefs[selectedAgent].denotation.slice(2, -2).split('}, {').map(str => str.split(', ').filter(Boolean));
+        let newDenotation = denotationResult.slice(2, -2).split('}, {').map(str => str.split(', ').filter(Boolean));
+        agentBeliefs[selectedAgent].denotation = `{{${setIntersection(oldDenotation, newDenotation).map(set => set.join(', ')).join('}, {')}}}`;
+    } else {
+        // If no prior beliefs, initialize with the current one
+        agentBeliefs[selectedAgent] = {
+            formulas: [beliefFormula],
+            denotation: denotationResult
+        };
+    }
 
     // Update the displayed beliefs for all agents
     displayAgentBeliefs();
 }
+
 function displayAgentBeliefs() {
     try {
-        const formula = document.getElementById("beliefFormula").value;
-
-        if (!isWellFormedSimpleCheck(formula)) {
-            throw new Error("The formula is not well-formed!");
+        let outputText = '';
+        for (let agent in agentBeliefs) {
+            outputText += `${agent} believes ${agentBeliefs[agent].formulas.join(' and ')} and k(${agent}) = ${agentBeliefs[agent].denotation}\n`;
         }
-    let outputText = '';
-    for (let agent in agentBeliefs) {
-        outputText += `${agent} believes ${agentBeliefs[agent].formula} and k(${agent}) = ${agentBeliefs[agent].denotation}\n`;
-    }
-
-    document.getElementById("beliefOutput").innerText = outputText;
+        document.getElementById("beliefOutput").innerText = outputText;
     } catch (error) {
         alert(error.message);
     }
 }
+
 
 
 // ================================================

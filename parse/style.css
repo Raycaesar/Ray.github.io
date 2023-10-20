@@ -1,16 +1,33 @@
-.tutorial {
-    border: 1px solid #ddd;
+body {
+    font-family: Arial, sans-serif;
     padding: 20px;
-    margin-top: 20px;
+    background-color: #f4f4f4;
 }
 
-.tutorial h3 {
-    color: #555;
+h3 {
+    color: #333;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 10px;
+}
+
+.tutorial {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+}
+
+.tutorial ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.tutorial li {
+    margin-bottom: 10px;
 }
 
 .example {
-    background-color: #f7f7f7;
-    padding: 10px;
-    border-radius: 5px;
-    margin-bottom: 10px;
+    background-color: #f9f9f9;
+    padding: 2px 5px;
+    border-radius: 3px;
 }
