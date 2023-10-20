@@ -73,7 +73,7 @@ function tokenize(formula) {
 
 // Recursive parser
 function parse(tokens) {
-    if (tokens.length === 0) return null;
+    if (tokens.length === 0) throw new Error("Unexpected end of input");
 
     let token = tokens.shift();
     
@@ -85,101 +85,136 @@ function parse(tokens) {
     } else if (token === '(') {
         let left = parse(tokens);
         
-        let operator = tokens.shift(); // Assume the next token is an operator
+        if (tokens.length === 0 || ['&', '+', '>'].indexOf(tokens[0]) === -1) {
+            throw new Error("Expected an operator");
+        }
+        
+        let operator = tokens.shift(); 
         
         let right = parse(tokens);
         
-        if (tokens[0] === ')') {
-            tokens.shift();  // Remove closing bracket
-            return {
-                type: operator,
-                left: left,
-                right: right
-            };
+        if (tokens[0] !== ')') {
+            throw new Error("Expected a closing bracket");
         }
-    } else {  // atom
+        
+        tokens.shift();  
+        return {
+            type: operator,
+            left: left,
+            right: right
+        };
+    } else if (Prop.includes(token)) {  // atom
         return {
             type: 'atom',
             value: token
         };
+    } else {
+        throw new Error(`Unexpected token: ${token}`);
+    }
+}
+
+//Formula Check
+function isWellFormedSimpleCheck(formula) {
+    const binaryOperators = ['&', '+', '>'];
+
+    let operatorCount = 0;
+    for (const operator of binaryOperators) {
+        operatorCount += (formula.match(new RegExp(`\\${operator}`, 'g')) || []).length;
+    }
+
+    const bracketPairsCount = (formula.match(/\(/g) || []).length;
+
+    return operatorCount === bracketPairsCount;
+}
+
+
+
+// ===============================================
+// ============== Denotation Compute==============
+// ===============================================
+
+
+//We obtain denotation by substiting formulas from atomic with sets.
+
+function replaceWithDenotation(parsedFormula) {
+    if (!parsedFormula) throw new Error("Invalid or non-well-formed formula.");
+
+    switch (parsedFormula.type) {
+        case 'atom':
+            const denotation = atomDenotation(parsedFormula.value);
+            if (denotation.length === 0) return '{}';
+            return `{{${denotation.map(set => set.join(', ')).join('}, {')}}}`;
+            
+        case 'negation':
+            const innerDenotation = replaceWithDenotation(parsedFormula.subformula);
+            if (innerDenotation === '{}') return '{{}}'; // Handle negation of empty set
+            if (innerDenotation.startsWith("{{") && innerDenotation.endsWith("}}")) {
+                let setString = innerDenotation.slice(2, -2).split('}, {'); 
+                let setArray = setString.map(str => str.split(', ').filter(Boolean));
+                let complementSet = complementOfSet(setArray);
+                if (complementSet.length === 0) return '{}'; // Return {} if the complement set is empty
+                return `{{${complementSet.map(set => set.join(', ')).join('}, {')}}}`;
+            }
+            return `~${innerDenotation}`;
+
+        case '&':
+        case '+':
+            const leftDenotation = replaceWithDenotation(parsedFormula.left);
+            const rightDenotation = replaceWithDenotation(parsedFormula.right);
+
+            if (leftDenotation.startsWith("{{") && leftDenotation.endsWith("}}") &&
+                rightDenotation.startsWith("{{") && rightDenotation.endsWith("}}")) {
+                
+                let setA = leftDenotation.slice(2, -2).split('}, {').map(str => str.split(', ').filter(Boolean));
+                let setB = rightDenotation.slice(2, -2).split('}, {').map(str => str.split(', ').filter(Boolean));
+
+                let resultSet;
+                if (parsedFormula.type === '&') {
+                    resultSet = setIntersection(setA, setB);
+                } else { // '+'
+                    resultSet = setUnion(setA, setB);
+                }
+                
+                if (resultSet.length === 0) return '{}'; // Return {} if the result set is empty
+                return `{{${resultSet.map(set => set.join(', ')).join('}, {')}}}`;
+            }
+
+            return `(${leftDenotation} ${parsedFormula.type} ${rightDenotation})`;
+
+        case '>':
+            const notLeft = {
+                type: 'negation',
+                subformula: parsedFormula.left
+            };
+            const orRight = {
+                type: '+',
+                left: notLeft,
+                right: parsedFormula.right
+            };
+            return replaceWithDenotation(orRight);
+
+        default:
+            throw new Error("Invalid or non-well-formed formula.");
     }
 }
 
 
 // Display Denotation
 function displayDenotation() {
-    const formula = document.getElementById("formulaInput").value;
-    const parsed = parse(tokenize(formula));
-    const result = replaceWithDenotation(parsed);
-    document.getElementById("resultOutput").innerText = result;
-}
-
-function replaceWithDenotation(parsedFormula) {
-    // Basic error handling - handle malformed formulas
     try {
-        if (!parsedFormula) return "";
+        const formula = document.getElementById("formulaInput").value;
 
-        switch (parsedFormula.type) {
-            case 'atom':
-                return `{{${atomDenotation(parsedFormula.value).map(set => set.join(', ')).join('}, {')}}}`;
-            case 'negation':
-                // Check if it's directly negating a set
-                let innerDenotation = replaceWithDenotation(parsedFormula.subformula);
-                if (innerDenotation.startsWith("{{") && innerDenotation.endsWith("}}")) {
-                    let setString = innerDenotation.slice(2, -2).split('}, {'); // Extract set elements
-                    let setArray = setString.map(str => str.split(', ').filter(Boolean));
-                    let complementSet = complementOfSet(setArray);
-                    return `{{${complementSet.map(set => set.join(', ')).join('}, {')}}}`;
-                }
-                return `~${innerDenotation}`;
-            case '&':
-                let leftIntersection = replaceWithDenotation(parsedFormula.left);
-                let rightIntersection = replaceWithDenotation(parsedFormula.right);
-                
-                if (leftIntersection.startsWith("{{") && leftIntersection.endsWith("}}") &&
-                    rightIntersection.startsWith("{{") && rightIntersection.endsWith("}}")) {
-                    
-                    let setA = leftIntersection.slice(2, -2).split('}, {').map(str => str.split(', ').filter(Boolean));
-                    let setB = rightIntersection.slice(2, -2).split('}, {').map(str => str.split(', ').filter(Boolean));
-                    let intersectionSet = setIntersection(setA, setB);
-                    
-                    return `{{${intersectionSet.map(set => set.join(', ')).join('}, {')}}}`;
-                }
-                return `(${leftIntersection} & ${rightIntersection})`;
-            case '+':
-                let leftUnion = replaceWithDenotation(parsedFormula.left);
-                let rightUnion = replaceWithDenotation(parsedFormula.right);
-                
-                if (leftUnion.startsWith("{{") && leftUnion.endsWith("}}") &&
-                    rightUnion.startsWith("{{") && rightUnion.endsWith("}}")) {
-                    
-                    let setA = leftUnion.slice(2, -2).split('}, {').map(str => str.split(', ').filter(Boolean));
-                    let setB = rightUnion.slice(2, -2).split('}, {').map(str => str.split(', ').filter(Boolean));
-                    let unionSet = setUnion(setA, setB);
-                    
-                    return `{{${unionSet.map(set => set.join(', ')).join('}, {')}}}`;
-                }
-                return `(${leftUnion} + ${rightUnion})`;
-            case '>':
-                let notLeft = {
-                    type: 'negation',
-                    subformula: parsedFormula.left
-                };
-                let orRight = {
-                    type: '+',
-                    left: notLeft,
-                    right: parsedFormula.right
-                };
-                return replaceWithDenotation(orRight);
-            default:
-                return "";
+        if (!isWellFormedSimpleCheck(formula)) {
+            throw new Error("The formula is not well-formed!");
         }
+
+        const parsed = parse(tokenize(formula));
+        let result = replaceWithDenotation(parsed);
+        document.getElementById("resultOutput").innerText = result;
     } catch (error) {
-        console.error("Error processing formula: ", error);
-        return "Error in formula processing.";
+        alert(error.message);
     }
 }
-
 
 // ===============================================
 // =============== BELIEF FUNCTIONS ==============
@@ -202,12 +237,21 @@ function assignBelief() {
     displayAgentBeliefs();
 }
 function displayAgentBeliefs() {
+    try {
+        const formula = document.getElementById("beliefFormula").value;
+
+        if (!isWellFormedSimpleCheck(formula)) {
+            throw new Error("The formula is not well-formed!");
+        }
     let outputText = '';
     for (let agent in agentBeliefs) {
         outputText += `${agent} believes ${agentBeliefs[agent].formula} and k(${agent}) = ${agentBeliefs[agent].denotation}\n`;
     }
 
     document.getElementById("beliefOutput").innerText = outputText;
+    } catch (error) {
+        alert(error.message);
+    }
 }
 
 
