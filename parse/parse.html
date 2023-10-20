@@ -1,31 +1,60 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Denotation Calculator</title>
-
-    <script src="parse.js"></script>
-    <style src = "style.css"></style>
+    <title>Model Generator</title>
+    <link rel="stylesheet" type="text/css" href="style.css"> <!-- Stylesheet link -->
+    <script src="parse.js" defer></script> <!-- Moved script to the end with defer attribute -->
 </head>
+
 <body>
+    <!-- Agent Size Setup -->
+    <h2>Set the Size of Agents</h2>
+    <input type="number" id="agentSize" placeholder="Enter the size of Agents">
+    <button onclick="setAgentSize()">Set Size</button>
+    <h3 id="agentOutput"></h3>
+
+    <!-- Agent Follower Selection -->
+    <h2>Select Agent's Followers</h2>
+    <p>Select an agent:</p>
+    <select id="selectedAgent"></select>
+    <p>Select its followers:</p>
+    <select id="agentFollowers" multiple></select>
+    <button onclick="setAgentFollowers()">Set Followers</button>
+    <h3 id="followerOutput"></h3>
+
+    <hr/>
+
+    <!-- Prop Size Setup -->
     <h2>Set the Size of Prop</h2>
     <input type="number" id="propSize" placeholder="Enter the size of Prop">
     <button onclick="setPropSize()">Set Size</button>
-
     <h3 id="propOutput"></h3>
 
+    <!-- Belief Assignment to Agent -->
+    <h2>Select an Agent for Belief Assignment:</h2>
+    <select id="beliefAgent"></select>
+    <h3>Input the Belief Formula:</h3>
+    <input type="text" id="beliefFormula" placeholder="Enter the belief formula">
+    <button onclick="assignBelief()">Assign Belief</button>
+    <h3>Agent Beliefs:</h3>
+    <p id="beliefOutput"></p>
+
+    <hr/>
+
+    <!-- Formula Entry and Denotation Computation -->
     <h2>Enter Your Formula</h2>
     <input type="text" id="formulaInput" placeholder="Enter the formula">
     <button onclick="displayDenotation()">Compute Denotation</button>
-
     <h3>Result:</h3>
     <p id="resultOutput"></p>
 
-    
-
+    <!-- Tutorial Section -->
     <div class="tutorial">
         <h3>How to Write Well-formed Formulas:</h3>
+        <!-- Formula Guidelines -->
         <ul>
             <li><strong>Propositional Variables:</strong> Use elements in <b>Prop</b>.</li>
             <li><strong>Negation:</strong> Use the tilde symbol <span class="example">~</span> before the propositional variable or formula. E.g., <span class="example">~p</span>.</li>
@@ -36,7 +65,10 @@
         </ul>
     </div>
 </body>
+
 </html>
+    
+
 
 
 
