@@ -17,13 +17,25 @@ function powerSet(array) {
     return array.reduce((subsets, value) => subsets.concat(subsets.map(set => [value, ...set])), [[]]);
 }
 
-// Mocked functions for the sake of example
+function isWellFormedSimpleCheck(formula) {
+    const binaryOperators = ['&', '+', '>'];
+
+    let operatorCount = 0;
+    for (const operator of binaryOperators) {
+        operatorCount += (formula.match(new RegExp(`\\${operator}`, 'g')) || []).length;
+    }
+
+    const bracketPairsCount = (formula.match(/\(/g) || []).length;
+
+    return operatorCount === bracketPairsCount;
+}
+
 // Tokenizer
 function tokenize(formula) {
     return formula.match(/~|\+|&|>|[a-z]_[0-9]+|[a-z]|[\(\)]/g);
 }
 
-// Recursive parser
+
 // Recursive parser
 function parse(tokens) {
     if (tokens.length === 0) throw new Error("Unexpected end of input");
@@ -65,11 +77,6 @@ function parse(tokens) {
         throw new Error(`Unexpected token: ${token}`);
     }
 }
-
-
-
-
-
 
 
 
@@ -185,17 +192,22 @@ function atomDenotation(atom) {
 
 
 
-
 function displayDenotation() {
     try {
         const formula = document.getElementById("formulaInput").value;
+
+        if (!isWellFormedSimpleCheck(formula)) {
+            throw new Error("The formula is not well-formed!");
+        }
+
         const parsed = parse(tokenize(formula));
-        const result = replaceWithDenotation(parsed);
+        let result = replaceWithDenotation(parsed);
         document.getElementById("resultOutput").innerText = result;
     } catch (error) {
         alert(error.message);
     }
 }
+
 
 
 
