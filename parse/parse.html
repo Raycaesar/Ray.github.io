@@ -6,7 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Model Generator</title>
     <link rel="stylesheet" type="text/css" href="style.css"> <!-- Stylesheet link -->
-    <script src="parse.js" defer></script> <!-- Moved script to the end with defer attribute -->
+    <script src="parse.js" defer></script> 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.17.0/cytoscape.min.js"></script>
+    <script src="drawGraph.js"></script>
 </head>
 
 <body>
@@ -43,6 +45,14 @@
     <p id="beliefOutput"></p>
 
     <hr/>
+
+    <div id="cy">
+
+
+<canvas id="beliefCanvas" width="500" height="500"></canvas></div>
+
+<button id="drawGraph">Draw Graph</button>
+<hr/>
 
     <!-- Formula Entry and Denotation Computation -->
     <h2>Enter Your Formula</h2>

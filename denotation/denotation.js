@@ -1,15 +1,23 @@
+
+
 let Prop = [];
 
 function setPropSize() {
     const size = parseInt(document.getElementById("propSize").value);
     Prop = [];
+    
     if (size < 4) {
         Prop = ['p', 'q', 'r'];
+    } else if (size === 4) {
+        Prop = ['p', 'q', 'r', 's'];
+    } else if (size === 5) {
+        Prop = ['p', 'q', 'r', 's', 't'];
     } else {
         for (let i = 1; i <= size; i++) {
             Prop.push(`p_${i}`);
         }
     }
+
     document.getElementById("propOutput").innerText = `Prop = {${Prop.join(', ')}}`;
 }
 
@@ -209,7 +217,103 @@ function displayDenotation() {
 }
 
 
+document.getElementById("generateDiagram").addEventListener("click", function() {
+    displayPowerSet();
+    function getDenotationResult() {
+        const denotation = document.getElementById("resultOutput").innerText;
+        return denotation;
+    }
+    
+    
+
+    function displayPowerSet() {
+        const powerSetOfProp = powerSet(Prop);
+        const svgContainer = document.getElementById("hasseDiagram");
+        svgContainer.innerHTML = '';  // Clear previous diagram
+    
+        const denotationResult = getDenotationResult();
+    
+        powerSetOfProp.sort((a, b) => a.length - b.length);  // Sort subsets by size
+    
+        const maxWidth = powerSetOfProp.length;
+        const maxHeight = Prop.length + 1; 
+    
+        const verticalGap = svgContainer.height.baseVal.value / (maxHeight + 1);
+        const circleRadius = 30;
+    
+        for (let i = 0; i <= Prop.length; i++) {
+            const subsetsOfSizeI = powerSetOfProp.filter(subset => subset.length === i);
+            
+            // Adjust yOffset to reverse the diagram
+            const yOffset = (Prop.length - i + 1) * verticalGap;
+            
+            const horizontalGap = svgContainer.width.baseVal.value / (subsetsOfSizeI.length + 1);
+            subsetsOfSizeI.forEach((subset, j) => {
+                const xOffset = (j + 1) * horizontalGap;
+                const isSubsetInDenotation = subset.every(element => denotationResult.includes(element));
+                createCircle(xOffset, yOffset, subset.join(','), svgContainer, circleRadius, isSubsetInDenotation);
+            });
+        }
+    }
+    
+    
+    function createCircle(x, y, label, svgContainer, radius, isInDenotation) {
+        const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+        circle.setAttribute("cx", x);
+        circle.setAttribute("cy", y);
+        circle.setAttribute("r", radius);
+        circle.setAttribute("stroke", "black");
+        circle.setAttribute("stroke-width", "1.5");
+        circle.setAttribute("fill", isInDenotation ? "lightgreen" : "white");
+        circle.setAttribute("data-text", label);  // Setting the data-text attribute here
+        svgContainer.appendChild(circle);
+        
+    
+        const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        text.setAttribute("x", x);
+        text.setAttribute("y", y);
+        text.setAttribute("dominant-baseline", "middle");
+        text.setAttribute("text-anchor", "middle");
+        text.textContent = label;
+        svgContainer.appendChild(text);
+    }
+    
+    
+    function colorDenotation(result) {
+        const circles = document.querySelectorAll("#hasseDiagram circle");
+        if (result === '{}') return;
+        if (typeof result !== 'string' || !result.startsWith("{{") || !result.endsWith("}}")) {
+            console.error('Invalid format for denotation result.');
+            return;
+        }
+    
+        const resultSets = result.slice(2, -2).split('}, {').map(str => str.split(', ').filter(Boolean));
+        const denotationStrings = resultSets.map(subset => subset.join(','));
+    
+        console.log("Expected subsets to color:", denotationStrings); // Log expected subsets
+    
+        circles.forEach(circle => {
+            console.log("Circle subset:", circle.getAttribute("data-text")); // Log each circle's subset
+            if (denotationStrings.includes(circle.getAttribute("data-text"))) {
+                circle.style.fill = "lightgreen"; // Change this color to your preference
+            }
+        });
+    }
+    
+       
+
+    const denotationResult = getDenotationResult(); 
+    colorDenotation(denotationResult);
+});
 
 
 
-/*for verification  (p+(~q&((r+~p)>~(p>~r))))*/
+/*for verification  
+
+
+((~p&~q) +(~r&~s)))
+(p+(~q&((r+~p)>~(p>~r))))
+(((p>q)&~r)+~(s&t))
+
+
+*/

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hesse Diagram</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.17.0/cytoscape.min.js"></script>
+    <style>
+        #cy {
+            width: 100%;
+            height: 800px;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+    </style>
+</head>
+<body>
+<div id="cy"></div>
+<script>
+    document.addEventListener("DOMContentLoaded", function(){
+        var cy = cytoscape({
+            container: document.getElementById('cy'),
+            elements: [
+                {data: { id: 'p', label: 'p' }},
+                {data: { id: '@', label: '@' }},
+                // ... add other nodes here
+            ],
+            style: [
+                {
+                    selector: 'node',
+                    style: {
+                        'label': 'data(label)',
+                        'background-color': 'blue',
+                        'width': '60px',
+                        'height': '60px'
+                    }
+                },
+                {
+                    selector: '#p',
+                    style: {
+                        'pie-size': '100%',
+                        'pie-1-background-color': 'red',
+                        'pie-1-background-size': '50%',
+                        'pie-2-background-color': 'blue',
+                        'pie-2-background-size': '50%'
+                    }
+                },
+            ],
+            layout: {
+                name: 'preset',
+                positions: {
+                    '@': { x: 400, y: 600 },
+                    'p': { x: 200, y: 50 },
+                    // ... set positions for other nodes here
+                }
+            }
+        });
+    });
+</script>
+</body>
+</html>

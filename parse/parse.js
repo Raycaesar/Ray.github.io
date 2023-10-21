@@ -2,7 +2,7 @@
 // =============== AGENT FUNCTIONS ===============
 // ===============================================
 const agentFollowers = {};
-const agentBeliefs = {};
+let agentBeliefs = {};
 
 
 // Set Agent Size and Update Dropdowns
@@ -221,44 +221,58 @@ function displayDenotation() {
 // ===============================================
 
 function assignBelief() {
-    const selectedAgent = document.getElementById("beliefAgent").value;
-    const beliefFormula = document.getElementById("beliefFormula").value;
-
-    const parsed = parse(tokenize(beliefFormula));
-    const denotationResult = replaceWithDenotation(parsed);
-
-    // Check if the agent already has beliefs
-    if (agentBeliefs[selectedAgent]) {
-        // Append new formula to the beliefs
-        agentBeliefs[selectedAgent].formulas.push(beliefFormula);
+    try {
         
-        // Intersect the new denotation with the previous one
-        let oldDenotation = agentBeliefs[selectedAgent].denotation.slice(2, -2).split('}, {').map(str => str.split(', ').filter(Boolean));
-        let newDenotation = denotationResult.slice(2, -2).split('}, {').map(str => str.split(', ').filter(Boolean));
-        agentBeliefs[selectedAgent].denotation = `{{${setIntersection(oldDenotation, newDenotation).map(set => set.join(', ')).join('}, {')}}}`;
-    } else {
-        // If no prior beliefs, initialize with the current one
-        agentBeliefs[selectedAgent] = {
-            formulas: [beliefFormula],
-            denotation: denotationResult
-        };
-    }
+        const formula = document.getElementById("beliefFormula").value;
 
-    // Update the displayed beliefs for all agents
-    displayAgentBeliefs();
+        if (!isWellFormedSimpleCheck(formula)) {
+            throw new Error("The formula is not well-formed!");
+        }
+
+        const selectedAgent = document.getElementById("beliefAgent").value;
+        const parsed = parse(tokenize(formula));
+        const denotationResult = replaceWithDenotation(parsed);
+
+        // Check if the agent already has beliefs
+        if (agentBeliefs[selectedAgent]) {
+            // Append new formula to the beliefs
+            agentBeliefs[selectedAgent].formulas.push(formula);
+            
+            // Intersect the new denotation with the previous one
+            let oldDenotation = agentBeliefs[selectedAgent].denotation.slice(2, -2).split('}, {').map(str => str.split(', ').filter(Boolean));
+            let newDenotation = denotationResult.slice(2, -2).split('}, {').map(str => str.split(', ').filter(Boolean));
+            let intersection = setIntersection(oldDenotation, newDenotation);
+            
+            if (intersection.length === 0) {
+                agentBeliefs[selectedAgent].denotation = '{}'; // Set denotation to empty if there's a contradiction
+            } else {
+                agentBeliefs[selectedAgent].denotation = `{{${intersection.map(set => set.join(', ')).join('}, {')}}}`;
+            }
+        } else {
+            // If no prior beliefs, initialize with the current one
+            agentBeliefs[selectedAgent] = {
+                formulas: [formula],
+                denotation: denotationResult
+            };
+        }
+
+        // Update the displayed beliefs for all agents
+        displayAgentBeliefs();
+    } catch (error) {
+        alert(error.message);
+    }
 }
 
+
+
 function displayAgentBeliefs() {
-    try {
+    
         let outputText = '';
         for (let agent in agentBeliefs) {
             outputText += `${agent} believes ${agentBeliefs[agent].formulas.join(' and ')} and k(${agent}) = ${agentBeliefs[agent].denotation}\n`;
         }
         document.getElementById("beliefOutput").innerText = outputText;
-    } catch (error) {
-        alert(error.message);
-    }
-}
+    } 
 
 
 
@@ -325,4 +339,12 @@ function arraysAreEqual(arr1, arr2) {
 
 
 
-/*for verification  (p+(~q&((r+~p)>~(p>~r))))*/
+/*for verification  
+
+
+(p+(~q&((r+~p)>~(p>~r)))) ===> {{p}, {q, p}, {r, p}, {r, q, p}}
+
+((p > q) & (q > r)) ===>  {{}, {r}, {r, q}, {r, q, p}}
+
+both ===> {{r, q, p}}
+*/

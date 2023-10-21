@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Denotation Calculator</title>
 
-    <script src="denotation.js"></script>
-    <style src = "denotation.css"></style>
+  
+    <link rel="stylesheet" type="text/css" href="denotation.css">
 </head>
 <body>
     <h2>Set the Size of Prop</h2>
@@ -22,6 +22,12 @@
     <h3>Result:</h3>
     <p id="resultOutput"></p>
 
+    <h3>Hasse Diagram of Power Set of Prop:</h3>
+    
+    <svg id="hasseDiagram" width="1000" height="600"></svg>
+    <br/>
+    <button id="generateDiagram">Generate Hasse Diagram</button>
+
     
 
     <div class="tutorial">
@@ -35,6 +41,7 @@
             <li><strong>Brackets:</strong> Every formula connected by a binary operator should be enclosed within a pair of brackets. E.g., <span class="example">(p&q)</span>, not <span class="example">p&q</span>.</li>
         </ul>
     </div>
+<script src="denotation.js"></script>
 </body>
 </html>
 

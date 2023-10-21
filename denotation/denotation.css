@@ -8,9 +8,57 @@
     color: #555;
 }
 
-.example {
-    background-color: #f7f7f7;
+
+circle {
+    stroke: black;
+    stroke-width: 1.5;
+    fill: white;
+}
+
+text {
+    font-size: 12px;
+}
+
+body {
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 20px;
+    background-color: #f3f4f6;
+}
+.container {
+    max-width: 1000px; /* Increased the width */
+    margin: 0 auto;
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+h1 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+label {
+    display: block;
+    margin-bottom: 10px;
+}
+input, button {
     padding: 10px;
     border-radius: 5px;
-    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    margin-top: 5px;
+}
+button {
+    width: 150px; /* Adjusted the width */
+    background-color: #6c757d; /* Changed the color */
+    color: white;
+    cursor: pointer;
+    border: none;
+}
+button:hover {
+    background-color: #5a636e;
+}
+#hasseDiagram {
+    margin-top: 20px;
+    width: 90%; /* Increased width percentage */
+    border: 1px solid #ccc;
 }

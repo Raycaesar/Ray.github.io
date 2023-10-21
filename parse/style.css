@@ -31,3 +31,8 @@ h3 {
     padding: 2px 5px;
     border-radius: 3px;
 }
+#cy {
+    width: 800px;
+    height: 600px;
+    border: 1px solid black;
+}
