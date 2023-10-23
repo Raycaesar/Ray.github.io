@@ -3,17 +3,28 @@
 // ===============================================
 const agentFollowers = {};
 let agentBeliefs = {};
+let Agt = [];  // This makes it global
 
+
+const agentColors = {}; // We use in graph Drawing
+let colorCounter = 0;
+const colors = ['#F0FDF0', '#F0F0FD','#FDF0F0']; // An array of colors for agents
+const selectedAgent = document.getElementById("beliefAgent").value;
 
 // Set Agent Size and Update Dropdowns
 function setAgentSize() {
     const size = parseInt(document.getElementById("agentSize").value);
     Agt = Array.from({length: size}, (_, i) => i < 4 ? ['a', 'b', 'c', 'd'][i] : `a_${i + 1}`);
+
+    Agt.forEach((agent, index) => {
+        agentColors[agent] = colors[index % colors.length];
+    });
     
     updateDropdown("selectedAgent");
     updateDropdown("agentFollowers");
     updateDropdown("beliefAgent");
 }
+
 
 // Helper function to update dropdowns
 function updateDropdown(elementId) {
@@ -28,7 +39,6 @@ function updateDropdown(elementId) {
     }
 }
 
-// Set Agent Followers
 // Set Agent Followers
 function setAgentFollowers() {
     let selectedAgent = document.getElementById("selectedAgent").value;
@@ -54,6 +64,9 @@ function displayFollowers() {
 // ================================================
 // =============== PROP FUNCTIONS =================
 // ================================================
+let Prop = [];  // This makes it global
+
+
 
 // Set Proposition Size
 function setPropSize() {
@@ -61,6 +74,7 @@ function setPropSize() {
     Prop = Array.from({length: size}, (_, i) => i < 3 ? ['p', 'q', 'r'][i] : `p_${i + 1}`);
     document.getElementById("propOutput").innerText = `Prop = {${Prop.join(', ')}}`;
 }
+
 
 // ================================================
 // =============== FORMULA FUNCTIONS ==============

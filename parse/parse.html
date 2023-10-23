@@ -6,9 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Model Generator</title>
     <link rel="stylesheet" type="text/css" href="style.css"> <!-- Stylesheet link -->
-    <script src="parse.js" defer></script> 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.17.0/cytoscape.min.js"></script>
-    <script src="drawGraph.js"></script>
+   
 </head>
 
 <body>
@@ -47,9 +45,7 @@
     <hr/>
 
     <div id="cy">
-
-
-<canvas id="beliefCanvas" width="500" height="500"></canvas></div>
+<svg id="beliefCanvas" width="1500" height="550"></svg></div>
 
 <button id="drawGraph">Draw Graph</button>
 <hr/>
@@ -73,6 +69,9 @@
             <li><strong>Brackets:</strong> Every formula connected by a binary operator should be enclosed within a pair of brackets. E.g., <span class="example">(p&q)</span>, not <span class="example">p&q</span>.</li>
         </ul>
     </div>
+
+    <script src="parse.js" defer></script> 
+    <script src="drawGraph.js" defer></script>
 </body>
 
 </html>
