@@ -8,7 +8,7 @@ let Agt = [];  // This makes it global
 
 const agentColors = {}; // We use in graph Drawing
 let colorCounter = 0;
-const colors = ['#F0FDF0', '#F0F0FD','#FDF0F0']; // An array of colors for agents
+const colors = ['#f56642', '#4bf542','#4281f5','#e642f5', '#f26f6f', '#f2bc6f', '#6fe5f2','#9ff26f']; // An array of colors for agents
 const selectedAgent = document.getElementById("beliefAgent").value;
 
 // Set Agent Size and Update Dropdowns
