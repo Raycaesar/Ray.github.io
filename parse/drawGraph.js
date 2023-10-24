@@ -11,7 +11,7 @@ function drawNetwork() {
         .attr("refX", 30)
         .attr("refY", 0)
         .attr("markerWidth", 10)
-        .attr("markerHeight", 10)
+        .attr("markerHeight", 30)
         .attr("orient", "auto")
         .append("path")
         .attr("d", "M0,-5L10,0L0,5")
@@ -24,11 +24,38 @@ function drawNetwork() {
             links.push({ source: follower, target: agent });
         }
     }
+    const width = svg.node().getBoundingClientRect().width;
+    const height = svg.node().getBoundingClientRect().height;
+    const nodeRadius = 20;
 
     const simulation = d3.forceSimulation(nodes)
         .force("link", d3.forceLink(links).id(d => d.id).distance(150))
-        .force("charge", d3.forceManyBody())
-        .force("center", d3.forceCenter(svg.attr("width") / 2, svg.attr("height") / 2));
+        .force("charge", d3.forceManyBody().strength(-500))
+        .force("center", d3.forceCenter(width / 2, height / 2))
+        .force("collide", d3.forceCollide(30)) 
+        .force("radial", d3.forceRadial(width / 2.5, width / 2, height / 2));
+
+    function dragstarted(event, d) {
+        if (!event.active) simulation.alphaTarget(0.3).restart();
+        d.fx = d.x;
+        d.fy = d.y;
+    }
+
+    function dragged(event, d) {
+        d.fx = event.x;
+        d.fy = event.y;
+    }
+
+    function dragended(event, d) {
+        if (!event.active) simulation.alphaTarget(0);
+        d.fx = null;
+        d.fy = null;
+    }
+
+    const drag = d3.drag()
+        .on("start", dragstarted)
+        .on("drag", dragged)
+        .on("end", dragended);
 
     const link = svg.append("g")
         .selectAll("path")
@@ -43,7 +70,8 @@ function drawNetwork() {
         .data(nodes)
         .enter().append("circle")
         .attr("r", 20)
-        .attr("fill", d => agentColors[d.id]);
+        .attr("fill", d => agentColors[d.id])
+        .call(drag);
 
     const nodeText = svg.append("g").selectAll("text")
         .data(nodes)
@@ -51,24 +79,37 @@ function drawNetwork() {
         .attr("font-size", 14)
         .attr("text-anchor", "middle")
         .attr("dy", ".35em")
-        .text(d => d.id);
+        .text(d => d.id)
+        .call(drag);
 
     function linkArc(d) {
         if (d.source.id === d.target.id) {
-            // Adjusting the curve for the reflexive arrow
-            const dr = 30;
-            return `M${d.source.x},${d.source.y - 20}A${dr},${dr} 0 1,0 ${d.source.x},${d.source.y - 40}Z`;
+            const dr = 35;
+            return `M${d.source.x},${d.source.y - 5}A${dr},${dr} 0 1,0 ${d.source.x},${d.source.y - 25}Z`;
         } else {
             return `M${d.source.x},${d.source.y}L${d.target.x},${d.target.y}`;
         }
     }
 
+
+
+    
+
+    function constrainPosition(val, max, radius) {
+        return Math.max(radius, Math.min(max - radius, val));
+    }
+
     simulation.on("tick", () => {
         link.attr("d", linkArc);
-        node.attr("cx", d => d.x).attr("cy", d => d.y);
-        nodeText.attr("x", d => d.x).attr("y", d => d.y);
+        
+        node.attr("cx", d => constrainPosition(d.x, width, nodeRadius))
+            .attr("cy", d => constrainPosition(d.y, height, nodeRadius));
+        
+        nodeText.attr("x", d => constrainPosition(d.x, width, 0))
+                .attr("y", d => constrainPosition(d.y, height, 0));
     });
 }
+
 
 
 const social = document.getElementById('networkCanvas');
