@@ -1,3 +1,114 @@
+function drawNetwork() {
+    const svg = d3.select("#networkCanvas");
+    svg.selectAll("*").remove();
+
+    // Define arrowheads
+    svg.append("defs").selectAll("marker")
+        .data(["end"])
+        .enter().append("marker")
+        .attr("id", String)
+        .attr("viewBox", "0 -5 10 10")
+        .attr("refX", 30)
+        .attr("refY", 0)
+        .attr("markerWidth", 10)
+        .attr("markerHeight", 10)
+        .attr("orient", "auto")
+        .append("path")
+        .attr("d", "M0,-5L10,0L0,5")
+        .style("fill", "#999");
+
+    const nodes = Agt.map(agent => ({ id: agent }));
+    const links = [];
+    for (let agent in agentFollowers) {
+        for (let follower of agentFollowers[agent]) {
+            links.push({ source: follower, target: agent });
+        }
+    }
+
+    const simulation = d3.forceSimulation(nodes)
+        .force("link", d3.forceLink(links).id(d => d.id).distance(150))
+        .force("charge", d3.forceManyBody())
+        .force("center", d3.forceCenter(svg.attr("width") / 2, svg.attr("height") / 2));
+
+    const link = svg.append("g")
+        .selectAll("path")
+        .data(links)
+        .enter().append("path")
+        .attr("marker-end", "url(#end)")
+        .style("stroke", "#999")
+        .attr("fill", "none");
+
+    const node = svg.append("g")
+        .selectAll("circle")
+        .data(nodes)
+        .enter().append("circle")
+        .attr("r", 20)
+        .attr("fill", d => agentColors[d.id]);
+
+    const nodeText = svg.append("g").selectAll("text")
+        .data(nodes)
+        .enter().append("text")
+        .attr("font-size", 14)
+        .attr("text-anchor", "middle")
+        .attr("dy", ".35em")
+        .text(d => d.id);
+
+    function linkArc(d) {
+        if (d.source.id === d.target.id) {
+            // Adjusting the curve for the reflexive arrow
+            const dr = 30;
+            return `M${d.source.x},${d.source.y - 20}A${dr},${dr} 0 1,0 ${d.source.x},${d.source.y - 40}Z`;
+        } else {
+            return `M${d.source.x},${d.source.y}L${d.target.x},${d.target.y}`;
+        }
+    }
+
+    simulation.on("tick", () => {
+        link.attr("d", linkArc);
+        node.attr("cx", d => d.x).attr("cy", d => d.y);
+        nodeText.attr("x", d => d.x).attr("y", d => d.y);
+    });
+}
+
+
+const social = document.getElementById('networkCanvas');
+
+
+function downloadsocial() {
+    const svgData = new XMLSerializer().serializeToString(social);
+    const blob = new Blob([svgData], { type: "image/svg+xml" });
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "socialgraph.svg";
+    a.click();
+
+    // Cleanup
+    URL.revokeObjectURL(url);
+}
+
+
+
+
+
+const svg = document.getElementById('beliefCanvas');
+
+
+function downloadSVG() {
+    const svgData = new XMLSerializer().serializeToString(svg);
+    const blob = new Blob([svgData], { type: "image/svg+xml" });
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "beliefgraph.svg";
+    a.click();
+
+    // Cleanup
+    URL.revokeObjectURL(url);
+}
+
 
 function getDenotationResult(agent) {
     if (agentBeliefs[agent] && typeof agentBeliefs[agent].denotation === 'string') {

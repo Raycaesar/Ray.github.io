@@ -8,8 +8,8 @@ let Agt = [];  // This makes it global
 
 const agentColors = {}; // We use in graph Drawing
 let colorCounter = 0;
-const colors = ['#f56642', '#4bf542','#4281f5','#e642f5', '#f26f6f', '#f2bc6f', '#6fe5f2','#9ff26f']; // An array of colors for agents
-const selectedAgent = document.getElementById("beliefAgent").value;
+const colors = ['#D67293', ' #73DEFA', '#5DB117', '#5A8CD7', '#CCCC00', '#9A5FD7', '#FA1CA8', '#A300A3', '#00A3A3']; // An array of colors for agents
+
 
 // Set Agent Size and Update Dropdowns
 function setAgentSize() {
@@ -71,9 +71,18 @@ let Prop = [];  // This makes it global
 // Set Proposition Size
 function setPropSize() {
     const size = parseInt(document.getElementById("propSize").value);
-    Prop = Array.from({length: size}, (_, i) => i < 3 ? ['p', 'q', 'r'][i] : `p_${i + 1}`);
+    if (size < 4) {
+        Prop = ['p', 'q', 'r'].slice(0, size);
+    } else if (size === 4) {
+        Prop = ['p', 'q', 'r', 's'];
+    } else if (size === 5) {
+        Prop = ['p', 'q', 'r', 's', 't'];
+    } else {
+        Prop = ['p', 'q', 'r', 's', 't'].concat(Array.from({length: size - 5}, (_, i) => `p_${i + 2}`));
+    }
     document.getElementById("propOutput").innerText = `Prop = {${Prop.join(', ')}}`;
 }
+
 
 
 // ================================================
@@ -280,13 +289,16 @@ function assignBelief() {
 
 
 function displayAgentBeliefs() {
-    
-        let outputText = '';
-        for (let agent in agentBeliefs) {
-            outputText += `${agent} believes ${agentBeliefs[agent].formulas.join(' and ')} and k(${agent}) = ${agentBeliefs[agent].denotation}\n`;
-        }
-        document.getElementById("beliefOutput").innerText = outputText;
-    } 
+    let outputText = '';
+    for (let agent in agentBeliefs) {
+        // Wrap agent's name in a span, color it, and make it bold using inline CSS
+        const coloredAgentName = `<span style="color: ${agentColors[agent]}; font-weight: bold;">${agent}</span>`;
+        outputText += `${coloredAgentName} believes ${agentBeliefs[agent].formulas.join(' and ')} and k(${agent}) = ${agentBeliefs[agent].denotation}<br>`;
+    }
+    // Using innerHTML instead of innerText since we are adding HTML tags
+    document.getElementById("beliefOutput").innerHTML = outputText;
+}
+
 
 
 

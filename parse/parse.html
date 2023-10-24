@@ -24,6 +24,12 @@
     <select id="agentFollowers" multiple></select>
     <button onclick="setAgentFollowers()">Set Followers</button>
     <h3 id="followerOutput"></h3>
+    <div id="network">
+        <!-- We'll use this SVG to display our network -->
+        <svg id="networkCanvas" width="1200" height="600"></svg>
+    </div>
+    <button id="drawFollow" onclick="drawNetwork()">Draw Network</button>
+    <button onclick="downloadsocial()">Download Network</button>
 
     <hr/>
 
@@ -45,9 +51,11 @@
     <hr/>
 
     <div id="cy">
-<svg id="beliefCanvas" width="1500" height="550"></svg></div>
-
+<svg id="beliefCanvas" width="1800" height="800"></svg>
+</div>
 <button id="drawGraph">Draw Graph</button>
+<button onclick="downloadSVG()">Download SVG</button>
+
 <hr/>
 
     <!-- Formula Entry and Denotation Computation -->
@@ -69,9 +77,11 @@
             <li><strong>Brackets:</strong> Every formula connected by a binary operator should be enclosed within a pair of brackets. E.g., <span class="example">(p&q)</span>, not <span class="example">p&q</span>.</li>
         </ul>
     </div>
-
+    
+    <script src="https://d3js.org/d3.v5.min.js"></script>
     <script src="parse.js" defer></script> 
     <script src="drawGraph.js" defer></script>
+    
 </body>
 
 </html>

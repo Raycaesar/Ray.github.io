@@ -31,8 +31,14 @@ h3 {
     padding: 2px 5px;
     border-radius: 3px;
 }
+#network {
+    width: 1200px;
+    height: 600px;
+    border: 1px solid black;
+}
+
 #cy {
-    width: 1300px;
-    height: 500px;
+    width: 1800px;
+    height: 800px;
     border: 1px solid black;
 }
