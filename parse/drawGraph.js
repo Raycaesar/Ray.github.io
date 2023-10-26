@@ -34,9 +34,10 @@ function drawNetwork() {
         .force("center", d3.forceCenter(width / 2, height / 2))
         .force("collide", d3.forceCollide(30)) 
         .force("radial", d3.forceRadial(width / 2.5, width / 2, height / 2));
+    simulation.alphaDecay(0.05);
 
     function dragstarted(event, d) {
-        if (!event.active) simulation.alphaTarget(0.3).restart();
+        if (!event.active) simulation.alphaTarget(0.7).restart(); // Increase alpha target for more immediate response
         d.fx = d.x;
         d.fy = d.y;
     }
@@ -57,13 +58,16 @@ function drawNetwork() {
         .on("drag", dragged)
         .on("end", dragended);
 
+   
+
     const link = svg.append("g")
         .selectAll("path")
         .data(links)
         .enter().append("path")
-        .attr("marker-end", "url(#end)")
+        .attr("marker-end", d => d.source.id !== d.target.id ? "url(#end)" : null) // Check if the link is reflexive
         .style("stroke", "#999")
         .attr("fill", "none");
+    
 
     const node = svg.append("g")
         .selectAll("circle")
@@ -77,6 +81,8 @@ function drawNetwork() {
         .data(nodes)
         .enter().append("text")
         .attr("font-size", 14)
+        .attr("fill", "#dcf5f4")
+        .attr("font-family", "Franklin Gothic Medium, Arial Narrow, Arial, sans-serif")
         .attr("text-anchor", "middle")
         .attr("dy", ".35em")
         .text(d => d.id)
@@ -84,16 +90,12 @@ function drawNetwork() {
 
     function linkArc(d) {
         if (d.source.id === d.target.id) {
-            const dr = 35;
-            return `M${d.source.x},${d.source.y - 5}A${dr},${dr} 0 1,0 ${d.source.x},${d.source.y - 25}Z`;
+            const dr = 20;  // Increased arc size a bit
+            return `M${d.source.x},${d.source.y - nodeRadius}A${dr},${dr} 0 1,0 ${d.source.x},${d.source.y - (1.5 * nodeRadius)}Z`;
         } else {
             return `M${d.source.x},${d.source.y}L${d.target.x},${d.target.y}`;
         }
     }
-
-
-
-    
 
     function constrainPosition(val, max, radius) {
         return Math.max(radius, Math.min(max - radius, val));
@@ -101,16 +103,15 @@ function drawNetwork() {
 
     simulation.on("tick", () => {
         link.attr("d", linkArc);
-        
+
         node.attr("cx", d => constrainPosition(d.x, width, nodeRadius))
             .attr("cy", d => constrainPosition(d.y, height, nodeRadius));
-        
+
+        // For text, adding an offset to ensure it doesn't sit exactly on the node's edge.
         nodeText.attr("x", d => constrainPosition(d.x, width, 0))
-                .attr("y", d => constrainPosition(d.y, height, 0));
+                .attr("y", d => constrainPosition(d.y, height, 4));  // Offset added here
     });
 }
-
-
 
 const social = document.getElementById('networkCanvas');
 
@@ -218,8 +219,8 @@ document.getElementById("drawGraph").addEventListener("click", function() {
         circle.setAttribute("cx", x);
         circle.setAttribute("cy", y);
         circle.setAttribute("r", radius);
-        circle.setAttribute("stroke", "black");
-        circle.setAttribute("stroke-width", "1.5");
+        circle.setAttribute("stroke", "#686673");
+        circle.setAttribute("stroke-width", "0.5");
     
         if (believingAgents.length === 0) {
             circle.setAttribute("fill", "white");
@@ -243,6 +244,8 @@ document.getElementById("drawGraph").addEventListener("click", function() {
         text.setAttribute("y", y);
         text.setAttribute("text-anchor", "middle");
         text.setAttribute("dy", "0.3em");
+        text.setAttribute("fill", "#40120a")
+        text.setAttribute("font-family", "Franklin Gothic Medium, Arial Narrow, Arial, sans-serif")
         text.textContent = label;
     
         svgContainer.appendChild(circle); // Ensure the circle is appended too
