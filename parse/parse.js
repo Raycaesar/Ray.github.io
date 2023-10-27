@@ -88,6 +88,7 @@ function tokenize(message) {
     return message.match(/~|\+|&|>|[a-z]_[0-9]+|[a-z]|[\(\)]/g);
 }
 
+
 function parse(tokens) {
     if (tokens.length === 0) throw new Error("Unexpected end of input");
 
@@ -98,7 +99,12 @@ function parse(tokens) {
             return { type: 'negation', submessage: parse(tokens) };
         case '(':
             const left = parse(tokens);
+
+            if (!tokens.length) throw new Error("Expected an operator after opening parenthesis");
+
             const operator = tokens.shift();
+            if (['&', '+', '>'].indexOf(operator) === -1) throw new Error(`Unexpected operator: ${operator}`);
+
             const right = parse(tokens);
             
             if (tokens[0] !== ')') throw new Error("Expected a closing bracket");
@@ -106,13 +112,14 @@ function parse(tokens) {
 
             return { type: operator, left, right };
         default:
-            if (Prop.includes(token)) {
+            if (/^[a-z](?:[a-z]|[A-Z])?$/.test(token)) { // This regex matches one or two-letter combinations like 'Ba', 'p', etc.
                 return { type: 'atom', value: token };
             } else {
                 throw new Error(`Unexpected token: ${token}`);
             }
     }
 }
+
 
 
 //message Check
@@ -380,72 +387,63 @@ function tokenizeFormula(formula) {
         throw new TypeError("Formula must be a string.");
     }
 
-  
-    return formula.match(/B[a-z]|~|&|\+|\[.*?\]|[a-z]_[0-9]+|[a-z]|[\(\)]/g);
+    return formula.match(/B[a-z]|~|&|\+|>|[a-z]_[0-9]+|[a-z]|[\(\)]/g);
 }
+
 
 
 function parseFormula(subtokens) {
     console.log("Parsing formula with subtokens:", subtokens);
-
-    let stack = [];
-
-    for (let [index, token] of subtokens.entries()) {
-       if (token.startsWith('B')) {
-            let agent = token[1];
-            let remainingTokens = subtokens.slice(index + 1);
-            let proposition = parseFormula(remainingTokens);
-        
-      
-            let consumedTokens = subtokens.length - remainingTokens.length;
-        
     
-            index += consumedTokens;
-        
+    let token = subtokens.shift();
 
-            stack.push({ type: "belief", agent: agent, proposition: proposition });
-        } else {
-           
+    if (token.startsWith('B')) {
+        let agent = token[1];
+        let proposition = subtokens.join(""); // join the remaining tokens for the proposition
+        console.log(proposition)
+        return { type: "belief_atom", agent: agent, proposition: proposition };
+    } else {
+
             switch (token) {
                 case '~':
-                    let negatedElement = getNextToken(subtokens);
-                    stack.push({ type: "not", element: negatedElement });
+                    stack.push({ type: "not", element: subtokens.shift() }); 
                     break;
                 case '&':
                     let leftConjunct = stack.pop();
-                    let rightConjunct = getNextToken(subtokens);
-                    stack.push({ type: "and", left: leftConjunct, right: rightConjunct });
+                    stack.push({ type: "and", left: leftConjunct, right: subtokens.shift() });
                     break;
                 case '+':
                     let leftDisjunct = stack.pop();
-                    let rightDisjunct = getNextToken(subtokens);
-                    stack.push({ type: "or", left: leftDisjunct, right: rightDisjunct });
+                    stack.push({ type: "or", left: leftDisjunct, right: subtokens.shift() });
                     break;
                 case '[':
-                    let announcementAgent = getNextToken(subtokens);
-                    let announcementProposition = getNextToken(subtokens);
-                    stack.push({ type: "announcement", agent: announcementAgent, proposition: announcementProposition });
+                    let announcementAgent = subtokens.shift();
+                    stack.push({ type: "announcement", agent: announcementAgent, proposition: subtokens.shift() });
                     break;
                 default:
-                    if (token.match(/^[a-z](_[0-9]+)?$/)) {  // Checks if token is an atomic proposition
+                    if (token.match(/^[a-z](_[0-9]+)?$/)) {
                         stack.push({ type: 'atom', value: token });
                     } else {
-                        throw new Error(`Unexpected token: ${token} at position ${index} in formula.`);
+                        throw new Error(`Unexpected token: ${token} in formula.`);
                     }
                     break;
             }
-        }
+    }
+
+    if (stack.length > 1) {
+        throw new Error("Malformed formula. Too many elements in stack.");
     }
 
     return stack[0];
 }
 
+
+
+
+
 function includesArray(bigArray, smallArray) {
     return bigArray.some(arr => JSON.stringify(arr) === JSON.stringify(smallArray));
 }
-
-
-
 
 
 function getNextToken(subtokens) {
@@ -454,10 +452,10 @@ function getNextToken(subtokens) {
 
 function checkSatisfiability(parsedFormula) {
     switch(parsedFormula.type) {
-        case "belief":
+        case "belief_atom":
             const agent = parsedFormula.agent;
-            const propositionValue = parsedFormula.proposition.value;
-        
+            const proposition = parsedFormula.proposition;
+
             if (!agentBeliefs[agent]) {
                 console.error(`Agent '${agent}' does not have any assigned beliefs.`);
                 return false; 
@@ -466,14 +464,15 @@ function checkSatisfiability(parsedFormula) {
             const agentBeliefWorlds = parseDenotationString(agentBeliefs[agent].denotation);
             console.log(`Full beliefs object for agent ${agent}:`, agentBeliefs[agent]);
             console.log("agentBeliefWorlds:", agentBeliefWorlds);
-        
-            const propositionDenotation = replaceWithDenotation(parse(tokenize(propositionValue)));
-            const parsedpropositionDenotation = parseDenotationString(propositionDenotation)
-            console.log("propositionDenotation:", propositionDenotation);
-            console.log("propositionDenotation:", parsedpropositionDenotation);
-            return agentBeliefWorlds.every(world => includesArray(parsedpropositionDenotation, world));
+            
 
-       
+            const parsedmessage  = parse(tokenize(proposition));
+            const propositionDenotation = replaceWithDenotation(parsedmessage);
+            const parsedpropositionDenotation = parseDenotationString(propositionDenotation);
+            console.log("propositionDenotation:", propositionDenotation);
+            console.log("parsedpropositionDenotation:", parsedpropositionDenotation);
+            return agentBeliefWorlds.every(world => includesArray(parsedpropositionDenotation, world));
+            
         case "not":
             return !checkSatisfiability(parsedFormula.element);
 
