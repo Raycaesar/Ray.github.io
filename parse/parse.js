@@ -1,3 +1,5 @@
+
+
 // ===============================================
 // =============== AGENT FUNCTIONS ===============
 // ===============================================
@@ -64,77 +66,54 @@ function displayFollowers() {
 // ================================================
 // =============== PROP FUNCTIONS =================
 // ================================================
-let Prop = [];  // This makes it global
+let Prop = [];
 
 
 
-// Set Proposition Size
 function setPropSize() {
+    const baseProp = ['p', 'q', 'r', 's', 't'];
     const size = parseInt(document.getElementById("propSize").value);
-    if (size < 4) {
-        Prop = ['p', 'q', 'r'].slice(0, size);
-    } else if (size === 4) {
-        Prop = ['p', 'q', 'r', 's'];
-    } else if (size === 5) {
-        Prop = ['p', 'q', 'r', 's', 't'];
+    
+    if (size <= baseProp.length) {
+        Prop = baseProp.slice(0, size);
     } else {
-        Prop = ['p', 'q', 'r', 's', 't'].concat(Array.from({length: size - 5}, (_, i) => `p_${i + 2}`));
+        const additionalProps = Array.from({ length: size - baseProp.length }, (_, i) => `p_${i + 2}`);
+        Prop = [...baseProp, ...additionalProps];
     }
+
     document.getElementById("propOutput").innerText = `Prop = {${Prop.join(', ')}}`;
 }
 
-
-
-// ================================================
-// =============== message FUNCTIONS ==============
-// ================================================
-
-// Tokenizer
 function tokenize(message) {
     return message.match(/~|\+|&|>|[a-z]_[0-9]+|[a-z]|[\(\)]/g);
 }
 
-// Recursive parser
 function parse(tokens) {
     if (tokens.length === 0) throw new Error("Unexpected end of input");
 
-    let token = tokens.shift();
-    
-    if (token === '~') {
-        return {
-            type: 'negation',
-            submessage: parse(tokens)
-        };
-    } else if (token === '(') {
-        let left = parse(tokens);
-        
-        if (tokens.length === 0 || ['&', '+', '>'].indexOf(tokens[0]) === -1) {
-            throw new Error("Expected an operator");
-        }
-        
-        let operator = tokens.shift(); 
-        
-        let right = parse(tokens);
-        
-        if (tokens[0] !== ')') {
-            throw new Error("Expected a closing bracket");
-        }
-        
-        tokens.shift();  
-        return {
-            type: operator,
-            left: left,
-            right: right
-        };
-    } else if (Prop.includes(token)) {  // atom
-        return {
-            type: 'atom',
-            value: token
-        };
-    } else {
-        throw new Error(`Unexpected token: ${token}`);
+    const token = tokens.shift();
+
+    switch (token) {
+        case '~':
+            return { type: 'negation', submessage: parse(tokens) };
+        case '(':
+            const left = parse(tokens);
+            const operator = tokens.shift();
+            const right = parse(tokens);
+            
+            if (tokens[0] !== ')') throw new Error("Expected a closing bracket");
+            tokens.shift();
+
+            return { type: operator, left, right };
+        default:
+            if (Prop.includes(token)) {
+                return { type: 'atom', value: token };
+            } else {
+                throw new Error(`Unexpected token: ${token}`);
+            }
     }
 }
+
 
 //message Check
 function isWellFormedSimpleCheck(message) {
@@ -364,35 +343,31 @@ function powerSet(array) {
 
 
 function isSubsetOf(subset, superset) {
-    for (let element of subset) {
-        if (!superset.includes(element)) {
-            return false;
-        }
+    return subset.every(element => superset.includes(element));
+}
+
+function parseDenotationString(denotation) {
+    if (Array.isArray(denotation)) return denotation;
+
+    if (typeof denotation !== "string") {
+        console.error("Unexpected input:", denotation);
+        return [];
     }
-    return true;
+
+    let worlds = denotation.match(/(?<=\{)[^{}]+(?=\})/g) || [];
+    return worlds.map(world => 
+        world.split(', ').map(atom => atom.trim())
+    );
 }
 
-function parseDenotationString(denotationString) {
-    return denotationString
-        .slice(2, -2)  // Remove the outer '{{' and '}}'
-        .split('}, {')  // Split by '}, {' to get individual worlds
-        .map(worldString => 
-            worldString.split(', ').map(atom => atom.slice(1, -1))  // Split by ', ' and remove the surrounding '{' and '}'
-        );
-}
-
-// Sample usage:
-// const denotationString = '{{p}, {q, p}, {r, p}, {r, q, p}}';
-// console.log(parseDenotationString(denotationString));
-// Expected output: [['p'], ['q', 'p'], ['r', 'p'], ['r', 'q', 'p']]
 
 
-//evaluate formula
+
 
 function satisfiability() {
     const formula = document.getElementById("formulaInput").value.trim();
-    const subtokens = tokenizeFormula(formula); // Get tokens first
-    const parsedFormula = parseFormula(subtokens); // Pass tokens to the parser
+    const subtokens = tokenizeFormula(formula); 
+    const parsedFormula = parseFormula(subtokens); 
     
     const satResult = checkSatisfiability(parsedFormula);
 
@@ -405,7 +380,7 @@ function tokenizeFormula(formula) {
         throw new TypeError("Formula must be a string.");
     }
 
-    // The order matters; we want to capture multi-character tokens before single ones.
+  
     return formula.match(/B[a-z]|~|&|\+|\[.*?\]|[a-z]_[0-9]+|[a-z]|[\(\)]/g);
 }
 
@@ -416,10 +391,18 @@ function parseFormula(subtokens) {
     let stack = [];
 
     for (let [index, token] of subtokens.entries()) {
-        if (token.startsWith('B')) {
-            let agent = token[1];  // Since the token is like 'Ba', the agent is the second character
-            let remainingTokens = subtokens.slice(index + 1); // get the remaining tokens
-            let proposition = parseFormula(remainingTokens); // recursively parse the remaining tokens
+       if (token.startsWith('B')) {
+            let agent = token[1];
+            let remainingTokens = subtokens.slice(index + 1);
+            let proposition = parseFormula(remainingTokens);
+        
+      
+            let consumedTokens = subtokens.length - remainingTokens.length;
+        
+    
+            index += consumedTokens;
+        
+
             stack.push({ type: "belief", agent: agent, proposition: proposition });
         } else {
            
@@ -473,35 +456,23 @@ function checkSatisfiability(parsedFormula) {
     switch(parsedFormula.type) {
         case "belief":
             const agent = parsedFormula.agent;
-            const proposition = parsedFormula.proposition;
-
+            const propositionValue = parsedFormula.proposition.value;
+        
             if (!agentBeliefs[agent]) {
                 console.error(`Agent '${agent}' does not have any assigned beliefs.`);
                 return false; 
             }
-            console.log(`Beliefs for agent ${agent}:`, agentBeliefs[agent]);
-
-            if (typeof agentBeliefs[agent].denotation === 'string') {
-                agentBeliefs[agent].denotation = parseDenotationString(agentBeliefs[agent].denotation);
-            }
-
-            const agentBeliefWorlds = agentBeliefs[agent] && agentBeliefs[agent].denotation;
+        
+            const agentBeliefWorlds = parseDenotationString(agentBeliefs[agent].denotation);
+            console.log(`Full beliefs object for agent ${agent}:`, agentBeliefs[agent]);
             console.log("agentBeliefWorlds:", agentBeliefWorlds);
-            const denotation_to_array = replaceWithDenotation(proposition)
-            const propositionDenotation = parseDenotationString(denotation_to_array);
+        
+            const propositionDenotation = replaceWithDenotation(parse(tokenize(propositionValue)));
+            const parsedpropositionDenotation = parseDenotationString(propositionDenotation)
             console.log("propositionDenotation:", propositionDenotation);
-            
-            if (!Array.isArray(agentBeliefWorlds) || !agentBeliefWorlds.every(Array.isArray)) {
-                console.error(`AgentBeliefWorlds for agent '${agent}' is not a proper array of arrays.`);
-                return false;
-            }
+            console.log("propositionDenotation:", parsedpropositionDenotation);
+            return agentBeliefWorlds.every(world => includesArray(parsedpropositionDenotation, world));
 
-            if (!Array.isArray(propositionDenotation) || !propositionDenotation.every(Array.isArray)) {
-                console.error("Proposition denotation is not a proper array of arrays:", propositionDenotation);
-                return false;
-            }
-
-            return agentBeliefWorlds.every(beliefWorld => includesArray(propositionDenotation, beliefWorld));
        
         case "not":
             return !checkSatisfiability(parsedFormula.element);
@@ -513,8 +484,7 @@ function checkSatisfiability(parsedFormula) {
             return checkSatisfiability(parsedFormula.left) || checkSatisfiability(parsedFormula.right);
 
         case "announcement":
-            // Assuming public announcement; for now, we'll just return true.
-            // More advanced handling for public announcement can be added later.
+           
             return true;
 
         default:
@@ -522,7 +492,6 @@ function checkSatisfiability(parsedFormula) {
             return false;
     }
 }
-
 
 
 
