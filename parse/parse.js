@@ -322,6 +322,10 @@ function setUnion(setA, setB) {
     return union;
 }
 
+function includesArray(bigArray, smallArray) {
+    return bigArray.some(arr => JSON.stringify(arr) === JSON.stringify(smallArray));
+}
+
 function setIntersection(setA, setB) {
     return setA.filter(subsetA => setB.some(subsetB => arraysAreEqual(subsetA, subsetB)));
 }
@@ -361,26 +365,11 @@ function parseDenotationString(denotation) {
         return [];
     }
 
-    let worlds = denotation.match(/(?<=\{)[^{}]+(?=\})/g) || [];
+    let worlds = denotation.match(/(?<=\{)[^{}]*?(?=\})/g) || [];
     return worlds.map(world => 
-        world.split(', ').map(atom => atom.trim())
+        world.split(',').filter(atom => atom.trim()).map(atom => atom.trim())
     );
 }
-
-
-
-
-
-function satisfiability() {
-    const formula = document.getElementById("formulaInput").value.trim();
-    const subtokens = tokenizeFormula(formula); 
-    const parsedFormula = parseFormula(subtokens); 
-    
-    const satResult = checkSatisfiability(parsedFormula);
-
-    document.getElementById("satisfaction").innerText = satResult ? "The formula is satisfiable." : "The formula is not satisfiable.";
-}
-
 
 function tokenizeFormula(formula) {
     if (typeof formula !== "string") {
@@ -390,88 +379,117 @@ function tokenizeFormula(formula) {
     return formula.match(/B[a-z]|~|&|\+|>|[a-z]_[0-9]+|[a-z]|[\(\)]/g);
 }
 
-
-
-function parseFormula(subtokens) {
-    console.log("Parsing formula with subtokens:", subtokens);
-    
-    let token = subtokens.shift();
-
-    if (token.startsWith('B')) {
-        let agent = token[1];
-        let proposition = subtokens.join(""); // join the remaining tokens for the proposition
-        console.log(proposition)
-        return { type: "belief_atom", agent: agent, proposition: proposition };
-    } else {
-
-            switch (token) {
-                case '~':
-                    stack.push({ type: "not", element: subtokens.shift() }); 
-                    break;
-                case '&':
-                    let leftConjunct = stack.pop();
-                    stack.push({ type: "and", left: leftConjunct, right: subtokens.shift() });
-                    break;
-                case '+':
-                    let leftDisjunct = stack.pop();
-                    stack.push({ type: "or", left: leftDisjunct, right: subtokens.shift() });
-                    break;
-                case '[':
-                    let announcementAgent = subtokens.shift();
-                    stack.push({ type: "announcement", agent: announcementAgent, proposition: subtokens.shift() });
-                    break;
-                default:
-                    if (token.match(/^[a-z](_[0-9]+)?$/)) {
-                        stack.push({ type: 'atom', value: token });
-                    } else {
-                        throw new Error(`Unexpected token: ${token} in formula.`);
-                    }
-                    break;
-            }
-    }
-
-    if (stack.length > 1) {
-        throw new Error("Malformed formula. Too many elements in stack.");
-    }
-
-    return stack[0];
-}
-
-
-
-
-
-function includesArray(bigArray, smallArray) {
-    return bigArray.some(arr => JSON.stringify(arr) === JSON.stringify(smallArray));
-}
-
-
 function getNextToken(subtokens) {
+    if (subtokens.length === 0) {
+        throw new Error("Unexpected end of formula.");
+    }
     return subtokens.shift();
 }
+// ================================================
+// =============== Evalutate Formula ==============
+// ================================================
+
+function parseFormula(subtokens) {
+    if (subtokens.length === 0) {
+        throw new Error("Unexpected end of formula");
+    }
+
+    let token = subtokens.shift();
+
+    if (token === '(') {
+        console.log("Encountered open parenthesis. Starting extraction...");
+
+        let subFormula = [];
+        let bracketCount = 1;
+
+        while (subtokens.length > 0 && bracketCount > 0) {
+            let nextToken = subtokens.shift();
+            console.log("Current token:", nextToken, "Subtokens:", subtokens, "SubFormula:", subFormula, "BracketCount:", bracketCount);
+
+            if (nextToken === '(') {
+                bracketCount++;
+                console.log("Encountered open parenthesis. Incrementing bracketCount...");
+            } else if (nextToken === ')') {
+                bracketCount--;
+                console.log("Encountered close parenthesis. Decrementing bracketCount...");
+            }
+
+            if (bracketCount !== 0) {
+                subFormula.push(nextToken);
+            }
+        }
+
+        if (bracketCount !== 0) {
+            throw new Error("Mismatched parentheses");
+        }
+
+      // After extracting a subformula, we parse it again to identify the connectors and operands
+      let splitPoint;
+      if ((splitPoint = subFormula.indexOf('&')) !== -1) {
+          let leftFormula = subFormula.slice(0, splitPoint);
+          let rightFormula = subFormula.slice(splitPoint + 1);
+
+          return {
+              type: 'and',
+              left: parseFormula(leftFormula),
+              right: parseFormula(rightFormula)
+          };
+      } else if ((splitPoint = subFormula.indexOf('+')) !== -1) {
+          let leftFormula = subFormula.slice(0, splitPoint);
+          let rightFormula = subFormula.slice(splitPoint + 1);
+
+          return {
+              type: 'or',
+              left: parseFormula(leftFormula),
+              right: parseFormula(rightFormula)
+          };
+      } else {
+          // If no operator is found, parse the subformula directly
+          return parseFormula(subFormula);
+      }
+
+  } else if (token.startsWith('B')) {
+      let agent = token[1];
+      let proposition = subtokens.join("");
+      return { type: "belief_atom", agent: agent, proposition: proposition };
+
+  } else if (token === '~') {
+      let negatedFormula = parseFormula(subtokens);
+      return { type: "not", element: negatedFormula };
+  }
+
+  throw new Error(`Unexpected token: ${token}`);
+}
+
+
+        
 
 function checkSatisfiability(parsedFormula) {
     switch(parsedFormula.type) {
         case "belief_atom":
-            const agent = parsedFormula.agent;
-            const proposition = parsedFormula.proposition;
+    const agent = parsedFormula.agent;
+    const proposition = parsedFormula.proposition;
 
-            if (!agentBeliefs[agent]) {
-                console.error(`Agent '${agent}' does not have any assigned beliefs.`);
-                return false; 
-            }
+    if (!agentBeliefs[agent]) {
+        console.error(`Agent '${agent}' does not have any assigned beliefs.`);
+        return false; 
+    }
+    
+    const agentBeliefWorlds = parseDenotationString(agentBeliefs[agent].denotation);
+    console.log(`Full beliefs object for agent ${agent}:`, agentBeliefs[agent]);
+    console.log("agentBeliefWorlds:", agentBeliefWorlds);
+
+    // Check if the proposition is already parsed
+    const parsedmessage = (typeof proposition === "string") 
+        ? parse(tokenize(proposition)) 
+        : proposition;
         
-            const agentBeliefWorlds = parseDenotationString(agentBeliefs[agent].denotation);
-            console.log(`Full beliefs object for agent ${agent}:`, agentBeliefs[agent]);
-            console.log("agentBeliefWorlds:", agentBeliefWorlds);
-            
-
-            const parsedmessage  = parse(tokenize(proposition));
-            const propositionDenotation = replaceWithDenotation(parsedmessage);
-            const parsedpropositionDenotation = parseDenotationString(propositionDenotation);
-            console.log("propositionDenotation:", propositionDenotation);
-            console.log("parsedpropositionDenotation:", parsedpropositionDenotation);
-            return agentBeliefWorlds.every(world => includesArray(parsedpropositionDenotation, world));
+    const propositionDenotation = replaceWithDenotation(parsedmessage);
+    const parsedpropositionDenotation = parseDenotationString(propositionDenotation);
+    console.log("propositionDenotation:", propositionDenotation);
+    console.log("parsedpropositionDenotation:", parsedpropositionDenotation);
+    
+    return agentBeliefWorlds.every(world => includesArray(parsedpropositionDenotation, world));
             
         case "not":
             return !checkSatisfiability(parsedFormula.element);
@@ -487,12 +505,22 @@ function checkSatisfiability(parsedFormula) {
             return true;
 
         default:
-            console.error(`Unknown formula type: ${parsedFormula.type}`);
+            
             return false;
     }
 }
 
 
+function satisfiability() {
+    const formula = document.getElementById("formulaInput").value.trim();
+    const subtokens = tokenizeFormula(formula); 
+    const parsedFormula = parseFormula(subtokens); 
+    console.log(parsedFormula)
+    
+    const satResult = checkSatisfiability(parsedFormula);
+
+    document.getElementById("satisfaction").innerText = satResult ? "The formula is satisfiable." : "The formula is not satisfiable.";
+}
 
 
 
