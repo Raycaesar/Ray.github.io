@@ -389,6 +389,8 @@ function getNextToken(subtokens) {
 // =============== Evalutate Formula ==============
 // ================================================
 
+
+/*
 function parseFormula(subtokens) {
     if (subtokens.length === 0) {
         throw new Error("Unexpected end of formula");
@@ -460,7 +462,67 @@ function parseFormula(subtokens) {
 
   throw new Error(`Unexpected token: ${token}`);
 }
+*/
+function parseFormula(subtokens) {
+    if (subtokens.length === 0) {
+        throw new Error("Unexpected end of formula");
+    }
 
+    let token = subtokens.shift();
+
+    if (token === '(') {
+        let subFormula = [];
+        let bracketCount = 1;
+
+        while (subtokens.length > 0 && bracketCount > 0) {
+            let nextToken = subtokens.shift();
+            if (nextToken === '(') {
+                bracketCount++;
+            } else if (nextToken === ')') {
+                bracketCount--;
+            }
+
+            if (bracketCount !== 0) {
+                subFormula.push(nextToken);
+            }
+        }
+
+        if (bracketCount !== 0) {
+            throw new Error("Mismatched parentheses");
+        }
+
+        let parsedSubFormula = parseFormula(subFormula);
+
+        if (subtokens.length > 0 && (subtokens[0] === '&' || subtokens[0] === '+')) {
+            let nextOp = subtokens.shift();
+            if (nextOp === '&') {
+                return {
+                    type: 'and',
+                    left: parsedSubFormula,
+                    right: parseFormula(subtokens)
+                };
+            } else if (nextOp === '+') {
+                return {
+                    type: 'or',
+                    left: parsedSubFormula,
+                    right: parseFormula(subtokens)
+                };
+            } else {
+                throw new Error(`Unexpected operator: ${nextOp}`);
+            }
+        } else {
+            return parsedSubFormula;
+        }
+    } else if (token.startsWith('B')) {
+        let agent = token[1];
+        let proposition = subtokens.join(""); 
+        return { type: "belief_atom", agent: agent, proposition: proposition };
+    } else if (token === '~') {
+        return { type: "not", element: parseFormula(subtokens) };
+    }
+
+    throw new Error(`Unexpected token: ${token}`);
+}
 
         
 
