@@ -87,67 +87,72 @@ function parse(tokens) {
 }
 
 
-
 function replaceWithDenotation(parsedFormula) {
     if (!parsedFormula) throw new Error("Invalid or non-well-formed formula.");
 
     switch (parsedFormula.type) {
         case 'atom':
-            const denotation = atomDenotation(parsedFormula.value);
-            if (denotation.length === 0) return '{}';
-            return `{{${denotation.map(set => set.join(', ')).join('}, {')}}}`;
+            return formatDenotation(atomDenotation(parsedFormula.value));
             
         case 'negation':
-            const innerDenotation = replaceWithDenotation(parsedFormula.subformula);
-            if (innerDenotation === '{}') return '{{}}'; // Handle negation of empty set
-            if (innerDenotation.startsWith("{{") && innerDenotation.endsWith("}}")) {
-                let setString = innerDenotation.slice(2, -2).split('}, {'); 
-                let setArray = setString.map(str => str.split(', ').filter(Boolean));
-                let complementSet = complementOfSet(setArray);
-                if (complementSet.length === 0) return '{}'; // Return {} if the complement set is empty
-                return `{{${complementSet.map(set => set.join(', ')).join('}, {')}}}`;
-            }
-            return `~${innerDenotation}`;
+            return handleNegation(parsedFormula.subformula);
 
         case '&':
         case '+':
-            const leftDenotation = replaceWithDenotation(parsedFormula.left);
-            const rightDenotation = replaceWithDenotation(parsedFormula.right);
-
-            if (leftDenotation.startsWith("{{") && leftDenotation.endsWith("}}") &&
-                rightDenotation.startsWith("{{") && rightDenotation.endsWith("}}")) {
-                
-                let setA = leftDenotation.slice(2, -2).split('}, {').map(str => str.split(', ').filter(Boolean));
-                let setB = rightDenotation.slice(2, -2).split('}, {').map(str => str.split(', ').filter(Boolean));
-
-                let resultSet;
-                if (parsedFormula.type === '&') {
-                    resultSet = setIntersection(setA, setB);
-                } else { // '+'
-                    resultSet = setUnion(setA, setB);
-                }
-                
-                if (resultSet.length === 0) return '{}'; // Return {} if the result set is empty
-                return `{{${resultSet.map(set => set.join(', ')).join('}, {')}}}`;
-            }
-
-            return `(${leftDenotation} ${parsedFormula.type} ${rightDenotation})`;
+            return handleBinaryOperator(parsedFormula);
 
         case '>':
-            const notLeft = {
-                type: 'negation',
-                subformula: parsedFormula.left
-            };
-            const orRight = {
-                type: '+',
-                left: notLeft,
-                right: parsedFormula.right
-            };
-            return replaceWithDenotation(orRight);
+            return handleImplication(parsedFormula);
 
         default:
             throw new Error("Invalid or non-well-formed formula.");
     }
+}
+
+function handleNegation(subformula) {
+    const innerDenotation = replaceWithDenotation(subformula);
+    if (innerDenotation === '{}') {
+        // The negation of an empty set (contradiction) is the full set of possibilities (tautology)
+        return formatDenotation(powerSet(Prop));
+    } else {
+        // Calculate the complement set and return it formatted
+        let complementSet = complementOfSet(parseSet(innerDenotation));
+        return formatDenotation(complementSet);
+    }
+}
+
+function handleBinaryOperator(parsedFormula) {
+    const leftDenotation = parseSet(replaceWithDenotation(parsedFormula.left));
+    const rightDenotation = parseSet(replaceWithDenotation(parsedFormula.right));
+
+    let resultSet = parsedFormula.type === '&'
+        ? setIntersection(leftDenotation, rightDenotation)
+        : setUnion(leftDenotation, rightDenotation);
+
+    return formatDenotation(resultSet);
+}
+
+function handleImplication(parsedFormula) {
+    const notLeft = {
+        type: 'negation',
+        subformula: parsedFormula.left
+    };
+    const orRight = {
+        type: '+',
+        left: notLeft,
+        right: parsedFormula.right
+    };
+    return replaceWithDenotation(orRight);
+}
+
+function parseSet(setString) {
+    if (setString === '{}') return [];
+    return setString.slice(2, -2).split('}, {').map(str => str.split(', ').filter(Boolean));
+}
+
+function formatDenotation(setArray) {
+    if (setArray.length === 0) return '{}';
+    return `{{${setArray.map(set => set.join(', ')).join('}, {')}}}`;
 }
 
 
