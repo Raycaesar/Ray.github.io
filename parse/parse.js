@@ -1,5 +1,3 @@
-
-
 // ===============================================
 // =============== AGENT FUNCTIONS ===============
 // ===============================================
@@ -84,42 +82,53 @@ function setPropSize() {
     document.getElementById("propOutput").innerText = `Prop = {${Prop.join(', ')}}`;
 }
 
-function tokenize(message) {
-    return message.match(/~|\+|&|>|[a-z]_[0-9]+|[a-z]|[\(\)]/g);
+// Tokenizer
+function tokenize(formula) {
+    return formula.match(/~|\+|&|>|[a-z]_[0-9]+|[a-z]|[\(\)]/g);
 }
 
 
+// Recursive parser
 function parse(tokens) {
     if (tokens.length === 0) throw new Error("Unexpected end of input");
 
-    const token = tokens.shift();
-
-    switch (token) {
-        case '~':
-            return { type: 'negation', submessage: parse(tokens) };
-        case '(':
-            const left = parse(tokens);
-
-            if (!tokens.length) throw new Error("Expected an operator after opening parenthesis");
-
-            const operator = tokens.shift();
-            if (['&', '+', '>'].indexOf(operator) === -1) throw new Error(`Unexpected operator: ${operator}`);
-
-            const right = parse(tokens);
-            
-            if (tokens[0] !== ')') throw new Error("Expected a closing bracket");
-            tokens.shift();
-
-            return { type: operator, left, right };
-        default:
-            if (/^[a-z](?:[a-z]|[A-Z])?$/.test(token)) { // This regex matches one or two-letter combinations like 'Ba', 'p', etc.
-                return { type: 'atom', value: token };
-            } else {
-                throw new Error(`Unexpected token: ${token}`);
-            }
+    let token = tokens.shift();
+    
+    if (token === '~') {
+        return {
+            type: 'negation',
+            subformula: parse(tokens)
+        };
+    } else if (token === '(') {
+        let left = parse(tokens);
+        
+        if (tokens.length === 0 || ['&', '+', '>'].indexOf(tokens[0]) === -1) {
+            throw new Error("Expected an operator");
+        }
+        
+        let operator = tokens.shift(); 
+        
+        let right = parse(tokens);
+        
+        if (tokens[0] !== ')') {
+            throw new Error("Expected a closing bracket");
+        }
+        
+        tokens.shift();  
+        return {
+            type: operator,
+            left: left,
+            right: right
+        };
+    } else if (Prop.includes(token)) {  // atom
+        return {
+            type: 'atom',
+            value: token
+        };
+    } else {
+        throw new Error(`Unexpected token: ${token}`);
     }
 }
-
 
 
 //message Check
@@ -145,67 +154,72 @@ function isWellFormedSimpleCheck(message) {
 
 //We obtain denotation by substiting messages from atomic with sets.
 
-function replaceWithDenotation(parsedmessage) {
-    console.log("replaceWithDenotation called with:", parsedmessage);
-    if (!parsedmessage) throw new Error("Invalid or non-well-formed message.");
+function replaceWithDenotation(parsedFormula) {
+    if (!parsedFormula) throw new Error("Invalid or non-well-formed formula.");
 
-    switch (parsedmessage.type) {
+    switch (parsedFormula.type) {
         case 'atom':
-            const denotation = atomDenotation(parsedmessage.value);
-            if (denotation.length === 0) return '{}';
-            return `{{${denotation.map(set => set.join(', ')).join('}, {')}}}`;
+            return formatDenotation(atomDenotation(parsedFormula.value));
             
         case 'negation':
-            const innerDenotation = replaceWithDenotation(parsedmessage.submessage);
-            if (innerDenotation === '{}') return '{{}}'; // Handle negation of empty set
-            if (innerDenotation.startsWith("{{") && innerDenotation.endsWith("}}")) {
-                let setString = innerDenotation.slice(2, -2).split('}, {'); 
-                let setArray = setString.map(str => str.split(', ').filter(Boolean));
-                let complementSet = complementOfSet(setArray);
-                if (complementSet.length === 0) return '{}'; // Return {} if the complement set is empty
-                return `{{${complementSet.map(set => set.join(', ')).join('}, {')}}}`;
-            }
-            return `~${innerDenotation}`;
+            return handleNegation(parsedFormula.subformula);
 
         case '&':
         case '+':
-            const leftDenotation = replaceWithDenotation(parsedmessage.left);
-            const rightDenotation = replaceWithDenotation(parsedmessage.right);
-
-            if (leftDenotation.startsWith("{{") && leftDenotation.endsWith("}}") &&
-                rightDenotation.startsWith("{{") && rightDenotation.endsWith("}}")) {
-                
-                let setA = leftDenotation.slice(2, -2).split('}, {').map(str => str.split(', ').filter(Boolean));
-                let setB = rightDenotation.slice(2, -2).split('}, {').map(str => str.split(', ').filter(Boolean));
-
-                let resultSet;
-                if (parsedmessage.type === '&') {
-                    resultSet = setIntersection(setA, setB);
-                } else { // '+'
-                    resultSet = setUnion(setA, setB);
-                }
-                
-                if (resultSet.length === 0) return '{}'; // Return {} if the result set is empty
-                return `{{${resultSet.map(set => set.join(', ')).join('}, {')}}}`;
-            }
-
-            return `(${leftDenotation} ${parsedmessage.type} ${rightDenotation})`;
+            return handleBinaryOperator(parsedFormula);
 
         case '>':
-            const notLeft = {
-                type: 'negation',
-                submessage: parsedmessage.left
-            };
-            const orRight = {
-                type: '+',
-                left: notLeft,
-                right: parsedmessage.right
-            };
-            return replaceWithDenotation(orRight);
+            return handleImplication(parsedFormula);
 
         default:
-            throw new Error("Invalid or non-well-formed message.");
+            throw new Error("Invalid or non-well-formed formula.");
     }
+}
+
+function handleNegation(subformula) {
+    const innerDenotation = replaceWithDenotation(subformula);
+    if (innerDenotation === '{}') {
+        // The negation of an empty set (contradiction) is the full set of possibilities (tautology)
+        return formatDenotation(powerSet(Prop));
+    } else {
+        // Calculate the complement set and return it formatted
+        let complementSet = complementOfSet(parseSet(innerDenotation));
+        return formatDenotation(complementSet);
+    }
+}
+
+function handleBinaryOperator(parsedFormula) {
+    const leftDenotation = parseSet(replaceWithDenotation(parsedFormula.left));
+    const rightDenotation = parseSet(replaceWithDenotation(parsedFormula.right));
+
+    let resultSet = parsedFormula.type === '&'
+        ? setIntersection(leftDenotation, rightDenotation)
+        : setUnion(leftDenotation, rightDenotation);
+
+    return formatDenotation(resultSet);
+}
+
+function handleImplication(parsedFormula) {
+    const notLeft = {
+        type: 'negation',
+        subformula: parsedFormula.left
+    };
+    const orRight = {
+        type: '+',
+        left: notLeft,
+        right: parsedFormula.right
+    };
+    return replaceWithDenotation(orRight);
+}
+
+function parseSet(setString) {
+    if (setString === '{}') return [];
+    return setString.slice(2, -2).split('}, {').map(str => str.split(', ').filter(Boolean));
+}
+
+function formatDenotation(setArray) {
+    if (setArray.length === 0) return '{}';
+    return `{{${setArray.map(set => set.join(', ')).join('}, {')}}}`;
 }
 
 
@@ -232,7 +246,6 @@ function displayDenotation() {
 
 function assignBelief() {
     try {
-        
         const message = document.getElementById("beliefmessage").value;
 
         if (!isWellFormedSimpleCheck(message)) {
@@ -248,15 +261,19 @@ function assignBelief() {
             // Append new message to the beliefs
             agentBeliefs[selectedAgent].messages.push(message);
             
-            // Intersect the new denotation with the previous one
-            let oldDenotation = agentBeliefs[selectedAgent].denotation.slice(2, -2).split('}, {').map(str => str.split(', ').filter(Boolean));
-            let newDenotation = denotationResult.slice(2, -2).split('}, {').map(str => str.split(', ').filter(Boolean));
-            let intersection = setIntersection(oldDenotation, newDenotation);
-            
-            if (intersection.length === 0) {
-                agentBeliefs[selectedAgent].denotation = '{}'; // Set denotation to empty if there's a contradiction
+            // If the new denotation is an empty set, it should remain as an empty set after intersection
+            if (denotationResult === '{}') {
+                agentBeliefs[selectedAgent].denotation = '{}';
             } else {
-                agentBeliefs[selectedAgent].denotation = `{{${intersection.map(set => set.join(', ')).join('}, {')}}}`;
+                // Intersect the new denotation with the previous one
+                let oldDenotation = agentBeliefs[selectedAgent].denotation === '{}' ? [] : 
+                    agentBeliefs[selectedAgent].denotation.slice(2, -2).split('}, {').map(str => str.split(', ').filter(Boolean));
+                let newDenotation = denotationResult.slice(2, -2).split('}, {').map(str => str.split(', ').filter(Boolean));
+                let intersection = setIntersection(oldDenotation, newDenotation);
+
+                // Update the denotation to the intersection result
+                agentBeliefs[selectedAgent].denotation = intersection.length === 0 ? '{}' : 
+                    `{{${intersection.map(set => set.join(', ')).join('}, {')}}}`;
             }
         } else {
             // If no prior beliefs, initialize with the current one
@@ -326,15 +343,24 @@ function includesArray(bigArray, smallArray) {
     return bigArray.some(arr => JSON.stringify(arr) === JSON.stringify(smallArray));
 }
 
+// Helper function to perform set intersection
 function setIntersection(setA, setB) {
-    return setA.filter(subsetA => setB.some(subsetB => arraysAreEqual(subsetA, subsetB)));
+    // Convert each set to a string to perform comparison
+    const setAStr = setA.map(subset => subset.sort().join(','));
+    const setBStr = setB.map(subset => subset.sort().join(','));
+    
+    // Filter set A to only include elements that are also in set B
+    const intersection = setAStr.filter(subsetA => setBStr.includes(subsetA));
+    
+    // Convert the string representation back to a set
+    return intersection.map(subset => subset.split(',').filter(Boolean));
 }
 
 function complementOfSet(set) {
     let powerSetOfProp = powerSet(Prop);
     return powerSetOfProp.filter(subset => !set.some(item => arraysAreEqual(item, subset)));
 
-    function arraysAreEqual(arr1, arr2) {
+function arraysAreEqual(arr1, arr2) {
         if (arr1.length !== arr2.length) return false;
         for (let i = 0; i < arr1.length; i++) {
             if (arr1[i] !== arr2[i]) return false;
@@ -371,13 +397,6 @@ function parseDenotationString(denotation) {
     );
 }
 
-function tokenizeFormula(formula) {
-    if (typeof formula !== "string") {
-        throw new TypeError("Formula must be a string.");
-    }
-
-    return formula.match(/B[a-z]|~|&|\+|>|[a-z]_[0-9]+|[a-z]|[\(\)]/g);
-}
 
 function getNextToken(subtokens) {
     if (subtokens.length === 0) {
@@ -385,12 +404,228 @@ function getNextToken(subtokens) {
     }
     return subtokens.shift();
 }
+
+
+
+function tokenizeFormula(formula) {
+    if (typeof formula !== "string") {
+        throw new TypeError("Formula must be a string.");
+    }
+    return formula.match(/B[a-z]|~|&|\+|>|[a-z]_[0-9]+|[a-z]|T|F|[\(\)]/g);
+}
+
+function parseFormula(tokens) {
+    if (!tokens) {
+        throw new Error("Tokens are undefined or null");
+    }
+    if (tokens.length === 0) throw new Error("Unexpected end of input");
+
+    const token = tokens.shift();
+
+    switch (token) {
+        case '~':
+            return { type: 'negation', submessage: parseFormula(tokens) };
+        case '(':
+            const left = parseFormula(tokens);
+
+            if (!tokens.length) throw new Error("Expected an operator after subformula");
+
+            const operator = tokens.shift();
+            if (['&', '+', '>'].indexOf(operator) === -1) throw new Error(`Unexpected operator: ${operator}`);
+
+            const right = parseFormula(tokens);
+            
+            if (tokens[0] !== ')') throw new Error("Expected a closing bracket");
+            tokens.shift();
+
+            return { type: operator, left, right };
+        default:
+            if (/^[a-z](?:[a-z]|[A-Z])?$/.test(token) || token === 'T' || token === 'F') { 
+                return { type: 'atom', value: token };
+            } else {
+                throw new Error(`Unexpected token: ${token}`);
+            }
+    }
+}
+
+
 // ================================================
 // =============== Evalutate Formula ==============
 // ================================================
 
+function addSeparatorsToFormula(tokens) {
+    let result = [];
+    for (let i = 0; i < tokens.length; i++) {
+        let token = tokens[i];
+        if (token.startsWith('B') || token.startsWith('~B')) {
+            if (i > 0 && (tokens[i-1] === '&' || tokens[i-1] === '+')) {
+                result.push('|');
+            }
+        }
+        result.push(token);
+        if (token === '&' || token === '+') {
+            if (i < tokens.length - 1 && (tokens[i+1].startsWith('B') || tokens[i+1].startsWith('~B'))) {
+                result.push('|');
+            }
+        }
+    }
+    return result;
+}
+
+
+
+
+function extractLiterals(formula) {
+    let literals = formula.match(/B[a-z]~?\([^)]+\)|B[a-z][a-z]|B[a-z]~[a-z]/g) || [];
+    return literals;
+}
+
+
+
+function evaluateLiteral(literal) {
+    let isNegated = false;
+    
+    if (literal.startsWith('~')) {
+        isNegated = true;
+        literal = literal.slice(1);
+    }
+
+    const agent = literal[1];
+    
+    let message;
+    if (literal.indexOf('(') !== -1) {
+        const messageStartIndex = literal.indexOf('(');
+        message = literal.slice(messageStartIndex);
+    } else {
+        message = literal.slice(1);
+    }
+
+    const parsedMessage = parse(tokenize(message));
+    const messageDenotation = replaceWithDenotation(parsedMessage);
+    let messageWorlds = messageDenotation.slice(2, -2).split('}, {').map(str => str.split(', ').filter(Boolean));
+    const agentBeliefWorlds = agentBeliefs[agent].denotation.slice(2, -2).split('}, {').map(str => str.split(', ').filter(Boolean));
+
+    const result = agentBeliefWorlds.every(world => includesArray(messageWorlds, world));
+
+    return isNegated ? !result : result;
+}
+
+function evaluateLiteral(literal) {
+    // Check if the literal is negated and strip the negation if it is.
+    let isNegated = false;
+    if (literal.startsWith('~')) {
+        isNegated = true;
+        literal = literal.slice(1);
+    }
+
+    const agent = literal[1];
+    let message;
+
+    // Extract the message part of the belief literal, including any negation inside it.
+    if (literal.indexOf('(') !== -1) {
+        const messageStartIndex = literal.indexOf('(');
+        message = literal.slice(messageStartIndex); // Include the negation in the message if present.
+    } else {
+        message = literal.slice(2); // Adjust this if the structure of your belief literals is different.
+    }
+
+    // Parse the message including the negation.
+    const parsedMessage = parseFormula(tokenizeFormula(message));
+    const messageDenotation = replaceWithDenotation(parsedMessage);
+
+    // The rest of your evaluation logic should go here, making sure it correctly interprets the parsed negation.
+    let messageWorlds = messageDenotation.slice(2, -2).split('}, {').map(str => str.split(', ').filter(Boolean));
+    const agentBeliefWorlds = agentBeliefs[agent].denotation.slice(2, -2).split('}, {').map(str => str.split(', ').filter(Boolean));
+
+    const result = agentBeliefWorlds.every(world => includesArray(messageWorlds, world));
+    
+    return isNegated ? !result : result; // This line may be adjusted based on how you handle messageDenotation.
+}
+
+
+
+
+function substituteLiteralsWithValues(formula, literals, evaluations) {
+    for (let i = 0; i < literals.length; i++) {
+        // Escape regex special characters
+        let regex = new RegExp(literals[i].replace(/([()\[\]{}^$+*?.])/g, '\\$1'), 'g');
+        formula = formula.replace(regex, evaluations[i] ? 'T' : 'F');
+    }
+    return formula;
+}
+
+
+
+
+
+function evaluateFormula(formula) {
+    switch (formula.type) {
+        case 'atom':
+            return formula.value === 'T' ? true : formula.value === 'F' ? false : undefined;
+        case '&':
+            return evaluateFormula(formula.left) && evaluateFormula(formula.right);
+        case '+':
+            return evaluateFormula(formula.left) || evaluateFormula(formula.right);
+        case 'negation':
+            return !evaluateFormula(formula.submessage);
+        default:
+            throw new Error(`Unexpected formula type: ${formula.type}`);
+    }
+}
+
+
+function satisfiability() {
+    const formula = document.getElementById("formulaInput").value.trim();
+    console.log("formula:", formula)
+    // Transform the formula: replace '|' with the appropriate characters
+    const transformedFormula = formula.replace(/\|&\|/g, '&').replace(/\|\+\|/g, '+');
+    console.log("transformedFormula:", transformedFormula)
+    // Extract the literals from the transformed formula
+    const literals = extractLiterals(transformedFormula);
+    console.log("literals:",literals)
+    // Evaluate each literal to determine its truth value
+    const evaluations = literals.map(literal => evaluateLiteral(literal));
+    console.log("evaluation:",evaluations)
+    // Substitute the truth values into the formula
+    const substitutedFormulaString = substituteLiteralsWithValues(transformedFormula, literals, evaluations);
+    console.log("substitutedFormulaString:",substitutedFormulaString)
+
+    const tokensForParsing = tokenizeFormula(substitutedFormulaString);
+    console.log("Tokens for parsing:", tokensForParsing);
+
+
+    // Parse the substituted formula so that it becomes an object structure
+    const parsedFormula = parseFormula(tokenizeFormula(substitutedFormulaString));
+
+    // Evaluate the formula
+    const satResult = evaluateFormula(parsedFormula);
+
+
+    
+    document.getElementById("satisfaction").innerText = satResult ? "Satisfied" : "Unsatisfied";
+}
+
+
+/*for verification: 
+a believes p and k(a) = {{p}, {q, p}, {r, p}, {r, q, p}}
+b believes q and k(b) = {{q}, {q, p}, {r, q}, {r, q, p}}
+c believes r and k(c) = {{r}, {r, p}, {r, q}, {r, q, p}}
+
+(~(Ba~(q+r)+Bbr)&Bcr) satisified
+
+((~Ba(~p>q)&Bbr)+(Bc(~q>r)&~Bb(p>q))) unsatisfied
+
+
+*/
+
+
+
 
 /*
+
+let tokens = tokenizeFormula("(((Ba(p&q)+~Bbq)&~Bcr)&(Bcq&~Ba(p+q)))");
+let transformedTokens = addSeparatorsToFormula(tokens);
+console.log(transformedTokens.join(''));  // Outputs: (((Ba(p&q)|+|~Bbq)|&|~Bcr)|&|(Bcq|&|~Ba(p+q)))
 function parseFormula(subtokens) {
     if (subtokens.length === 0) {
         throw new Error("Unexpected end of formula");
@@ -462,67 +697,7 @@ function parseFormula(subtokens) {
 
   throw new Error(`Unexpected token: ${token}`);
 }
-*/
-function parseFormula(subtokens) {
-    if (subtokens.length === 0) {
-        throw new Error("Unexpected end of formula");
-    }
 
-    let token = subtokens.shift();
-
-    if (token === '(') {
-        let subFormula = [];
-        let bracketCount = 1;
-
-        while (subtokens.length > 0 && bracketCount > 0) {
-            let nextToken = subtokens.shift();
-            if (nextToken === '(') {
-                bracketCount++;
-            } else if (nextToken === ')') {
-                bracketCount--;
-            }
-
-            if (bracketCount !== 0) {
-                subFormula.push(nextToken);
-            }
-        }
-
-        if (bracketCount !== 0) {
-            throw new Error("Mismatched parentheses");
-        }
-
-        let parsedSubFormula = parseFormula(subFormula);
-
-        if (subtokens.length > 0 && (subtokens[0] === '&' || subtokens[0] === '+')) {
-            let nextOp = subtokens.shift();
-            if (nextOp === '&') {
-                return {
-                    type: 'and',
-                    left: parsedSubFormula,
-                    right: parseFormula(subtokens)
-                };
-            } else if (nextOp === '+') {
-                return {
-                    type: 'or',
-                    left: parsedSubFormula,
-                    right: parseFormula(subtokens)
-                };
-            } else {
-                throw new Error(`Unexpected operator: ${nextOp}`);
-            }
-        } else {
-            return parsedSubFormula;
-        }
-    } else if (token.startsWith('B')) {
-        let agent = token[1];
-        let proposition = subtokens.join(""); 
-        return { type: "belief_atom", agent: agent, proposition: proposition };
-    } else if (token === '~') {
-        return { type: "not", element: parseFormula(subtokens) };
-    }
-
-    throw new Error(`Unexpected token: ${token}`);
-}
 
         
 
@@ -573,18 +748,27 @@ function checkSatisfiability(parsedFormula) {
 }
 
 
-function satisfiability() {
-    const formula = document.getElementById("formulaInput").value.trim();
-    const subtokens = tokenizeFormula(formula); 
-    const parsedFormula = parseFormula(subtokens); 
-    console.log(parsedFormula)
-    
-    const satResult = checkSatisfiability(parsedFormula);
 
-    document.getElementById("satisfaction").innerText = satResult ? "The formula is satisfiable." : "The formula is not satisfiable.";
+
+let transformedFormula = "(((Ba(p&q)|+|~Bbq)|&|~Bcr)|&|(Bcq|&|~Ba(p+q)))";
+let literals = extractLiterals(transformedFormula);
+console.log(literals); // Expected: ['Ba(p&q)', '~Bbq', '~Bcr', 'Bcq', '~Ba(p+q)']
+
+function evaluateLiteral(literal, model) {
+    if (literal.startsWith('~')) {
+        // if the model doesn't have the negated form but has the positive form
+        return !model[literal.slice(1)];
+    }
+    return model[literal];
 }
 
+let model = { 'Ba(p&q)': true, 'Bbq': false, 'Bcr': false, 'Bcq': true, 'Ba(p+q)': false };
+let evaluations = literals.map(literal => evaluateLiteral(literal, model));
+console.log(evaluations); // Outputs: [true, false, false, true, false]
 
+let substitutedFormula = substituteLiteralsWithValues(transformedFormula, literals, evaluations);
+console.log(substitutedFormula); // Outputs: (((T|+|F)|&|F)|&|(T|&|F))
 
+*/
 
 
