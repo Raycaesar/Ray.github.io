@@ -178,14 +178,17 @@ function replaceWithDenotation(parsedFormula) {
 
 function handleNegation(subformula) {
     const innerDenotation = replaceWithDenotation(subformula);
-    if (innerDenotation === '{}') {
-        // The negation of an empty set (contradiction) is the full set of possibilities (tautology)
-        return formatDenotation(powerSet(Prop));
+    //console.log("innerDenotation:", innerDenotation);
+
+    // If the inner denotation is the full set, the negation is the empty set.
+    if (innerDenotation === formatDenotation(powerSet(Prop))) {
+        return '{}';
     } else {
         // Calculate the complement set and return it formatted
         let complementSet = complementOfSet(parseSet(innerDenotation));
         return formatDenotation(complementSet);
     }
+    
 }
 
 function handleBinaryOperator(parsedFormula) {
@@ -212,14 +215,16 @@ function handleImplication(parsedFormula) {
     return replaceWithDenotation(orRight);
 }
 
-function parseSet(setString) {
-    if (setString === '{}') return [];
-    return setString.slice(2, -2).split('}, {').map(str => str.split(', ').filter(Boolean));
+// Helper function to parse a set denotation string into a set
+function parseSet(denotation) {
+    if (denotation === '{}') return [];
+    return denotation.slice(2, -2).split('}, {').map(str => str.split(', ').filter(Boolean));
 }
 
-function formatDenotation(setArray) {
-    if (setArray.length === 0) return '{}';
-    return `{{${setArray.map(set => set.join(', ')).join('}, {')}}}`;
+// Helper function to format a set into a denotation string
+function formatDenotation(set) {
+    if (set.length === 0) return '{}';
+    return `{{${set.map(subset => subset.join(', ')).join('}, {')}}}`;
 }
 
 
@@ -233,7 +238,9 @@ function displayDenotation() {
         }
 
         const parsed = parse(tokenize(message));
+        
         let result = replaceWithDenotation(parsed);
+       
         document.getElementById("resultOutput").innerText = result;
     } catch (error) {
         alert(error.message);
@@ -253,8 +260,12 @@ function assignBelief() {
         }
 
         const selectedAgent = document.getElementById("beliefAgent").value;
+        //console.log("selectedAgent", selectedAgent)
         const parsed = parse(tokenize(message));
+        //console.log("parsedmessage", parsed)
         const denotationResult = replaceWithDenotation(parsed);
+        //console.log("denotationResult", denotationResult)
+
 
         // Check if the agent already has beliefs
         if (agentBeliefs[selectedAgent]) {
@@ -356,32 +367,36 @@ function setIntersection(setA, setB) {
     return intersection.map(subset => subset.split(',').filter(Boolean));
 }
 
+// Helper function to calculate the complement of a set
 function complementOfSet(set) {
-    let powerSetOfProp = powerSet(Prop);
-    return powerSetOfProp.filter(subset => !set.some(item => arraysAreEqual(item, subset)));
-
-function arraysAreEqual(arr1, arr2) {
-        if (arr1.length !== arr2.length) return false;
-        for (let i = 0; i < arr1.length; i++) {
-            if (arr1[i] !== arr2[i]) return false;
-        }
-        return true;
-    }
+    // Generate the power set of Prop
+    let fullSet = powerSet(Prop);
+    // Remove the elements that are in the input set from the full set
+    return fullSet.filter(subset => !set.some(setSubset => 
+        setSubset.length === subset.length && setSubset.every((element, index) => element === subset[index])
+    ));
 }
 
 function atomDenotation(atom) {
     return powerSet(Prop).filter(subset => subset.includes(atom));
 }
 
-function powerSet(array) {
-    return array.reduce((subsets, value) => subsets.concat(subsets.map(set => [value, ...set])), [[]]);
+function powerSet(set) {
+    const powerSet = [];
+    const total = Math.pow(2, set.length);
+    for (let i = 0; i < total; i++) {
+        const subset = [];
+        for (let j = 0; j < set.length; j++) {
+            // If the j-th position in the binary representation of i is 1, include the j-th element
+            if (i & (1 << j)) {
+                subset.push(set[j]);
+            }
+        }
+        powerSet.push(subset);
+    }
+    return powerSet;
 }
 
-
-
-function isSubsetOf(subset, superset) {
-    return subset.every(element => superset.includes(element));
-}
 
 function parseDenotationString(denotation) {
     if (Array.isArray(denotation)) return denotation;
@@ -476,71 +491,68 @@ function addSeparatorsToFormula(tokens) {
 
 
 function extractLiterals(formula) {
-    let literals = formula.match(/B[a-z]~?\([^)]+\)|B[a-z][a-z]|B[a-z]~[a-z]/g) || [];
+    let literals = formula.match(/B[a-z](~+)?\([^)]+\)|B[a-z](~+)?[a-z]/g) || [];
     return literals;
 }
 
 
 
-function evaluateLiteral(literal) {
-    let isNegated = false;
-    
-    if (literal.startsWith('~')) {
-        isNegated = true;
-        literal = literal.slice(1);
-    }
 
-    const agent = literal[1];
-    
-    let message;
-    if (literal.indexOf('(') !== -1) {
-        const messageStartIndex = literal.indexOf('(');
-        message = literal.slice(messageStartIndex);
-    } else {
-        message = literal.slice(1);
-    }
-
-    const parsedMessage = parse(tokenize(message));
-    const messageDenotation = replaceWithDenotation(parsedMessage);
-    let messageWorlds = messageDenotation.slice(2, -2).split('}, {').map(str => str.split(', ').filter(Boolean));
-    const agentBeliefWorlds = agentBeliefs[agent].denotation.slice(2, -2).split('}, {').map(str => str.split(', ').filter(Boolean));
-
-    const result = agentBeliefWorlds.every(world => includesArray(messageWorlds, world));
-
-    return isNegated ? !result : result;
+/*
+function includesSet(set, subset) {
+    return subset.every(element => set.includes(element));
 }
 
-function evaluateLiteral(literal) {
-    // Check if the literal is negated and strip the negation if it is.
-    let isNegated = false;
-    if (literal.startsWith('~')) {
-        isNegated = true;
-        literal = literal.slice(1);
-    }
+*/
 
+function isSubsetOf(subsetWorlds, supersetWorlds) {
+    // Convert the arrays of worlds to strings for easier comparison
+    const supersetStrings = supersetWorlds.map(set => JSON.stringify(set.sort()));
+    const subsetStrings = subsetWorlds.map(set => JSON.stringify(set.sort()));
+
+    // Check if every world in subsetWorlds is included in supersetWorlds
+    return subsetStrings.every(subset => supersetStrings.includes(subset));
+}
+
+
+
+
+function evaluateLiteral(literal) {
     const agent = literal[1];
     let message;
 
     // Extract the message part of the belief literal, including any negation inside it.
-    if (literal.indexOf('(') !== -1) {
-        const messageStartIndex = literal.indexOf('(');
-        message = literal.slice(messageStartIndex); // Include the negation in the message if present.
+    if (literal.includes('(')) {
+        // Include the parentheses to ensure any negation inside is parsed.
+        const messageStartIndex = literal.indexOf('B' + agent) + ('B' + agent).length;
+        message = literal.slice(messageStartIndex);
     } else {
         message = literal.slice(2); // Adjust this if the structure of your belief literals is different.
     }
+    console.log("message:", message);
 
     // Parse the message including the negation.
-    const parsedMessage = parseFormula(tokenizeFormula(message));
+    const parsedMessage = parse(tokenize(message));
+    console.log("parsedMessage:", parsedMessage);
+
+    // Assuming replaceWithDenotation returns a set of worlds where the message is true.
     const messageDenotation = replaceWithDenotation(parsedMessage);
+    console.log("messageDenotation:", messageDenotation);
 
-    // The rest of your evaluation logic should go here, making sure it correctly interprets the parsed negation.
-    let messageWorlds = messageDenotation.slice(2, -2).split('}, {').map(str => str.split(', ').filter(Boolean));
-    const agentBeliefWorlds = agentBeliefs[agent].denotation.slice(2, -2).split('}, {').map(str => str.split(', ').filter(Boolean));
+    // Convert the denotation string into a set of worlds.
+    let messageWorlds = parseSet(messageDenotation);
+    console.log("messageWorlds:", messageWorlds);
+    const agentBeliefWorlds = parseSet(agentBeliefs[agent].denotation);
+    console.log("agentBeliefWorlds:", agentBeliefWorlds);
 
-    const result = agentBeliefWorlds.every(world => includesArray(messageWorlds, world));
-    
-    return isNegated ? !result : result; // This line may be adjusted based on how you handle messageDenotation.
+    // Check if the proposition is true in all of the agent's belief worlds.
+    const result = isSubsetOf(agentBeliefWorlds, messageWorlds);
+
+    return result;
 }
+
+
+
 
 
 
@@ -562,12 +574,13 @@ function evaluateFormula(formula) {
     switch (formula.type) {
         case 'atom':
             return formula.value === 'T' ? true : formula.value === 'F' ? false : undefined;
+        case 'negation':
+            return !evaluateFormula(formula.submessage);
         case '&':
             return evaluateFormula(formula.left) && evaluateFormula(formula.right);
         case '+':
             return evaluateFormula(formula.left) || evaluateFormula(formula.right);
-        case 'negation':
-            return !evaluateFormula(formula.submessage);
+        
         default:
             throw new Error(`Unexpected formula type: ${formula.type}`);
     }
@@ -612,162 +625,16 @@ b believes q and k(b) = {{q}, {q, p}, {r, q}, {r, q, p}}
 c believes r and k(c) = {{r}, {r, p}, {r, q}, {r, q, p}}
 
 (~(Ba~(q+r)+Bbr)&Bcr) satisified
+(~(F+F)&T)
 
 ((~Ba(~p>q)&Bbr)+(Bc(~q>r)&~Bb(p>q))) unsatisfied
+((~T&F)+(T&~T))
 
+((Ba~(~p&r) + ~Bb~(r+q)) + ~Bc~(p>q)) Satisfied
+((T + ~F) + ~F)
 
-*/
-
-
-
-
-/*
-
-let tokens = tokenizeFormula("(((Ba(p&q)+~Bbq)&~Bcr)&(Bcq&~Ba(p+q)))");
-let transformedTokens = addSeparatorsToFormula(tokens);
-console.log(transformedTokens.join(''));  // Outputs: (((Ba(p&q)|+|~Bbq)|&|~Bcr)|&|(Bcq|&|~Ba(p+q)))
-function parseFormula(subtokens) {
-    if (subtokens.length === 0) {
-        throw new Error("Unexpected end of formula");
-    }
-
-    let token = subtokens.shift();
-
-    if (token === '(') {
-        console.log("Encountered open parenthesis. Starting extraction...");
-
-        let subFormula = [];
-        let bracketCount = 1;
-
-        while (subtokens.length > 0 && bracketCount > 0) {
-            let nextToken = subtokens.shift();
-            console.log("Current token:", nextToken, "Subtokens:", subtokens, "SubFormula:", subFormula, "BracketCount:", bracketCount);
-
-            if (nextToken === '(') {
-                bracketCount++;
-                console.log("Encountered open parenthesis. Incrementing bracketCount...");
-            } else if (nextToken === ')') {
-                bracketCount--;
-                console.log("Encountered close parenthesis. Decrementing bracketCount...");
-            }
-
-            if (bracketCount !== 0) {
-                subFormula.push(nextToken);
-            }
-        }
-
-        if (bracketCount !== 0) {
-            throw new Error("Mismatched parentheses");
-        }
-
-      // After extracting a subformula, we parse it again to identify the connectors and operands
-      let splitPoint;
-      if ((splitPoint = subFormula.indexOf('&')) !== -1) {
-          let leftFormula = subFormula.slice(0, splitPoint);
-          let rightFormula = subFormula.slice(splitPoint + 1);
-
-          return {
-              type: 'and',
-              left: parseFormula(leftFormula),
-              right: parseFormula(rightFormula)
-          };
-      } else if ((splitPoint = subFormula.indexOf('+')) !== -1) {
-          let leftFormula = subFormula.slice(0, splitPoint);
-          let rightFormula = subFormula.slice(splitPoint + 1);
-
-          return {
-              type: 'or',
-              left: parseFormula(leftFormula),
-              right: parseFormula(rightFormula)
-          };
-      } else {
-          // If no operator is found, parse the subformula directly
-          return parseFormula(subFormula);
-      }
-
-  } else if (token.startsWith('B')) {
-      let agent = token[1];
-      let proposition = subtokens.join("");
-      return { type: "belief_atom", agent: agent, proposition: proposition };
-
-  } else if (token === '~') {
-      let negatedFormula = parseFormula(subtokens);
-      return { type: "not", element: negatedFormula };
-  }
-
-  throw new Error(`Unexpected token: ${token}`);
-}
-
-
-        
-
-function checkSatisfiability(parsedFormula) {
-    switch(parsedFormula.type) {
-        case "belief_atom":
-    const agent = parsedFormula.agent;
-    const proposition = parsedFormula.proposition;
-
-    if (!agentBeliefs[agent]) {
-        console.error(`Agent '${agent}' does not have any assigned beliefs.`);
-        return false; 
-    }
-    
-    const agentBeliefWorlds = parseDenotationString(agentBeliefs[agent].denotation);
-    console.log(`Full beliefs object for agent ${agent}:`, agentBeliefs[agent]);
-    console.log("agentBeliefWorlds:", agentBeliefWorlds);
-
-    // Check if the proposition is already parsed
-    const parsedmessage = (typeof proposition === "string") 
-        ? parse(tokenize(proposition)) 
-        : proposition;
-        
-    const propositionDenotation = replaceWithDenotation(parsedmessage);
-    const parsedpropositionDenotation = parseDenotationString(propositionDenotation);
-    console.log("propositionDenotation:", propositionDenotation);
-    console.log("parsedpropositionDenotation:", parsedpropositionDenotation);
-    
-    return agentBeliefWorlds.every(world => includesArray(parsedpropositionDenotation, world));
-            
-        case "not":
-            return !checkSatisfiability(parsedFormula.element);
-
-        case "and":
-            return checkSatisfiability(parsedFormula.left) && checkSatisfiability(parsedFormula.right);
-
-        case "or":
-            return checkSatisfiability(parsedFormula.left) || checkSatisfiability(parsedFormula.right);
-
-        case "announcement":
-           
-            return true;
-
-        default:
-            
-            return false;
-    }
-}
-
-
-
-
-let transformedFormula = "(((Ba(p&q)|+|~Bbq)|&|~Bcr)|&|(Bcq|&|~Ba(p+q)))";
-let literals = extractLiterals(transformedFormula);
-console.log(literals); // Expected: ['Ba(p&q)', '~Bbq', '~Bcr', 'Bcq', '~Ba(p+q)']
-
-function evaluateLiteral(literal, model) {
-    if (literal.startsWith('~')) {
-        // if the model doesn't have the negated form but has the positive form
-        return !model[literal.slice(1)];
-    }
-    return model[literal];
-}
-
-let model = { 'Ba(p&q)': true, 'Bbq': false, 'Bcr': false, 'Bcq': true, 'Ba(p+q)': false };
-let evaluations = literals.map(literal => evaluateLiteral(literal, model));
-console.log(evaluations); // Outputs: [true, false, false, true, false]
-
-let substitutedFormula = substituteLiteralsWithValues(transformedFormula, literals, evaluations);
-console.log(substitutedFormula); // Outputs: (((T|+|F)|&|F)|&|(T|&|F))
+(~Ba(p>q)&~Bbr)+(Bc~~r+Bb~(r>q))  Satisfied
+(~F&~F)+(T+F)
 
 */
 
