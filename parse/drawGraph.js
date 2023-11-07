@@ -155,10 +155,7 @@ function downloadSVG() {
     // Cleanup
     URL.revokeObjectURL(url);
 }
-// This function is similar to 'downloadsocial' but for the belief network SVG.
-    // It serializes the SVG, creates a Blob, sets up a download link, and triggers the download.
 
-// This function processes the denotation part of an agent's beliefs and returns it as an array of subsets.
 
 const svg = document.getElementById('beliefCanvas'); // Select the SVG element for the belief network.
 
@@ -173,7 +170,40 @@ function getDenotationResult(agent) {
     return []; // If the conditions are not met, return an empty array.
 }
 
-   
+document.getElementById('propSize').addEventListener('change', function() {
+    var size = parseInt(this.value, 10); // Make sure to parse the input value as an integer
+    var svgContainer = document.getElementById('cy');
+    var svgCanvas = document.getElementById('beliefCanvas');
+
+    // Base width and height
+    var baseWidth = 3600;
+    var baseHeight = 800;
+
+    if (size >= 7) {
+        // Calculate new width as per the given formula
+        var newWidth = baseWidth * Math.pow(1.5, size - 7);
+        var newHeight = baseHeight * Math.pow(1.5, size - 7);
+        // Set the new width and keep the height constant
+        svgContainer.style.width = newWidth + 'px';
+        svgContainer.style.height = newHeight + 'px';
+
+        // Adjust the SVG canvas size as well
+        svgCanvas.setAttribute('width', newWidth);
+        svgCanvas.setAttribute('height', newHeight);
+    } else {
+        // Reset to default size
+        svgContainer.style.width = '1800px';
+        svgContainer.style.height = '800px';
+
+        // Reset the SVG canvas size as well
+        svgCanvas.setAttribute('width', '1800');
+        svgCanvas.setAttribute('height', '800');
+    }
+});
+
+
+
+
 // This code snippet is an event listener attached to an HTML element with the id "drawGraph".
 // When the element is clicked, it triggers the displayPowerSet function to visualize a power set.
 document.getElementById("drawGraph").addEventListener("click", function() {
@@ -231,7 +261,6 @@ document.getElementById("drawGraph").addEventListener("click", function() {
         }
     }
     
-
     function createCircle(x, y, label, svgContainer, radius, believingAgents) {
         // Create an SVG circle element.
         const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
@@ -246,7 +275,14 @@ document.getElementById("drawGraph").addEventListener("click", function() {
     
         // Determine the fill color based on the believing agents.
         let fillColor = "white"; // Default to white (no belief).
+         // Add a class to the circle for identification
+         circle.classList.add("belief-node");
     
+         // Add an event listener to the circle
+         circle.addEventListener("click", function(event) {
+             handleNodeClick(event, label);
+         });
+
         if (agentsWithBeliefs.length === 1) {
             // If there is exactly one believing agent with non-empty denotation.
             const agent = agentsWithBeliefs[0];
@@ -279,7 +315,10 @@ document.getElementById("drawGraph").addEventListener("click", function() {
         text.setAttribute("fill", "#40120a");
         text.setAttribute("font-family", "Franklin Gothic Medium, Arial Narrow, Arial, sans-serif");
         text.textContent = label;
+         // Add a class to the text for identification
+         text.classList.add("belief-label");
     
+         text.classList.add('draggable');
         // Append the circle and text to the SVG container.
         svgContainer.appendChild(circle);
         svgContainer.appendChild(text);
@@ -287,7 +326,77 @@ document.getElementById("drawGraph").addEventListener("click", function() {
     
     
     
+
+    function makeDraggable(svg) {
+        let selectedElements = [];
+        let offset;
+        let isCtrlPressed = false;
     
+        function startDrag(evt) {
+            if (evt.target.classList.contains('draggable')) {
+                if (evt.ctrlKey && !selectedElements.includes(evt.target)) {
+                    selectedElements.push(evt.target);
+                } else if (!evt.ctrlKey) {
+                    selectedElements = [evt.target];
+                }
+                selectedElements.forEach(element => {
+                    element.classList.add('selected'); // Add class for highlighting
+                });
+                offset = getMousePosition(evt);
+                offset.x -= parseFloat(evt.target.getAttributeNS(null, "x"));
+                offset.y -= parseFloat(evt.target.getAttributeNS(null, "y"));
+                isCtrlPressed = evt.ctrlKey;
+            }
+        }
+    
+        function drag(evt) {
+            if (selectedElements.length > 0) {
+                evt.preventDefault();
+                const coord = getMousePosition(evt);
+                selectedElements.forEach(element => {
+                    element.setAttributeNS(null, "x", coord.x - offset.x);
+                    element.setAttributeNS(null, "y", coord.y - offset.y);
+                });
+            }
+        }
+    
+        function endDrag(evt) {
+            selectedElements.forEach(element => {
+                element.classList.remove('selected'); // Remove class for highlighting
+            });
+            selectedElements = [];
+            isCtrlPressed = false;
+        }
+    
+        function getMousePosition(evt) {
+            const CTM = svg.getScreenCTM();
+            return {
+                x: (evt.clientX - CTM.e) / CTM.a,
+                y: (evt.clientY - CTM.f) / CTM.d
+            };
+        }
+    
+        svg.addEventListener('mousedown', startDrag);
+        svg.addEventListener('mousemove', drag);
+        svg.addEventListener('mouseup', endDrag);
+        svg.addEventListener('mouseleave', endDrag);
+    
+        // Optional: Add event listener for Ctrl key press and release
+        window.addEventListener('keydown', function(evt) {
+            if (evt.key === 'Control') {
+                isCtrlPressed = true;
+            }
+        });
+        window.addEventListener('keyup', function(evt) {
+            if (evt.key === 'Control') {
+                isCtrlPressed = false;
+                endDrag(evt); // Deselect all when Ctrl is released
+            }
+        });
+    }
+    
+    // Call this function after the SVG is loaded
+    makeDraggable(document.getElementById('beliefCanvas'));
     
     
     
