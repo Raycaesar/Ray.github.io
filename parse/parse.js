@@ -564,8 +564,16 @@ function setIntersection(setA, setB) {
     );
 }
 
-function updatedmodels(announcement) {
-    const parsedAnnouncement = parseFormula(tokenizeFormula(announcement));
+function updatedmodels(formula) {
+
+    console.log("Updatedmodels called with announcement:", announcement);
+
+    // Check if announcement is a valid string
+    if (typeof announcement !== 'string' || announcement.trim() === '') {
+        console.error("Invalid announcement format:", announcement);
+        return;
+    }
+    const parsedAnnouncement = parseFormula(tokenizeFormula(formula));
     console.log("Parsed Announcement:", parsedAnnouncement);
     const announcementAgent = parsedAnnouncement.agent;
     const announcementProposition = parsedAnnouncement.content;
@@ -735,26 +743,6 @@ function evaluateLiteral(literal, announcements) {
     // Start with the agent's belief worlds.
     let agentBeliefWorlds = parseSet(agentBeliefs[agent].denotation);
      
-  // If there is a context of free announcements, intersect the belief worlds with the denotation of each announcement.
- /* if (announcements) {
-    const formulaString = document.getElementById("formulaInput").value.trim(); // Assuming this is where you get the formula from
-    const applicableAnnouncements = getApplicableAnnouncements(literal, announcements, formulaString);
-    console.log("applicableAnnouncements:", applicableAnnouncements);
-    applicableAnnouncements.forEach(announcement => {
-    
-        // Check if the agent is a follower of the announcing agent
-        if (agentFollowers[announcement.agent].includes(agent)) {
-            const announcementDenotation = replaceWithDenotation(parse(tokenize(announcement.proposition)));
-            console.log("announcementDenotation:", announcementDenotation);
-            const announcementWorlds = parseSet(announcementDenotation);
-            console.log("announcementWorlds:", announcementWorlds);
-            // Intersect with the current belief worlds.
-            agentBeliefWorlds = setIntersection(agentBeliefWorlds, announcementWorlds);
-        }
-    });
-}
-    console.log("agentBeliefWorlds after announcements:", agentBeliefWorlds);
-*/
     // Check if the proposition is true in all of the agent's belief worlds.
     const result = isSubsetOf(agentBeliefWorlds, messageWorlds);
     console.log("result:", result);
@@ -779,16 +767,51 @@ f(b) = {c}
 */
 
 
+function evaluateFormula(formula) {
+    switch (formula.type) {
+        case 'atom':
+            // Assuming evaluateLiteral is defined elsewhere
+            return evaluateLiteral(formula.value);
+        case 'negation':
+            return !evaluateFormula(formula.subformula);
+        case '&':
+            return evaluateFormula(formula.left) && evaluateFormula(formula.right);
+        case '+':
+            return evaluateFormula(formula.left) || evaluateFormula(formula.right);
 
-function substituteLiteralsWithValues(formula, literals, evaluations) {
-    for (let i = 0; i < literals.length; i++) {
-        // Escape regex special characters
-        let regex = new RegExp(literals[i].replace(/([()\[\]{}^$+*?.])/g, '\\$1'), 'g');
-        formula = formula.replace(regex, evaluations[i] ? 'T' : 'F');
+        case 'free announcement':
+                console.log("Evaluating free announcement:", formula.announcement);
+    
+                // Ensure the announcement is in a valid format
+                if (typeof formula.announcement !== 'string' || formula.announcement.trim() === '') {
+                    console.error("Invalid format for free announcement:", formula.announcement);
+                    return false;
+                }
+    
+                updatedmodels(formula.announcement);
+                return evaluateFormula(formula.subformula);
+
     }
-    formula = formula.replace(/\[[a-z]:[^\]]+\](T|F)/g, (match, p1) => p1);
-    return formula;
 }
+
+
+
+function satisfiability() {
+    const formulaInput = document.getElementById("formulaInput").value.trim();
+    console.log("formula:", formulaInput);
+    
+    const parsedFormula = parseFormula(tokenizeFormula(formulaInput));
+    console.log("parsedFormula:", parsedFormula);
+    
+    const satResult = evaluateFormula(parsedFormula, []);
+    
+    document.getElementById("satisfaction").innerText = satResult ? "Satisfied" : "Unsatisfied";
+}
+
+
+/*
+[a:r]([a:p]Bbp&Bcp)
+
 
 function evaluateFormula(formula, announcements) {
     switch (formula.type) {
@@ -813,24 +836,7 @@ function evaluateFormula(formula, announcements) {
 function satisfiability() {
     const formula = document.getElementById("formulaInput").value.trim();
     console.log("formula:", formula)
-    // Transform the formula: replace '|' with the appropriate characters
-    // const transformedFormula = formula.replace(/\|&\|/g, '&').replace(/\|\+\|/g, '+');
-    //console.log("transformedFormula:", transformedFormula)
-    // Extract the literals from the transformed formula
-    const literals = extractLiterals(formula);
-    console.log("literals:",literals)
-    const announcements = extractAnnouncements(formula);
-    console.log("announcements:",announcements)
-    // Evaluate each literal to determine its truth value
-    const evaluations = literals.map(literal => evaluateLiteral(literal, announcements));
-    console.log("evaluation:",evaluations)
-    // Substitute the truth values into the formula
-    const substitutedFormulaString = substituteLiteralsWithValues(formula, literals, evaluations);
-    console.log("substitutedFormulaString:",substitutedFormulaString)
-
-    const tokensForParsing = tokenizeFormula(substitutedFormulaString);
-    console.log("Tokens for parsing:", tokensForParsing);
-
+    
 
     // Parse the substituted formula so that it becomes an object structure
     const parsedFormula = parseFormula(tokenizeFormula(substitutedFormulaString));
@@ -841,7 +847,7 @@ function satisfiability() {
     
     document.getElementById("satisfaction").innerText = satResult ? "Satisfied" : "Unsatisfied";
 }
-
+*/
 
 /*for verification: 
 a believes p and k(a) = {{p}, {q, p}, {r, p}, {r, q, p}}
@@ -866,6 +872,34 @@ c believes r and k(c) = {{r}, {r, p}, {r, q}, {r, q, p}}
 
 
 /*
+function substituteLiteralsWithValues(formula, literals, evaluations) {
+    for (let i = 0; i < literals.length; i++) {
+        // Escape regex special characters
+        let regex = new RegExp(literals[i].replace(/([()\[\]{}^$+*?.])/g, '\\$1'), 'g');
+        formula = formula.replace(regex, evaluations[i] ? 'T' : 'F');
+    }
+    formula = formula.replace(/\[[a-z]:[^\]]+\](T|F)/g, (match, p1) => p1);
+    return formula;
+}
+
+// Transform the formula: replace '|' with the appropriate characters
+    // const transformedFormula = formula.replace(/\|&\|/g, '&').replace(/\|\+\|/g, '+');
+    //console.log("transformedFormula:", transformedFormula)
+    // Extract the literals from the transformed formula
+    const literals = extractLiterals(formula);
+    console.log("literals:",literals)
+    const announcements = extractAnnouncements(formula);
+    console.log("announcements:",announcements)
+    // Evaluate each literal to determine its truth value
+    const evaluations = literals.map(literal => evaluateLiteral(literal, announcements));
+    console.log("evaluation:",evaluations)
+    // Substitute the truth values into the formula
+    const substitutedFormulaString = substituteLiteralsWithValues(formula, literals, evaluations);
+    console.log("substitutedFormulaString:",substitutedFormulaString)
+
+    const tokensForParsing = tokenizeFormula(substitutedFormulaString);
+    console.log("Tokens for parsing:", tokensForParsing);
+
 function getNextToken(subtokens) {
     if (subtokens.length === 0) {
         throw new Error("Unexpected end of formula.");
