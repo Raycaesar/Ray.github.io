@@ -68,7 +68,11 @@
 <button id="drawGraph">Draw Graph</button>
 <button onclick="downloadSVG()">Download SVG</button>
 
-<hr/>
+<input type="text" id="beliefupdate" placeholder="Enter the announcement">
+<button onclick="handleUpdateModelClick()">Update Model</button>
+<p>Apologies, as I prefer not to create a separate function just for parsing announcements. Thus, kindly ensure that your input is a formula containing an announcement, such as [a:p]Bcq. Please note, the part Bcq is not functional in this context.</p>
+
+
  <!-- Tutorial Section -->
  <div class="tutorial">
     <h3>How to Write Well-formed Formulas:</h3>
@@ -83,7 +87,7 @@
 
     <!-- Formula Entry and Denotation Computation -->
     <h2>Enter Your Formula</h2>
-    <input type="text" id="formulaInput" placeholder="Check the satisfiability">
+    <input type="text" id="formulaInput" placeholder="Check the satisfiability" maxlength="300" size="80">
     <button onclick="satisfiability()">Check</button>
     <h3>Result:</h3>
     <p id="satisfaction"></p>
