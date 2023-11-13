@@ -39,8 +39,6 @@ function updateDropdown(elementId) {
     }
 }
 
-
-
 // Set Agent Followers
 function setAgentFollowers() {
     let selectedAgent = document.getElementById("selectedAgent").value;
@@ -67,9 +65,6 @@ function displayFollowers() {
 // ================================================
 // =============== PROP FUNCTIONS =================
 // ================================================
-//let Prop = [];
-
-
 
 function setPropSize() {
     const baseProp = ['p', 'q', 'r', 's', 't'];
@@ -218,13 +213,8 @@ function handleImplication(parsedFormula) {
     return replaceWithDenotation(orRight);
 }
 
-// Helper function to parse a set denotation string into a set
-/*
-function parseSet(denotation) {
-    if (denotation === '{}') return [];
-    return denotation.slice(2, -2).split('}, {').map(str => str.split(', ').filter(Boolean));
-}
-*/
+
+
 // Helper function to format a set into a denotation string
 function formatDenotation(set) {
     if (set.length === 0) return '{}';
@@ -356,20 +346,7 @@ function setUnion(setA, setB) {
     return union;
 }
 
-// Helper function to perform set intersection
-/*
-function setIntersection(setA, setB) {
-    // Convert each set to a string to perform comparison
-    const setAStr = setA.map(subset => subset.sort().join(','));
-    const setBStr = setB.map(subset => subset.sort().join(','));
-    
-    // Filter set A to only include elements that are also in set B
-    const intersection = setAStr.filter(subsetA => setBStr.includes(subsetA));
-    
-    // Convert the string representation back to a set
-    return intersection.map(subset => subset.split(',').filter(Boolean));
-}
-*/
+
 function denotationToString(denotation) {
     if (denotation.length === 0) return '{}';
     return `{{${denotation.map(set => set.join(', ')).join('}, {')}}}`;
@@ -427,7 +404,7 @@ function parseFormula(tokens) {
         throw new Error('No tokens to parse');
     }
 
-    const token = tokens.shift(); // Get the first token and remove it from the array
+    const token = tokens.shift(); 
 
     if (token === '~') {
         // Negation case
@@ -449,25 +426,49 @@ function parseFormula(tokens) {
         };
     
     } else if (token.startsWith('B')) {
-        // Belief case
         const agent = token[1];
         let message = '';
-        if (tokens[0] === '(') {
-            // Belief with a message inside parentheses
+
+        if (tokens[0] === '~') {
+            // Add the negation symbol
+            message += tokens.shift();
+            // If the next token is '(', it's a complex expression
+            if (tokens[0] === '(') {
+                // Include '(' in the message
+                message += tokens.shift();
+                // Continue adding tokens until the corresponding ')'
+                while (tokens.length > 0 && tokens[0] !== ')') {
+                    message += tokens.shift();
+                }
+                // Include ')' in the message
+                if (tokens[0] === ')') {
+                    message += tokens.shift();
+                }
+            } else {
+                // If it's not '(', it should be a single propositional variable
+                message += tokens.shift();
+            }
+        } else if (tokens[0] === '(') {
+            // Belief with a complex expression inside parentheses
+            message += tokens.shift(); // Include '('
             while (tokens.length > 0 && tokens[0] !== ')') {
                 message += tokens.shift();
             }
-            message += tokens.shift(); // Add the closing parenthesis
+            if (tokens[0] === ')') {
+                message += tokens.shift(); // Include ')'
+            }
         } else {
-            // Belief with a propositional variable or negation
+            // Belief with a single propositional variable
             message = tokens.shift();
         }
+
         return {
             type: 'belief',
             agent: agent,
             message: message
         };
-    } else if (token === '(') {
+    }
+ else if (token === '(') {
         // Binary operation case
         const left = parseFormula(tokens); // Parse left subformula
         const operator = tokens.shift(); // Get the operator (&, +, or >)
@@ -488,59 +489,6 @@ function parseFormula(tokens) {
 }
 
 
-/*
-
-const input = "[a:p]([b:(p>q)]Bc(p+q) & [a:q](Bc(q>p) +[c:q]Baq))";
-const example_tokens = tokenizeFormula(input);
-console.log('Tokens:', example_tokens);
-
-try {
-    const parsed = parseFormula(example_tokens);
-    console.log('Parsed formula:', JSON.stringify(parsed, null, 2));
-} catch (e) {
-    console.error('Error:', e.message);
-}
-
-
-console.log("announcement:", announcement)
-console.log("left:", left)
-console.log("operator:", operator)
-console.log("right:", right)
-console.log("messageTokens:", messageTokens)
-
-*/
-/*
-function updatedmodels(announcement) {
-    const parsedAnnouncement = parseFormula(tokenizeFormula(announcement));
-    console.log("parsedAnnouncement:", parsedAnnouncement);
-    const announcementAgent = parsedAnnouncement.agent;
-    console.log("announcementAgent:", announcementAgent);
-    const announcementProposition = parsedAnnouncement.content;
-    console.log("announcementProposition:", announcementProposition);
-
-    for (let agt in agentFollowers) {
-        console.log("follower:", agt);
-        if (agentFollowers[announcementAgent].includes(agt)) {
-            let announcementDenotation = replaceWithDenotation(parse(tokenize(announcementProposition)));
-            console.log("announcementDenotation:", announcementDenotation);
-            let announcementWorlds;
-            console.log("announcementWorlds:", announcementWorlds);
-            // Check if announcementDenotation is already an array
-            if (Array.isArray(announcementDenotation)) {
-                announcementWorlds = announcementDenotation;
-            } else {
-                // If it's a string, parse it
-                announcementWorlds = parseSet(announcementDenotation);
-            }
-
-            let agentBeliefWorlds = parseSet(agentBeliefs[agt].denotation);
-            agentBeliefWorlds = setIntersection(agentBeliefWorlds, announcementWorlds);
-            console.log("agentBeliefWorlds:", agentBeliefWorlds);
-            
-            agentBeliefs[agt].denotation = formatDenotation(agentBeliefWorlds);
-        }
-    }
-}*/
 function parseSet(denotation) {
     if (denotation === '{}' || denotation === '') return [];
     return denotation.slice(2, -2).split('}, {')
@@ -564,42 +512,66 @@ function setIntersection(setA, setB) {
     );
 }
 
-function updatedmodels(formula) {
 
-    console.log("Updatedmodels called with announcement:", announcement);
-
-    // Check if announcement is a valid string
-    if (typeof announcement !== 'string' || announcement.trim() === '') {
-        console.error("Invalid announcement format:", announcement);
-        return;
+function parseAnnouncement(announcementString) {
+    if (typeof announcementString !== 'string' || announcementString.trim() === '') {
+        throw new Error('Announcement must be a non-empty string');
     }
-    const parsedAnnouncement = parseFormula(tokenizeFormula(formula));
-    console.log("Parsed Announcement:", parsedAnnouncement);
+
+    // Tokenize the announcement string
+    const tokens = tokenizeFormula(announcementString);
+
+    if (!tokens.length) {
+        throw new Error('No tokens to parse');
+    }
+
+    // Extract the first token, which should be the announcement
+    const token = tokens.shift();
+
+    // Assuming the token is a well-formed announcement
+    const agent = token[1];
+    const content = token.slice(3, -1); // Extracts the content (e.g., 'p>q' from '[a:(p>q)]')
+    const announcement = token; // The full token (e.g., '[a:(p>q)]')
+
+    return {
+        agent: agent,
+        content: content,
+        announcement: announcement
+    };
+}
+
+function updatedmodels(announcement) {
+
+    //console.log("updatedmodels called with announcement:", announcement);
+
+    const parsedAnnouncement = parseAnnouncement(announcement);
+    //console.log("Parsed Announcement:", parsedAnnouncement);
+
     const announcementAgent = parsedAnnouncement.agent;
     const announcementProposition = parsedAnnouncement.content;
     const announcementDenotation = replaceWithDenotation(parse(tokenize(announcementProposition)));
-    console.log("Announcement Denotation:", announcementDenotation);
+    //console.log("Announcement Denotation:", announcementDenotation);
     const announcementWorlds = stringToDenotation(announcementDenotation);
-    console.log("Announcement Worlds:", announcementWorlds);
+    //console.log("Announcement Worlds:", announcementWorlds);
 
-    console.log("a's followers:", agentFollowers[announcementAgent]);
+    //console.log("a's followers:", agentFollowers[announcementAgent]);
 
     for (let agt of agentFollowers[announcementAgent]) { // Use 'of' instead of 'in'
-        console.log("Processing agent:", agt);
+        //console.log("Processing agent:", agt);
 
-        console.log(`Agent ${agt} is a follower of ${announcementAgent}`);
+        //console.log(`Agent ${agt} is a follower of ${announcementAgent}`);
         let agentBeliefWorlds = stringToDenotation(agentBeliefs[agt].denotation);
-        console.log(`Agent ${agt} Belief Worlds Before Intersection:`, agentBeliefWorlds);
+        //console.log(`Agent ${agt} Belief Worlds Before Intersection:`, agentBeliefWorlds);
 
         agentBeliefWorlds = setIntersection(agentBeliefWorlds, announcementWorlds);
-        console.log(`Agent ${agt} Belief Worlds After Intersection:`, agentBeliefWorlds);
+       //console.log(`Agent ${agt} Belief Worlds After Intersection:`, agentBeliefWorlds);
 
         agentBeliefs[agt].denotation = denotationToString(agentBeliefWorlds);
     }
     
-    console.log("a's belief:", agentBeliefs["a"]);
-    console.log("b's belief:", agentBeliefs["b"]);
-    console.log("c's belief:", agentBeliefs["c"]);
+    //console.log("a's belief:", agentBeliefs["a"]);
+    //console.log("b's belief:", agentBeliefs["b"]);
+    //console.log("c's belief:", agentBeliefs["c"]);
 }
 
 
@@ -623,40 +595,13 @@ function handleUpdateModelClick() {
 
     updatedmodels(announcement);
 
-
-
 }
 
 
 
 
 /*
-function updatedmodels(announcement) {
-    const parsedAnnouncement = parseFormula(tokenizeFormula(announcement));
-    const announcementAgent = parsedAnnouncement.agent;
-    const announcementProposition = parsedAnnouncement.content;
-
-    for (let agt in agentFollowers) {
-        if (agentFollowers[announcementAgent].includes(agt)) {
-            const announcementDenotation = replaceWithDenotation(parse(tokenize(announcementProposition)));
-            console.log(`announcementDenotation for ${agt}:`, announcementDenotation);
-
-            let announcementWorlds = announcementDenotation; // Assuming this is already in the correct format
-            console.log(`announcementWorlds for ${agt}:`, announcementWorlds);
-
-            let agentBeliefWorlds = parseSet(agentBeliefs[agt].denotation);
-            console.log(`agentBeliefWorlds (before intersection) for ${agt}:`, agentBeliefWorlds);
-
-            agentBeliefWorlds = setIntersection(agentBeliefWorlds, announcementWorlds);
-            console.log(`agentBeliefWorlds (after intersection) for ${agt}:`, agentBeliefWorlds);
-
-            agentBeliefs[agt].denotation = formatDenotation(agentBeliefWorlds);
-        }
-    }
-}
-
-
-
+For checking the functions above
 
 let Prop = ["p", "q", "r"];
 
@@ -669,11 +614,6 @@ agentBeliefs["b"] = { denotation: "{{q}, {p,q}, {q,r}, {p,q,r} }" };
 agentBeliefs["c"] = { denotation: "{{p}, {r}}" };
 updatedmodels("[a:r]Bbq");
 */
-
-
-
-
-
 
 
 
@@ -697,42 +637,15 @@ function isSubsetOf(subsetWorlds, supersetWorlds) {
 }
 
 
-
-
-
-/*
-function setIntersection(setA, setB) {
-    return setA.filter(subsetA => 
-        setB.some(subsetB => 
-            subsetA.length === subsetB.length && subsetA.every(element => subsetB.includes(element))
-        )
-    );
-}
-*/
-
-
-function evaluateLiteral(literal, announcements) {
-    
-    const agent = literal[1];
+function evaluateLiteral(message, agent) {
     console.log("agent:", agent);
-    console.log("Bound announcements", announcements);
-    let message;
-
-    // Extract the message part of the belief literal, including any negation inside it.
-    if (literal.includes('(')) {
-        // Include the parentheses to ensure any negation inside is parsed.
-        const messageStartIndex = literal.indexOf('B' + agent) + ('B' + agent).length;
-        message = literal.slice(messageStartIndex);
-    } else {
-        message = literal.slice(2); // Adjust this if the structure of your belief literals is different.
-    }
     console.log("message:", message);
+    
 
-    // Parse the message including the negation.
+    // Assuming replaceWithDenotation returns a set of worlds where the message is true.
     const parsedMessage = parse(tokenize(message));
     console.log("parsedMessage:", parsedMessage);
 
-    // Assuming replaceWithDenotation returns a set of worlds where the message is true.
     const messageDenotation = replaceWithDenotation(parsedMessage);
     console.log("messageDenotation:", messageDenotation);
 
@@ -742,12 +655,12 @@ function evaluateLiteral(literal, announcements) {
 
     // Start with the agent's belief worlds.
     let agentBeliefWorlds = parseSet(agentBeliefs[agent].denotation);
+    console.log("agentBeliefWorlds:", agentBeliefWorlds);
      
     // Check if the proposition is true in all of the agent's belief worlds.
     const result = isSubsetOf(agentBeliefWorlds, messageWorlds);
     console.log("result:", result);
     return result;
-    
 }
 
   
@@ -768,10 +681,11 @@ f(b) = {c}
 
 
 function evaluateFormula(formula) {
+
     switch (formula.type) {
-        case 'atom':
-            // Assuming evaluateLiteral is defined elsewhere
-            return evaluateLiteral(formula.value);
+        case 'belief':
+            // Pass the message part of the belief formula to evaluateLiteral
+            return evaluateLiteral(formula.message, formula.agent);
         case 'negation':
             return !evaluateFormula(formula.subformula);
         case '&':
@@ -780,16 +694,21 @@ function evaluateFormula(formula) {
             return evaluateFormula(formula.left) || evaluateFormula(formula.right);
 
         case 'free announcement':
-                console.log("Evaluating free announcement:", formula.announcement);
-    
-                // Ensure the announcement is in a valid format
-                if (typeof formula.announcement !== 'string' || formula.announcement.trim() === '') {
-                    console.error("Invalid format for free announcement:", formula.announcement);
-                    return false;
-                }
-    
-                updatedmodels(formula.announcement);
-                return evaluateFormula(formula.subformula);
+                    console.log("Evaluating free announcement:", formula.announcement);
+        
+                    // Temporarily store the current belief states
+                    const originalBeliefs = JSON.parse(JSON.stringify(agentBeliefs));
+        
+                    // Update models based on the announcement
+                    updatedmodels(formula.announcement);
+        
+                    // Evaluate the subformula in the context of the updated models
+                    const result = evaluateFormula(formula.subformula);
+        
+                    // Restore the original belief states
+                    agentBeliefs = originalBeliefs;
+        
+                    return result;
 
     }
 }
@@ -809,47 +728,13 @@ function satisfiability() {
 }
 
 
-/*
-[a:r]([a:p]Bbp&Bcp)
 
-
-function evaluateFormula(formula, announcements) {
-    switch (formula.type) {
-        case 'atom':
-            return formula.value === 'T' ? true : formula.value === 'F' ? false : undefined;
-        case 'negation':
-            return !evaluateFormula(formula.submessage, announcements);
-        case '&':
-            return evaluateFormula(formula.left, announcements) && evaluateFormula(formula.right, announcements);
-        case '+':
-            return evaluateFormula(formula.left, announcements) || evaluateFormula(formula.right, announcements);
-        case 'free announcement':
-            // Add the current announcement to the context for the subformula
-            const newAnnouncements = [...announcements, { agent: formula.agent, proposition: formula.proposition }];
-            return evaluateFormula(formula.subformula, newAnnouncements);
-        default:
-            throw new Error(`Unexpected formula type: ${formula.type}`);
-    }
-}
-
-
-function satisfiability() {
-    const formula = document.getElementById("formulaInput").value.trim();
-    console.log("formula:", formula)
-    
-
-    // Parse the substituted formula so that it becomes an object structure
-    const parsedFormula = parseFormula(tokenizeFormula(substitutedFormulaString));
-    console.log("parsedFormula:", parsedFormula);
-    
-    // Evaluate the formula with an empty context initially
-    const satResult = evaluateFormula(parsedFormula, []);
-    
-    document.getElementById("satisfaction").innerText = satResult ? "Satisfied" : "Unsatisfied";
-}
-*/
 
 /*for verification: 
+f(a) = {b, c}
+f(b) = {c}
+f(c) = {a}
+
 a believes p and k(a) = {{p}, {q, p}, {r, p}, {r, q, p}}
 b believes q and k(b) = {{q}, {q, p}, {r, q}, {r, q, p}}
 c believes r and k(c) = {{r}, {r, p}, {r, q}, {r, q, p}}
@@ -866,370 +751,23 @@ c believes r and k(c) = {{r}, {r, p}, {r, q}, {r, q, p}}
 (~Ba(p>q)&~Bbr)+(Bc~~r+Bb~(r>q))  Satisfied
 (~F&~F)+(T+F)
 
-(Ba~(p>q)&(Bb(r>~q)+Bc(p+~r)))
+(Ba~(p>q)&(Bb(r>~q)+Bc(p+~r))) unsatisfied
 (F&(F+F))
+
+~(Ba(r>p)&~(Bb~q+~Bc(p+~r))) satisfied
+~(T&~(F+~F))
+
+[a:r]([a:p]Bbp&Bcp)  unsatisfied
+(T&F)
+
+[b:q](~Ba~q&Bcq)      satisfied
+(~F&T)
+
+[b:q]([a:(p&q)]Baq+Bcp)   unsatisfied
+(F+F)
+
+[a:(r>q)]([b:(q>p)]Bcp & [c:q](~Bcp&Baq))   satisfied
+(T & (~F&T))
 */
 
 
-/*
-function substituteLiteralsWithValues(formula, literals, evaluations) {
-    for (let i = 0; i < literals.length; i++) {
-        // Escape regex special characters
-        let regex = new RegExp(literals[i].replace(/([()\[\]{}^$+*?.])/g, '\\$1'), 'g');
-        formula = formula.replace(regex, evaluations[i] ? 'T' : 'F');
-    }
-    formula = formula.replace(/\[[a-z]:[^\]]+\](T|F)/g, (match, p1) => p1);
-    return formula;
-}
-
-// Transform the formula: replace '|' with the appropriate characters
-    // const transformedFormula = formula.replace(/\|&\|/g, '&').replace(/\|\+\|/g, '+');
-    //console.log("transformedFormula:", transformedFormula)
-    // Extract the literals from the transformed formula
-    const literals = extractLiterals(formula);
-    console.log("literals:",literals)
-    const announcements = extractAnnouncements(formula);
-    console.log("announcements:",announcements)
-    // Evaluate each literal to determine its truth value
-    const evaluations = literals.map(literal => evaluateLiteral(literal, announcements));
-    console.log("evaluation:",evaluations)
-    // Substitute the truth values into the formula
-    const substitutedFormulaString = substituteLiteralsWithValues(formula, literals, evaluations);
-    console.log("substitutedFormulaString:",substitutedFormulaString)
-
-    const tokensForParsing = tokenizeFormula(substitutedFormulaString);
-    console.log("Tokens for parsing:", tokensForParsing);
-
-function getNextToken(subtokens) {
-    if (subtokens.length === 0) {
-        throw new Error("Unexpected end of formula.");
-    }
-    return subtokens.shift();
-}
-
-function parseDenotationString(denotation) {
-    if (Array.isArray(denotation)) return denotation;
-
-    if (typeof denotation !== "string") {
-        console.error("Unexpected input:", denotation);
-        return [];
-    }
-
-    let worlds = denotation.match(/(?<=\{)[^{}]*?(?=\})/g) || [];
-    return worlds.map(world => 
-        world.split(',').filter(atom => atom.trim()).map(atom => atom.trim())
-    );
-}
-
-
-
-
-
-
-  // Expected output: (([a:p][c:r]Bbr&[a:p][c:r]~Bcq) + [a:p][b:q]Bcr)
-  // Should output: (([a:p][c:r]Bbr&[a:p][c:r]~Bcq) + [a:p][b:q]Bcr)
-
-
-
-function addSeparatorsToFormula(tokens) {
-    let result = [];
-    for (let i = 0; i < tokens.length; i++) {
-        let token = tokens[i];
-        if (token.startsWith('B') || token.startsWith('~B')) {
-            if (i > 0 && (tokens[i-1] === '&' || tokens[i-1] === '+')) {
-                result.push('|');
-            }
-        }
-        result.push(token);
-        if (token === '&' || token === '+') {
-            if (i < tokens.length - 1 && (tokens[i+1].startsWith('B') || tokens[i+1].startsWith('~B'))) {
-                result.push('|');
-            }
-        }
-    }
-    return result;
-}
-
-
-function includesSet(set, subset) {
-    return subset.every(element => set.includes(element));
-}
-
-
-function includesArray(bigArray, smallArray) {
-    return bigArray.some(arr => JSON.stringify(arr) === JSON.stringify(smallArray));
-}
-
-
-
-function setIntersection(setA, setB) {
-    // Convert each set to a string to perform comparison
-    const setAStr = setA.map(subset => subset.sort().join(','));
-    const setBStr = setB.map(subset => subset.sort().join(','));
-    
-    // Filter set A to only include elements that are also in set B
-    const intersection = setAStr.filter(subsetA => setBStr.includes(subsetA));
-    
-    // Convert the string representation back to a set
-    return intersection.map(subset => subset.split(',').filter(Boolean));
-}
-
-function getApplicableAnnouncements(literal, announcements, formula) {
-    console.log(`getApplicableAnnouncements called with literal: ${literal}, announcements:`, announcements, `formula: ${formula}`);
-    let applicableAnnouncements = [];
-    let literalIndices = getIndicesOf(literal, formula); // Get all indices of the literal in the formula
-    console.log(`Literal indices in formula:`, literalIndices);
-
-    // Iterate over each occurrence of the literal
-    literalIndices.forEach(literalIndex => {
-        console.log(`Checking literal at index ${literalIndex}`);
-        // Iterate over the announcements in reverse order (starting from the most recent)
-        for (let i = announcements.length - 1; i >= 0; i--) {
-            const announcement = announcements[i];
-            console.log(`Checking against announcement:`, announcement);
-            // Check if the literal is within the scope of the announcement
-            if (isLiteralInScopeOfAnnouncement(literalIndex, announcement, formula)) {
-                console.log(`Announcement is applicable for literal at index ${literalIndex}:`, announcement);
-                applicableAnnouncements.push(announcement);
-                // Do not break here; we need to check for all applicable announcements
-            }
-        }
-    });
-
-    console.log(`Applicable announcements found:`, applicableAnnouncements);
-    return applicableAnnouncements;
-}
-function isLiteralInScopeOfAnnouncement(literalIndex, announcement, formula) {
-    // The announcement string should be a unique identifier for the announcement in the formula
-    const announcementString = `[${announcement.agent}:${announcement.proposition}]`;
-    const announcementIndices = getIndicesOf(announcementString, formula);
-
-    console.log(`Checking literal at index ${literalIndex} against announcement '${announcementString}' with indices:`, announcementIndices);
-
-    // Check each occurrence of the announcement
-    for (let i = 0; i < announcementIndices.length; i++) {
-        const announcementIndex = announcementIndices[i];
-        const closingBracketIndex = findClosingBracketIndex(formula, announcementIndex);
-
-        console.log(`Announcement at index ${announcementIndex} has closing bracket at index ${closingBracketIndex}`);
-
-        // If the literal is within the announcement's brackets or exactly at the closing bracket, it's in scope
-        if (literalIndex >= announcementIndex && literalIndex <= closingBracketIndex + 1) {
-            console.log(`Literal is in scope of announcement at index ${announcementIndex}`);
-            return true;
-        }
-    }
-
-    console.log(`Literal at index ${literalIndex} is not in scope of any occurrences of announcement '${announcementString}'`);
-    // If no scope is found for the literal, it's not in scope
-    return false;
-}
-
-
-
-
-// Helper function to find the index of the closing bracket for the given opening bracket
-function findClosingBracketIndex(formula, openingIndex) {
-    let depth = 1;
-    for (let i = openingIndex + 1; i < formula.length; i++) {
-        if (formula[i] === '[') {
-            depth++;
-        } else if (formula[i] === ']') {
-            depth--;
-            if (depth === 0) {
-                return i;
-            }
-        }
-    }
-    // If no closing bracket is found, return the length of the formula
-    return formula.length;
-}
-
-
-
-// Helper function to get all indices of a substring in a string
-function getIndicesOf(searchStr, str) {
-    let searchStrLen = searchStr.length;
-    if (searchStrLen === 0) {
-        return [];
-    }
-    let startIndex = 0, index, indices = [];
-
-    while ((index = str.indexOf(searchStr, startIndex)) > -1) {
-        indices.push(index);
-        startIndex = index + searchStrLen;
-    }
-    return indices;
-}
-function literalScope(input) {
-    const scopeStack = [[]]; // Stack to manage scopes
-    const scopes = {}; // Object to hold the scopes and their literals
-
-    // Helper function to add literals to the current scope
-    function addLiteral(literal) {
-        const currentScope = scopeStack[scopeStack.length - 1];
-        currentScope.push(literal);
-    }
-
-    // Helper function to open a new scope
-    function openScope() {
-        scopeStack.push([...scopeStack[scopeStack.length - 1]]); // Copy the current scope
-    }
-
-    // Helper function to close the current scope and save it if necessary
-    function closeScope(scopeName) {
-        const closedScope = scopeStack.pop();
-        if (scopeName && closedScope.length > 0) {
-            if (!scopes[scopeName]) {
-                scopes[scopeName] = [];
-            }
-            scopes[scopeName].push(closedScope);
-        }
-    }
-
-    let i = 0;
-    while (i < input.length) {
-        const char = input[i];
-
-        if (char === '[') {
-            // Literal found, extract it and add to the current scope
-            const endLiteral = input.indexOf(']', i);
-            const literal = input.slice(i, endLiteral + 1);
-            addLiteral(literal);
-            i = endLiteral;
-        } else if (char === '(') {
-            // Open a new scope
-            openScope();
-        } else if (char === ')') {
-            // Close scope without saving
-            closeScope();
-        } else if (char === 'B' && i + 1 < input.length && /[a-z]/.test(input[i + 1])) {
-            // Scope identifier found, close the current scope and save it with the identifier
-            const scopeName = char + input[i + 1];
-            i++; // Skip the scope identifier character
-            // Close the scope after incrementing i to include the scope identifier in the name
-            closeScope(scopeName);
-        }
-
-        i++; // Move to the next character
-    }
-
-    // At the end, close any remaining open scopes
-    while (scopeStack.length > 1) {
-        closeScope();
-    }
-
-    // Convert the arrays of literals to strings
-    for (const scope in scopes) {
-        scopes[scope] = scopes[scope].map(literals => literals.join(''));
-    }
-
-    return scopes;
-}
-
-  // Test the function with the provided examples
-  console.log(JSON.stringify(literalScope('[a:p]Bbp'))); 
-  // Expected output: { Bbp: [['[a:p]']] }
-  console.log(JSON.stringify(literalScope('[a:p][b:(p>q)]Bcq'))); 
-  // Expected output: { Bcq: [['[a:p]', '[b:(p>q)]']] }
-  console.log(JSON.stringify(literalScope('[b:q][a:p]([b:(p>q)]Bcq & Bcq)'))); 
-  // Expected output: { Bcq: [['[b:q]', '[a:p]', '[b:(p>q)]'], ['[b:q]', '[a:p]']] }
-  console.log(JSON.stringify(literalScope('[a:p]([b:(p>q)]Bcq &[a:q](Bcq +[c:q]Baq))'))); 
-  // Expected output: { Bcq: [['[a:p]', '[b:(p>q)]'], ['[a:p]', '[a:q]']], Baq: [['[a:p]', '[a:q]', '[c:q]']] }
-
-
-  
-function getApplicableAnnouncements(literal, announcements, formulaString) {
-    const scopes = literalScope(formulaString);
-    const agentLiteral = literal.slice(0, 2);
-
-    return announcements.filter(announcement => {
-        const announcementScope = scopes[agentLiteral];
-        // Ensure that announcementScope is an array before calling includes
-        return Array.isArray(announcementScope) && announcementScope.includes(literal);
-    });
-}
-
-
-function announcementScope(formula) {
-    // Recursive function to handle the scope parsing
-    function parseScope(segment) {
-      let stack = [];
-      let currentScope = stack;
-      let token = '';
-  
-      for (let i = 0; i < segment.length; i++) {
-        let char = segment[i];
-  
-        if (char === '[') {
-          // When we find an announcement, we push a new scope onto the stack
-          if (token) {
-            currentScope.push(token);
-            token = '';
-          }
-          let scope = [];
-          currentScope.push({ [segment.slice(i, segment.indexOf(']', i) + 1)]: scope });
-          currentScope = scope;
-          i = segment.indexOf(']', i);
-        } else if (char === ']') {
-          // When we find a closing bracket, we pop the current scope from the stack
-          if (token) {
-            currentScope.push(token);
-            token = '';
-          }
-          currentScope = stack;
-        } else if (char === '&') {
-          // Handle conjunctions by pushing the current token to the scope
-          if (token) {
-            currentScope.push(token);
-            token = '';
-          }
-          // Skip the '&' and any whitespace following it
-          while (segment[i + 1] === ' ') {
-            i++;
-          }
-        } else if (char !== ' ') {
-          // Accumulate tokens for literals
-          token += char;
-        }
-      }
-  
-      if (token) {
-        currentScope.push(token);
-      }
-  
-      return stack;
-    }
-  
-    return parseScope(formula);
-  }
-  
-  // Test the function with the provided examples
-  console.log(JSON.stringify(announcementScope('[a:p]Bbp')));
-  // Expected output: [{"[a:p]":["Bbp"]}]
-  
-  console.log(JSON.stringify(announcementScope('[a:p][b:(p>q)]Bcq')));
-  // Expected output: [{"[a:p]":[{"[b:(p>q)]":["Bcq"]}]}]
-  
-  console.log(JSON.stringify(announcementScope('[b:q][a:p]([b:(p>q)]Bcq & Bcq)')));
-  // Expected output: [{"[b:q]":[{"[a:p]":[{"[b:(p>q)]":["Bcq"]},"Bcq"]}]}]
-
-
-  function extractAnnouncements(formula) {
-    // This regex matches the pattern [a:θ] where 'a' is a single character agent identifier
-    // and 'θ' is a proposition which may include logical operators and other agents' beliefs.
-    const announcementRegex = /\[([a-z]):([^\]]+)\]/gi;
-    let match;
-    let announcements = [];
-
-    while ((match = announcementRegex.exec(formula)) !== null) {
-        announcements.push({
-            agent: match[1],
-            proposition: match[2]
-        });
-    }
-
-    return announcements;
-
-}
-*/
