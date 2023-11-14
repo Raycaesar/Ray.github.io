@@ -664,6 +664,7 @@ f(b) = {c}
 
 
 [a:p]([b:(p>q)]Bcq &[a:q](Bcq +[c:q]Baq)) 
+
 */
 
 
@@ -679,6 +680,8 @@ function evaluateFormula(formula) {
             return evaluateFormula(formula.left) && evaluateFormula(formula.right);
         case '+':
             return evaluateFormula(formula.left) || evaluateFormula(formula.right);
+        case '>':
+            return !evaluateFormula(formula.left) || evaluateFormula(formula.right);
 
         case 'free announcement':
                     console.log("Evaluating free announcement:", formula.announcement);
@@ -760,11 +763,23 @@ c believes r and k(c) = {{r}, {r, p}, {r, q}, {r, q, p}}
 [a:(~r+~q)]([b:~~q]([c:~q]Ba~(q+~p)& Bc(p&~r))&[a:r]Bb(~q&r))  satisfied
 ((T&T)&T)
 
-[a:~q](Bc(q&r)+~Bb(p&~p))
+[a:~q](Bc(q&r)+~Bb(p&~p))  unsatisfied
 (F+F)
 
-[c:(q>r)](Bar+[a:~q](Bb(q>~q)&[b:q]Bc(p&~p)))
+[c:(q>r)](Bar+[a:~q](Bb(q>~q)&[b:q]Bc(p&~p))) satisfied
 (F + (T & T))
+
+
+[a:q](Bbq>Bcp)  unsatisfied
+(T>F)
+
+
+([a:q](Bbq>Bcp) > ([a:q]Bbq>[a:q]Bcp)) satisfied, axiom [K[:]] 
+
+
+([a:p]Bbq > Bb(p > q))  satisfied, [SDMon] 
+
+([a:r]~Bbr > ([a:p]Bbq> Bbq)) satisfied, [RDMon] p,q,r can be can be unification substituted by any boolean expression.
 */
 
 

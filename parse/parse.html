@@ -6,6 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Model Generator</title>
     <link rel="stylesheet" type="text/css" href="style.css"> <!-- Stylesheet link -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
    
 </head>
 
@@ -92,6 +94,55 @@
     <h3>Result:</h3>
     <p id="satisfaction"></p>
 
+ 
+    <div class="content">
+        <h2>Axiom System Fsal</h2>
+        <p>An <strong>axiom system</strong> is a set of foundational truths (axioms) used to derive further theorems through logical reasoning. In such a system:</p>
+        <ul>
+            <li>Axioms are basic, accepted truths.</li>
+            <li>Theorems are derived statements proven using axioms and inference rules.</li>
+            <li>Rules of Inference dictate the valid ways of deriving new theorems.</li>
+        </ul>
+        <div class="definition">
+          
+            <p>The following system \( \mathsf{Fsal} \) is sound and complete, meaning every theorem is valid and then satisfied by any model within this system, and only theorems are valid. </p>
+            <p>Our original model is defined with infinite propositional variables but here we only employ a finite number of variables. To test a formula by the satisfiability checker above, ensure it is well-formed, using  only the defined propositional variables in \( Prop \) and agents.</p>
+        </div>
+    </div>
+
+    <div class="definition-box">
+        <strong>Definition:</strong>
+        <br><br>
+        Let \( \mathsf{Fsal} \) be the formal system which is a set of all valid formulas of \( L_{FSAL} \). Say a formula is a <em>theorem</em> of \( \mathsf{Fsal} \) if it is a consequence of the following axioms and rules:
+        <br><br>
+        <div class="axioms">
+            Axioms:
+            <br>
+            [Taut] All substitution instances of propositional tautologies &nbsp &nbsp [you may test (Bap + ~Bap) with any model you defined]
+            <br>
+            [K<sub>⊤</sub>] \( B_{i}\theta \) where \( \theta \) is an instance of propositional tautology.  &nbsp &nbsp     [e.g. Ba(p+~p)]
+            <br>
+            [K<sub>B</sub>] \( B_{a}(\theta \rightarrow \gamma) \rightarrow (B_{a}\theta \rightarrow B_{a}\gamma) \)  [e.g. (~Ba(p>q)+(~Bap + Baq))]
+            <br>
+            [K<sub>[:]</sub>] \( [a:\theta](\phi \rightarrow \psi) \rightarrow ([a:\theta]\phi \rightarrow [a:\theta]\psi) \)
+            <br>
+            [[:]-Dual] \( \neg [a:\theta]\phi \leftrightarrow [a:\theta]\neg\phi \)
+            <br>
+            [Comm] \( [a:\gamma][b:\theta]\phi \leftrightarrow [b:\theta][a:\gamma]\phi \)
+            <br>
+            [UMon] \( B_{b}\chi\rightarrow[a:\theta]B_{b}\chi \)
+            <br>
+            [SDMon] \( [a:\theta]B_{b}\chi\rightarrow B_{b}(\theta\rightarrow\chi) \)
+            <br>
+            [RDMon] \( [a:\gamma]\neg B_{b}\gamma\rightarrow([a:\theta]B_{b}\chi\rightarrow B_{b}\chi) \)
+            <br><br>
+            Rules:
+            <br>
+            [MP] From \( (\phi \rightarrow \psi), \phi \), infer \( \psi \)
+            <br>
+            [[:]-Nec] From \( \vdash\phi \), infer \( \vdash[a:\theta]\phi \)
+        </div>
+    </div>
    
     
     <script src="https://d3js.org/d3.v5.min.js"></script>

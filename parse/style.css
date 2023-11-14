@@ -42,3 +42,28 @@ h3 {
     height: 800px;
     border: 1px solid black;
 }
+
+.selected {
+    fill: #007bff; /* Change the fill color for highlighting */
+    cursor: move; /* Change cursor to indicate draggable */
+}
+.definition-box {
+    border: 1px solid black;
+    padding: 10px;
+    margin-top: 10px;
+    width: 100%;
+}
+
+.axioms {
+    margin-top: 10px;
+}
+.content {
+    font-family: Arial, sans-serif;
+    max-width: 700px;
+    padding: 20px;
+}
+.definition {
+    border: 1px solid #ccc;
+    padding: 15px;
+    margin-top: 20px;
+}
