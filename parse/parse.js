@@ -429,26 +429,13 @@ function parseFormula(tokens) {
         const agent = token[1];
         let message = '';
 
-        if (tokens[0] === '~') {
-            // Add the negation symbol
+        // Handle consecutive negations
+        while (tokens.length > 0 && tokens[0] === '~') {
             message += tokens.shift();
-            // If the next token is '(', it's a complex expression
-            if (tokens[0] === '(') {
-                // Include '(' in the message
-                message += tokens.shift();
-                // Continue adding tokens until the corresponding ')'
-                while (tokens.length > 0 && tokens[0] !== ')') {
-                    message += tokens.shift();
-                }
-                // Include ')' in the message
-                if (tokens[0] === ')') {
-                    message += tokens.shift();
-                }
-            } else {
-                // If it's not '(', it should be a single propositional variable
-                message += tokens.shift();
-            }
-        } else if (tokens[0] === '(') {
+        }
+
+        // Handle complex expression or single propositional variable
+        if (tokens[0] === '(') {
             // Belief with a complex expression inside parentheses
             message += tokens.shift(); // Include '('
             while (tokens.length > 0 && tokens[0] !== ')') {
@@ -458,8 +445,8 @@ function parseFormula(tokens) {
                 message += tokens.shift(); // Include ')'
             }
         } else {
-            // Belief with a single propositional variable
-            message = tokens.shift();
+            // Belief with a single propositional variable (or followed by negations)
+            message += tokens.shift();
         }
 
         return {
@@ -768,6 +755,16 @@ c believes r and k(c) = {{r}, {r, p}, {r, q}, {r, q, p}}
 
 [a:(r>q)]([b:(q>p)]Bcp & [c:q](~Bcp&Baq))   satisfied
 (T & (~F&T))
+
+
+[a:(~r+~q)]([b:~~q]([c:~q]Ba~(q+~p)& Bc(p&~r))&[a:r]Bb(~q&r))  satisfied
+((T&T)&T)
+
+[a:~q](Bc(q&r)+~Bb(p&~p))
+(F+F)
+
+[c:(q>r)](Bar+[a:~q](Bb(q>~q)&[b:q]Bc(p&~p)))
+(F + (T & T))
 */
 
 
