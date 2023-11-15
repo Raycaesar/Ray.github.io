@@ -774,12 +774,16 @@ c believes r and k(c) = {{r}, {r, p}, {r, q}, {r, q, p}}
 (T>F)
 
 
+axioms 
+ (Ba(p>q)>(Bap > Baq)) satisfied, [KB] 
+
 ([a:q](Bbq>Bcp) > ([a:q]Bbq>[a:q]Bcp)) satisfied, axiom [K[:]] 
 
+（Bbp>[a:q]Bbp） satisfied,[UMon]
 
 ([a:p]Bbq > Bb(p > q))  satisfied, [SDMon] 
 
-([a:r]~Bbr > ([a:p]Bbq> Bbq)) satisfied, [RDMon] p,q,r can be can be unification substituted by any boolean expression.
+([a:r]~Bbr > ([a:p]Bbq> Bbq)) satisfied, [RDMon] 
 */
 
 
