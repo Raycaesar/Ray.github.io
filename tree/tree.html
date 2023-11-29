@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tableau Proof Assistant</title>
+    <link rel="stylesheet" href="refine.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Tableau Proof Assistant</h1>
+
+        <!-- Formula -->
+
+        <div class="tutorial">
+            <h3>Formulas of ASAL:</h3>
+            <ul>
+                <li><strong>Literal Belief formula:</strong> Baθ or ~Baθ where a is an element of <b>Agents</b> and θ is an element of <b>Prop</b>.</li>
+                <li><strong>Conjunction:</strong> Use the ampersand symbol <span class="example">&</span> between two formulas. E.g., <span class="example">(φ&ψ) where both φ and ψ are formulas</span>.</li>
+                <li><strong>Disjunction:</strong> Use the plus symbol <span class="example">+</span> between two formulas. E.g., <span class="example">(φ+ψ)</span>.</li>
+                <li><strong>Free Announcement:</strong> Use the symbol [a:θ] <span class="example"></span> before the formula. E.g., <span class="example">[a:θ]φ</span>.</li>
+                <li><strong>Diamond Sincere Announcement:</strong> Use the symbol  &lt;a!θ&gt; <span class="example"></span> before the formula. E.g., <span class="example"> &lt;a!θ&gt;φ</span>.</li>
+                <li><strong>Box Sincere Announcement:</strong> Use the symbol [a!θ] <span class="example"></span> before the formula. E.g., <span class="example">[a!θ]φ</span>.</li>
+                <li><strong>Diamond Arbitrary Announcement:</strong> Use the symbol &lt;a!&gt; <span class="example"></span> before the formula. E.g., <span class="example"> &lt;a!&gt; φ</span>.</li>
+                <li><strong>Box Arbitrary Announcement:</strong> Use the symbol [a!] <span class="example"></span> before the formula. E.g., <span class="example">[a!]φ</span>.</li>
+                <li><strong>Brackets:</strong> Every formula connected by a binary operator should be enclosed within a pair of brackets. E.g., <span class="example">(φ+ψ)</span>, not <span class="example">φ+ψ</span>.</li>
+            </ul>
+        </div>
+        <!-- Input Area -->
+        <div class="input-area">
+            <textarea id="formula-input" rows="4" placeholder="Enter formulas here..."></textarea>
+            <button id="generate-tableau">Generate Tableau</button>
+        </div>
+
+        <!-- Tableau Rules -->
+    
+        <div class="tableau-rules">
+        <h2>Tableau Rules</h2>
+        <div class="tree-container">
+            <!-- Tree 1 -->
+            <div class="tree">
+                <div class="node">
+                    <div class="content">[:]<sub>∨</sub> [b:γ]...[b:χ](φ∨ψ)</div>
+                    <div class="children">
+                        <div class="node">
+                            <div class="content">[b:γ]...[b:χ]φ</div>
+                        </div>
+                        <div class="node">
+                            <div class="content">[b:γ]...[b:χ]ψ</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+             <!-- Tree 2 -->
+            <div class="tree">
+                <div class="node">
+                    <div class="content">[:]<sub>∧</sub> [b:γ]...[b:χ](φ∧ψ)</div>
+                    <div class="children">
+                        <div class="node">
+                            <div class="content">[b:γ]...[b:χ]φ</div>
+                            <div class="node">
+                                <div class="content">[b:γ]...[b:χ]ψ</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+             <!-- Tree 3 -->
+            <div class="tree">
+                <div class="node">
+                    <div class="content">[:]<sub>K</sub> [b:γ]...[b:χ][a:θ]Bcε</div>
+                    <div class="children">
+                        <div class="node">
+                            <div class="content">[b:γ]...[b:χ]Bcε</div>
+                        </div>
+                        <div class="children">
+                            <div class="node">
+                                <div class="content">[b:γ]...[b:χ]Bc(θ>ε)</div>
+                                <div class="children">
+                                    <div class="node">
+                                        <div class="content">cFa</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+               <!-- Tree 4 -->
+               <div class="tree">
+                <div class="node">
+                    <div class="content">[:]<sub>~K</sub> [b:γ]...[b:χ][a:θ]~Bcε</div>
+                    <div class="children">
+                        <div class="node">
+                            <div class="content">[b:γ]...[b:χ]~Bc(θ>ε)</div>
+                        </div>
+                        <div class="node">
+                            <div class="content">[b:γ]...[b:χ]~Bcε</div>
+                            <div class="children">
+                                <div class="node">
+                                    <div class="content">~cFa</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        
+            <!-- Tree 5 -->
+            <div class="tree">
+                <div class="node">
+                    <div class="content">&lt;!θ&gt; [b:γ]...[b:χ]&lt;a!θ&gt;φ</div>
+                    <div class="children">
+                        <div class="node">
+                            <div class="content">[b:γ]...[b:θ]Baθ</div>
+                            <div class="children">
+                                <div class="node">
+                                    <div class="content">[b:γ]...[b:θ][a:θ]φ</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Tree 6 -->
+            <div class="tree">
+                <div class="node">
+                    <div class="content">[!θ] [b:γ]...[b:χ][a!θ]φ</div>
+                    <div class="children">
+                        <div class="node">
+                            <div class="content">[b:γ]...[b:χ]~Baθ</div>
+                        </div>
+                        <div class="node">
+                            <div class="content">[b:γ]...[b:χ][a:θ]φ</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        
+            <!-- Tree 7 -->
+            <div class="tree">
+                <div class="node">
+                    <div class="content">&lt;!&gt; [b:γ]...[b:χ]&lt;a!&gt;φ</div>
+                    <div class="children">
+                        <div class="node">
+                            <div class="content">[b:γ]...[b:θ]&lt;a!p&gt;φ</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        
+            <!-- Tree 8 -->
+            <div class="tree">
+                <div class="node">
+                    <div class="content">[!] [b:γ]...[b:χ][a!]φ</div>
+                    <div class="children">
+                        <div class="node">
+                            <div class="content">[b:γ]...[b:χ][a!θ]φ</div>
+                        </div>
+                      
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+
+        where [b:γ]...[b:χ] is either a sequence of free announcement operators or empty and p is a new atomic message which does not occur in any ancestor.
+
+    </div>
+        
+
+        <!-- Tableau Output -->
+        <div class="tableau-output">
+            <h2>Tableau Output</h2>
+            <!-- The tableau will be displayed here -->
+        </div>
+
+        <!-- Counter-Model -->
+        <div class="counter-model">
+            <h2>Counter-Model</h2>
+            <!-- The counter-model will be displayed here -->
+        </div>
+    </div>
+    <script src="botany.js"></script>
+</body>
+</html>
