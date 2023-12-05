@@ -9,7 +9,7 @@
 <body>
     <div class="container">
         <h1>Tableau Proof Assistant</h1>
-
+    
         <!-- Formula -->
 
         <div class="tutorial">
@@ -26,59 +26,54 @@
                 <li><strong>Brackets:</strong> Every formula connected by a binary operator should be enclosed within a pair of brackets. E.g., <span class="example">(φ+ψ)</span>, not <span class="example">φ+ψ</span>.</li>
             </ul>
         </div>
-        <!-- Input Area -->
-        <div class="input-area">
-            <textarea id="formula-input" rows="4" placeholder="Enter formulas here..."></textarea>
-            <button id="generate-tableau">Generate Tableau</button>
-        </div>
-
+      
         <!-- Tableau Rules -->
     
         <div class="tableau-rules">
         <h2>Tableau Rules</h2>
         <div class="tree-container">
             <!-- Tree 1 -->
-            <div class="tree">
+            <div class="tree" id ="disjunction">
                 <div class="node">
-                    <div class="content">[:]<sub>∨</sub> [b:γ]...[b:χ](φ∨ψ)</div>
+                    <div class="content">[:]<sub>∨</sub> [b:γ]...[c:χ](φ∨ψ)</div>
                     <div class="children">
                         <div class="node">
-                            <div class="content">[b:γ]...[b:χ]φ</div>
+                            <div class="content">[b:γ]...[c:χ]φ</div>
                         </div>
                         <div class="node">
-                            <div class="content">[b:γ]...[b:χ]ψ</div>
+                            <div class="content">[b:γ]...[c:χ]ψ</div>
                         </div>
                     </div>
                 </div>
             </div>
              <!-- Tree 2 -->
-            <div class="tree">
+            <div class="tree" id ="conjunction">
                 <div class="node">
-                    <div class="content">[:]<sub>∧</sub> [b:γ]...[b:χ](φ∧ψ)</div>
+                    <div class="content">[:]<sub>∧</sub> [b:γ]...[c:χ](φ∧ψ)</div>
                     <div class="children">
                         <div class="node">
-                            <div class="content">[b:γ]...[b:χ]φ</div>
+                            <div class="content">[b:γ]...[c:χ]φ</div>
                             <div class="node">
-                                <div class="content">[b:γ]...[b:χ]ψ</div>
+                                <div class="content">[b:γ]...[c:χ]ψ</div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
              <!-- Tree 3 -->
-            <div class="tree">
+            <div class="tree" id ="belief with free announcement">
                 <div class="node">
-                    <div class="content">[:]<sub>K</sub> [b:γ]...[b:χ][a:θ]Bcε</div>
+                    <div class="content">[:]<sub>K</sub> [b:γ]...[c:χ][a:θ]Bdε</div>
                     <div class="children">
                         <div class="node">
-                            <div class="content">[b:γ]...[b:χ]Bcε</div>
+                            <div class="content">[b:γ]...[c:χ]Bdε</div>
                         </div>
                         <div class="children">
                             <div class="node">
-                                <div class="content">[b:γ]...[b:χ]Bc(θ>ε)</div>
+                                <div class="content">[b:γ]...[c:χ]Bd(θ>ε)</div>
                                 <div class="children">
                                     <div class="node">
-                                        <div class="content">cFa</div>
+                                        <div class="content">dFa</div>
                                     </div>
                                 </div>
                             </div>
@@ -87,18 +82,18 @@
                 </div>
             </div>
                <!-- Tree 4 -->
-               <div class="tree">
+               <div class="tree" id ="negation with free announcement">
                 <div class="node">
-                    <div class="content">[:]<sub>~K</sub> [b:γ]...[b:χ][a:θ]~Bcε</div>
+                    <div class="content">[:]<sub>~K</sub> [b:γ]...[c:χ][a:θ]~Bdε</div>
                     <div class="children">
                         <div class="node">
-                            <div class="content">[b:γ]...[b:χ]~Bc(θ>ε)</div>
+                            <div class="content">[b:γ]...[c:χ]~Bd(θ>ε)</div>
                         </div>
                         <div class="node">
-                            <div class="content">[b:γ]...[b:χ]~Bcε</div>
+                            <div class="content">[b:γ]...[c:χ]~Bdε</div>
                             <div class="children">
                                 <div class="node">
-                                    <div class="content">~cFa</div>
+                                    <div class="content">~dFa</div>
                                 </div>
                             </div>
                         </div>
@@ -107,15 +102,15 @@
             </div>
         
             <!-- Tree 5 -->
-            <div class="tree">
+            <div class="tree" id ="diamond sincere">
                 <div class="node">
-                    <div class="content">&lt;!θ&gt; [b:γ]...[b:χ]&lt;a!θ&gt;φ</div>
+                    <div class="content">&lt;!θ&gt; [b:γ]...[c:χ]&lt;a!θ&gt;φ</div>
                     <div class="children">
                         <div class="node">
-                            <div class="content">[b:γ]...[b:θ]Baθ</div>
+                            <div class="content">[b:γ]...[c:χ]Baθ</div>
                             <div class="children">
                                 <div class="node">
-                                    <div class="content">[b:γ]...[b:θ][a:θ]φ</div>
+                                    <div class="content">[b:γ]...[c:χ][a:θ]φ</div>
                                 </div>
                             </div>
                         </div>
@@ -123,39 +118,39 @@
                 </div>
             </div>
             <!-- Tree 6 -->
-            <div class="tree">
+            <div class="tree" id ="box sincere">
                 <div class="node">
-                    <div class="content">[!θ] [b:γ]...[b:χ][a!θ]φ</div>
+                    <div class="content">[!θ] [b:γ]...[c:χ][a!θ]φ</div>
                     <div class="children">
                         <div class="node">
-                            <div class="content">[b:γ]...[b:χ]~Baθ</div>
+                            <div class="content">[b:γ]...[c:χ]~Baθ</div>
                         </div>
                         <div class="node">
-                            <div class="content">[b:γ]...[b:χ][a:θ]φ</div>
+                            <div class="content">[b:γ]...[c:χ][a:θ]φ</div>
                         </div>
                     </div>
                 </div>
             </div>
         
             <!-- Tree 7 -->
-            <div class="tree">
+            <div class="tree" id ="diamond arbitrary">
                 <div class="node">
-                    <div class="content">&lt;!&gt; [b:γ]...[b:χ]&lt;a!&gt;φ</div>
+                    <div class="content">&lt;!&gt; [b:γ]...[c:χ]&lt;a!&gt;φ</div>
                     <div class="children">
                         <div class="node">
-                            <div class="content">[b:γ]...[b:θ]&lt;a!p&gt;φ</div>
+                            <div class="content">[b:γ]...[c:χ]&lt;a!p&gt;φ</div>
                         </div>
                     </div>
                 </div>
             </div>
         
             <!-- Tree 8 -->
-            <div class="tree">
+            <div class="tree" id ="box arbitrary">
                 <div class="node">
-                    <div class="content">[!] [b:γ]...[b:χ][a!]φ</div>
+                    <div class="content">[!] [b:γ]...[c:χ][a!]φ</div>
                     <div class="children">
                         <div class="node">
-                            <div class="content">[b:γ]...[b:χ][a!θ]φ</div>
+                            <div class="content">[b:γ]...[c:χ][a!θ]φ</div>
                         </div>
                       
                     </div>
@@ -164,23 +159,31 @@
             
         </div>
 
-        where [b:γ]...[b:χ] is either a sequence of free announcement operators or empty and p is a new atomic message which does not occur in any ancestor.
-
+        where [b:γ]...[c:χ] is either a sequence of free announcement operators or empty and p is a new atomic message which does not occur in any ancestor.
+        <br/>
+        Due to my fault, currently agents should be only denoted by one letter like a, b, c. Do not use a_1, b_2 and etc..
     </div>
         
+</div>
+  <!-- Input Area -->
+  <div class="input-area">
+    <textarea id="formula-input" rows="4" placeholder="Enter formulas here..."></textarea>
+    <button id="generate-tableau">Generate Tableau</button>
+</div>
+  <!-- Tableau Output -->
+  <div class="tableau-output">
+    <h2>Tableau Output</h2>
+    <!-- The tableau will be displayed here -->
+</div>
 
-        <!-- Tableau Output -->
-        <div class="tableau-output">
-            <h2>Tableau Output</h2>
-            <!-- The tableau will be displayed here -->
-        </div>
 
-        <!-- Counter-Model -->
-        <div class="counter-model">
-            <h2>Counter-Model</h2>
-            <!-- The counter-model will be displayed here -->
-        </div>
-    </div>
-    <script src="botany.js"></script>
+<!-- Counter-Model -->
+<div class="counter-model">
+    <h2>Counter-Model</h2>
+    <!-- The counter-model will be displayed here -->
+</div>
+      
+    
+    <script src="backup.js"></script>
 </body>
 </html>

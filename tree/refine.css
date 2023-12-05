@@ -5,11 +5,14 @@ body {
     padding: 0;
 }
 
+
 .container {
-    width: 80%;
-    margin: auto;
-    overflow: hidden;
+    max-width: none; /* Set a maximum width */
+    width: 80%; /* Allows width to adjust based on content */
+    margin: auto; /* Centers the container */
+    overflow: hidden; /* Keeps content within the container */
 }
+
 
 h1 {
     text-align: center;
@@ -31,6 +34,55 @@ h2 {
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
+
+
+
+
+
+
+.tableau-output {
+    overflow-x: auto; /* Enables horizontal scrolling for wide content */
+    overflow-y: hidden; /* Disables vertical scrolling */
+    white-space: nowrap; /* Prevents text wrapping to a new line */
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start; /* Aligns content to the start */
+  
+    width: auto; /* Sets the initial width */
+    min-width: 100%; /* Ensures a minimum width of the container */
+    max-width: none; /* Allows the container to expand as needed */
+    padding: 10px; /* Adds some padding inside the container */
+    border: 1px solid #ddd; /* Adds a border for visual structure */
+    margin-bottom: 20px; /* Space below the container */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Adds subtle shadow for depth */
+}
+
+/* Style adjustments for Webkit browsers like Chrome and Safari */
+.tableau-output::-webkit-scrollbar {
+    height: 12px; /* Height of the horizontal scrollbar */
+}
+
+.tableau-output::-webkit-scrollbar-track {
+    background: #f0f0f0; /* Color of the scrollbar track */
+}
+
+.tableau-output::-webkit-scrollbar-thumb {
+    background-color: #888; /* Color of the scrollbar thumb */
+    border-radius: 6px; /* Rounded corners for the scrollbar thumb */
+    border: 3px solid #f0f0f0; /* Border around the scrollbar thumb */
+}
+
+
+
+.tree-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    width: auto;
+    max-width: none; /* Allow for a wider tableau */
+    overflow-x: auto; /* Horizontal scroll for larger tableaus */
+}
+
 
 
 #formula-input {
@@ -72,27 +124,14 @@ h2 {
 
 
 
-.children {
-    display: flex;
-    justify-content: space-around; /* Spread out the children more */
-    margin-top: 10px;
-    position: relative; /* To position the line correctly */
-}
+
+
 
 .vec {
     font-style: italic;
 }
 
-.tree-container {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-around;
-    width: 100%;
-}
-.node {
-    position: relative; /* Needed for absolute positioning of pseudo-elements */
-    margin: 10px 0;
-}
+
 
 .node .children .node::before {
     content: '';
@@ -128,7 +167,97 @@ h2 {
     display: inline-block;
 }
 
+.bold {
+    font-weight: bold;
+}
+
+.leaf {
+    color: rgb(15, 110, 15);
+
+}
 
 
 
+/* Styling for the branch containers */
+.branch {
+    display: flex;
+    justify-content: center; /* Aligns children at the center */
+    margin-top: 10px;
+}
+
+
+
+/* Additional styling for visual separation (if needed) */
+.node:not(:last-child) {
+    border-right: 2px solid #ccc;
+}
+
+
+/* Ensuring formula and node styles don't interfere */
+.formula, .node {
+    text-align: center;
+    margin: 5px 0; /* Adjusts vertical spacing */
+}
+
+
+/* Individual branches */
+.node {
+    flex: 1; /* Allow branches to flexibly fill the space */
+    text-align: center;
+    margin: 0 5px; /* Margin for some spacing */
+    min-width: 50px; /* Minimum width for each branch */
+}
+
+/* Style for the formula within each node */
+.formula {
+    margin: 5px;
+    padding: 5px;
+    /* Remove or adjust the border as needed */
+    border: 1px solid #ddd; /* Update or remove this line based on your requirement */
+    background-color: #f9f9f9;
+    text-align: center;
+    justify-content: space-between;
+}
+
+
+
+
+/* Container for the branches */
+.children {
+    display: inline-flex; /* Align children in a row */
+    justify-content: space-around; /* Space out children evenly */
+    align-items: center;
+    width: 100%;
+    gap: 20px;
+}
+
+/* Individual branches */
+.left-branch, .right-branch {
+    flex: 1;
+    text-align: center;
+    background-color: #f9f9f9; /* Set background color */
+    padding: 5px;
+    margin: 0 5px;
+    display: inline-flex;
+}
+
+
+
+/* Optional: Visual connection between parent formula and branches */
+.branch::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: 2px;
+    height: auto;
+    background-color: #ccc;
+    z-index: -1;
+}
+
+.formula.data-used {
+    color: #888; /* Grayed out */
+    background-color: #f0f0f0; /* Lighter background */
+    border-color: #ccc; /* Lighter border */
+}
 
