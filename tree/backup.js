@@ -831,14 +831,14 @@ function processBranch(branch) {
     // Extract propositional variables and agents from formulas
     branch.forEach(formula => {
         // Match for belief formulas like Bap, ~Bb(r>q)
-        const beliefMatch = formula.match(/~?B([a-z])/);
+        const beliefMatch = formula.match(/~?B([a-e])/);
         if (beliefMatch) {
             const agent = beliefMatch[1];
             if (!Agt.includes(agent)) Agt.push(agent);
         }
 
         // Match for following relationships like aFd, ~cFe
-        const followingMatch = formula.match(/([a-z])F([a-z])/);
+        const followingMatch = formula.match(/([a-e])F([a-e])/);
         if (followingMatch) {
             const [agent1, agent2] = [followingMatch[1], followingMatch[2]];
             if (!Agt.includes(agent1)) Agt.push(agent1);
@@ -846,7 +846,7 @@ function processBranch(branch) {
         }
 
         // Extract propositions
-        const propVars = formula.match(/[a-z]/g) || [];
+        const propVars = formula.match(/[p-z]/g) || [];
         propVars.forEach(propVar => {
             if (!Prop.includes(propVar) && !Agt.includes(propVar)) Prop.push(propVar);
         });
@@ -927,7 +927,6 @@ function isBranchClosed(branch) {
 }
 
 function generateAgentFollowersFromBranch(selectedBranch) {
-    const agentFollowers = {};
 
     // Initialize agentFollowers for each agent
     Agt.forEach(agent => {
@@ -954,11 +953,29 @@ function generateAgentFollowersFromBranch(selectedBranch) {
         console.log(`${agent}'s followers:`, agentFollowers[agent]);
     });
 
-    console.log("Generated agentFollowers from branch:", agentFollowers);
+    console.log("Generated agentFollowers of a from branch:", agentFollowers['a']);
     return agentFollowers;
 }
 
 
+
+function handleSelectedBranch(generatedAgentFollowers) {
+    let colorCounter = 0;
+    const colors = ['#D67293', '#73DEFA', '#5DB117', '#5A8CD7', '#CCCC00', '#9A5FD7', '#FA1CA8', '#A300A3', '#00A3A3']; // An array of colors for agents
+
+    // Assign colors to agents
+    Agt.forEach(agent => {
+        if (!agentColors[agent]) {
+            agentColors[agent] = colors[colorCounter % colors.length];
+            colorCounter++;
+        }
+    });
+
+    console.log("agentFollowers before drawNetwork:", generatedAgentFollowers);
+
+    // Call drawNetwork with the generated agentFollowers
+    drawNetwork(generatedAgentFollowers);
+}
 
 function setupBranchSelection() {
     const drawGraphButton = document.getElementById('drawGraph');
@@ -984,20 +1001,6 @@ function setupBranchSelection() {
     });
 }
 
-function handleSelectedBranch(agentFollowers) {
-    let colorCounter = 0;
-const colors = ['#D67293', '#73DEFA', '#5DB117', '#5A8CD7', '#CCCC00', '#9A5FD7', '#FA1CA8', '#A300A3', '#00A3A3']; // An array of colors for agents
-
-// Assign colors to agents
-Agt.forEach(agent => {
-    if (!agentColors[agent]) {
-        agentColors[agent] = colors[colorCounter % colors.length];
-        colorCounter++;
-    }
-});
-console.log("agentFollowers before drawNetwork:", agentFollowers);
-drawNetwork(agentFollowers);
-}
 
 // Call this function after the tableau is complete
 setupBranchSelection();
