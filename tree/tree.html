@@ -60,21 +60,19 @@
                     </div>
                 </div>
             </div>
-             <!-- Tree 3 -->
-            <div class="tree" id ="belief with free announcement">
+               <!-- Tree 3 -->
+               <div class="tree" id ="belief with free announcement">
                 <div class="node">
                     <div class="content">[:]<sub>K</sub> [b:γ]...[c:χ][a:θ]Bdε</div>
                     <div class="children">
                         <div class="node">
                             <div class="content">[b:γ]...[c:χ]Bdε</div>
                         </div>
-                        <div class="children">
-                            <div class="node">
-                                <div class="content">[b:γ]...[c:χ]Bd(θ>ε)</div>
-                                <div class="children">
-                                    <div class="node">
-                                        <div class="content">dFa</div>
-                                    </div>
+                        <div class="node">
+                            <div class="content">[b:γ]...[c:χ]Bd(θ>ε)</div>
+                            <div class="children">
+                                <div class="node">
+                                    <div class="content">dFa</div>
                                 </div>
                             </div>
                         </div>
@@ -100,6 +98,7 @@
                     </div>
                 </div>
             </div>
+            
         
             <!-- Tree 5 -->
             <div class="tree" id ="diamond sincere">
@@ -176,14 +175,25 @@
     <!-- The tableau will be displayed here -->
 </div>
 
-
+<div id="messageArea"></div>
 <!-- Counter-Model -->
 <div class="counter-model">
-    <h2>Counter-Model</h2>
+    <h2>Model</h2>
+    <button id="drawGraph">Draw Graph</button>
+    <div id="network">
+        <!-- We'll use this SVG to display our network -->
+        <svg id="networkCanvas" width="1200" height="600"></svg>
+    </div>
+    <div id="cy">
+        <svg id="beliefCanvas" width="1800" height="800"></svg>
+        </div>
+        
     <!-- The counter-model will be displayed here -->
 </div>
-      
-    
-    <script src="backup.js"></script>
+<script src="https://d3js.org/d3.v5.min.js"></script>
+<script src="../parse/parse.js"></script>
+<script src="../parse/drawGraph.js"></script>
+<script src="backup.js"></script>
+
 </body>
 </html>
