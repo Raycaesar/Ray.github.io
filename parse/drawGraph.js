@@ -20,12 +20,15 @@ function drawNetwork() {
     // Create nodes and links for the network
     const nodes = Agt.map(agent => ({ id: agent })); // Map each 'agent' to an object with an 'id' property.
     const links = []; // Initialize an array to hold the links between nodes.
+    console.log("agentFollowers inside drawNetwork:", agentFollowers);
     for (let agent in agentFollowers) { // Iterate over the 'agentFollowers' object.
         for (let follower of agentFollowers[agent]) { // Iterate over each follower of the agent.
             links.push({ source: follower, target: agent }); // Create a link from the follower to the agent.
         }
     }
-
+    
+console.log("Nodes:", nodes);
+console.log("Links:", links);
     // Set up the dimensions for the simulation
     const width = svg.node().getBoundingClientRect().width; // Get the width of the SVG element.
     const height = svg.node().getBoundingClientRect().height; // Get the height of the SVG element.
@@ -208,10 +211,12 @@ document.getElementById('propSize').addEventListener('change', function() {
 // When the element is clicked, it triggers the displayPowerSet function to visualize a power set.
 document.getElementById("drawGraph").addEventListener("click", function() {
     displayPowerSet(); // Call the function to display the power set.
-
+});
     // This function is responsible for visualizing the power set of propositions on an SVG canvas.
     function displayPowerSet() {
+        console.log("Displaying power set...");
         const powerSetOfProp = powerSet(Prop); // Generate the power set of the propositions.
+        console.log("Displaying power set of Prop:", powerSetOfProp);
         const svgContainer = document.getElementById("beliefCanvas"); // Select the SVG container element.
         svgContainer.innerHTML = '';  // Clear any previous content in the SVG container.
 
@@ -433,135 +438,10 @@ document.getElementById("drawGraph").addEventListener("click", function() {
             y: centerY + (radius * Math.sin(angleInRadians))
         };
     }
-});
-
-
-/*
-
-document.getElementById("drawGraph").addEventListener("click", function() {
-    displayPowerSet();
-
-    function displayPowerSet() {
-        const powerSetOfProp = powerSet(Prop);
-        const svgContainer = document.getElementById("beliefCanvas");
-        svgContainer.innerHTML = '';  // Clear previous diagram
-    
-    
-        powerSetOfProp.sort((a, b) => a.length - b.length);  // Sort subsets by size
-    
-        const maxWidth = powerSetOfProp.length;
-        const maxHeight = Prop.length + 1; 
-    
-        const verticalGap = svgContainer.height.baseVal.value / (maxHeight + 1);
-        const circleRadius = 30;
-        
-        for (let i = 0; i <= Prop.length; i++) {
-            const subsetsOfSizeI = powerSetOfProp.filter(subset => subset.length === i);
-            let beliefsForSubset = {};
-
-            // Calculate which agents believe in each subset
-           // Calculate which agents believe in each subset
-        Agt.forEach(agent => {
-            const denotationResult = getDenotationResult(agent);
-            subsetsOfSizeI.forEach(subset => {
-        const subsetStr = subset.sort().join(',');
-        const isSubsetInDenotation = denotationResult.some(denotedSubset => 
-            denotedSubset.length === subset.length && 
-            denotedSubset.every(element => subset.includes(element))
-        );
-        if (isSubsetInDenotation) {
-            if (!beliefsForSubset[subsetStr]) beliefsForSubset[subsetStr] = [];
-            if (!beliefsForSubset[subsetStr].includes(agent)) { // make sure we don't double count agents
-                beliefsForSubset[subsetStr].push(agent);
-            }
-        }
-    });
-});
-
-
-            // Now create the circle with the beliefs of all agents
-            subsetsOfSizeI.forEach((subset, j) => {
-                const subsetStr = subset.sort().join(',');
-                const yOffset = (Prop.length - i + 1) * verticalGap;
-                const horizontalGap = svgContainer.width.baseVal.value / (subsetsOfSizeI.length + 1);
-                const xOffset = (j + 1) * horizontalGap;
-                createCircle(xOffset, yOffset, subsetStr, svgContainer, circleRadius, beliefsForSubset[subsetStr] || []);
-            });
-        }
-    }
-    
-    function createCircle(x, y, label, svgContainer, radius, believingAgents) {
-        const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-        circle.setAttribute("cx", x);
-        circle.setAttribute("cy", y);
-        circle.setAttribute("r", radius);
-        circle.setAttribute("stroke", "#686673");
-        circle.setAttribute("stroke-width", "0.5");
-    
-        if (believingAgents.length === 0) {
-            circle.setAttribute("fill", "white");
-        } else if (believingAgents.length === 1) {
-            circle.setAttribute("fill", agentColors[believingAgents[0]]);
-        } else {
-            circle.setAttribute("fill", "none"); // Make sure the circle is transparent
-    
-            // Create arcs for multiple agents' beliefs
-            let startAngle = 0;
-            believingAgents.forEach(agent => {
-                const endAngle = startAngle + (360 / believingAgents.length);
-                createArc(svgContainer, x, y, startAngle, endAngle, radius, agentColors[agent]);
-                startAngle = endAngle;
-            });
-        }
-    
-        // Adding label
-        const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
-        text.setAttribute("x", x);
-        text.setAttribute("y", y);
-        text.setAttribute("text-anchor", "middle");
-        text.setAttribute("dy", "0.3em");
-        text.setAttribute("fill", "#40120a")
-        text.setAttribute("font-family", "Franklin Gothic Medium, Arial Narrow, Arial, sans-serif")
-        text.textContent = label;
-    
-        svgContainer.appendChild(circle); // Ensure the circle is appended too
-        svgContainer.appendChild(text);
-    }
-    
-    
-
-    function createArc(svgContainer, cx, cy, startAngle, endAngle, radius, fillColor) {
-        const start = polarToCartesian(cx, cy, radius, endAngle);
-        const end = polarToCartesian(cx, cy, radius, startAngle);
-    
-        const largeArcFlag = endAngle - startAngle <= 180 ? "0" : "1";
-    
-        const d = [
-            "M", start.x, start.y, 
-            "A", radius, radius, 0, largeArcFlag, 0, end.x, end.y,
-            "L", cx, cy,
-            "Z"
-        ].join(" ");
-    
-        const arc = document.createElementNS("http://www.w3.org/2000/svg", "path");
-        arc.setAttribute("d", d);
-        arc.setAttribute("fill", fillColor);
-        svgContainer.appendChild(arc);
-    }
-    
-
-    function polarToCartesian(centerX, centerY, radius, angleInDegrees) {
-        const angleInRadians = (angleInDegrees - 90) * Math.PI / 180.0;
-        return {
-            x: centerX + (radius * Math.cos(angleInRadians)),
-            y: centerY + (radius * Math.sin(angleInRadians))
-        };
-    }
-});
 
 
 
-*/
+
 
 
 
