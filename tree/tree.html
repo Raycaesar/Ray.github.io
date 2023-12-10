@@ -160,7 +160,7 @@
 
         where [b:γ]...[c:χ] is either a sequence of free announcement operators or empty and p is a new atomic message which does not occur in any ancestor.
         <br/>
-        Due to my fault, currently agents should be only denoted by one letter like a, b, c. Do not use a_1, b_2 and etc..
+        Due to my fault, currently agents should be only denoted by one letter from a to e. And propositional variable should be from p to z. Do not use a_1, b_2, p_1, x_2 and etc..
     </div>
         
 </div>
@@ -169,17 +169,29 @@
     <textarea id="formula-input" rows="4" placeholder="Enter formulas here..."></textarea>
     <button id="generate-tableau">Generate Tableau</button>
 </div>
+
   <!-- Tableau Output -->
   <div class="tableau-output">
     <h2>Tableau Output</h2>
     <!-- The tableau will be displayed here -->
 </div>
 
-<div id="messageArea"></div>
+<div id="messageArea"><p>Expand the tableau by double clicking compound formula.</p></div>
+<div id = "Termination">
+    <h2>Closure Condition</h2>
+    <ul>
+<li> A branch is closed if it contains a formula ~Baθ such that θ is a
+tautology, or, in addition, formulas Baθ<sub>1</sub>, ...Baθ<sub>n</sub> such that (θ<sub>1</sub> & ... & θ<sub>n</sub> > θ)
+is a tautology.
+<li> A branch is closed  if it contains both bFa and ~bFa.
+</ul>
+</div>
 <!-- Counter-Model -->
+
 <div class="counter-model">
     <h2>Model</h2>
     <button id="drawGraph">Draw Graph</button>
+    <p>Please choose an open branch when prompted, selecting from left to right. Opting for a closed branch to create a model is not advisable.</p>
     <div id="network">
         <!-- We'll use this SVG to display our network -->
         <svg id="networkCanvas" width="1200" height="600"></svg>

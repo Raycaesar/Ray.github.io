@@ -23,11 +23,11 @@ h2 {
     color: #333;
 }
 
-.tutorial{
+.tutorial, #Termination{
     line-height: 1.6;
 }
 
-.input-area, .tableau-rules, .tableau-output, .counter-model, .tutorial {
+.input-area, .tableau-rules, .tableau-output, .counter-model, .tutorial, #Termination {
     background: #fff;
     padding: 20px;
     margin: 20px 0;
@@ -36,6 +36,10 @@ h2 {
 }
 
 
+.used-formula {
+    color: rgb(71, 103, 172); /* Change text color to grey */
+    background-color: #f0f0f0; /* Change background to a light grey */
+}
 
 
 
@@ -111,6 +115,7 @@ h2 {
     display: flex;
     flex-wrap: wrap; /* Allow wrapping of child elements */
     margin-top: 20px; /* Space from the top */
+    
 }
 
 .tree {
@@ -140,7 +145,11 @@ h2 {
     height: 100%;
     background: black;
     z-index: -1;
+    display: none;
 }
+
+
+
 
 .node .children .node:first-child::before {
     left: 50%;
@@ -217,6 +226,7 @@ h2 {
     background-color: #f9f9f9;
     text-align: center;
     justify-content: space-between;
+    border-radius: 20px;
 }
 
 
@@ -261,3 +271,34 @@ h2 {
     border-color: #ccc; /* Lighter border */
 }
 
+.check-completion-button {
+    display: block;
+    width: auto;
+    padding: 10px;
+    margin: 20px auto;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.check-completion-button:hover {
+    background-color: #45a049;
+}
+
+#messageArea {
+    margin: 10px 0;
+    padding: 10px;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    text-align: center;
+}
+
+.closed-branch-mark {
+    color: red;
+    font-weight: bold;
+    padding-left: 5px;
+}

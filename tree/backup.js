@@ -95,42 +95,38 @@ function highlightLeaves() {
 }
 
 
-
-
 function expandFormula(formulaDiv) {
-
-    // Ensure only the text of this formula is used
     const formulaText = formulaDiv.childNodes[0].nodeValue.trim();
     console.log('Expanding formula:', formulaText);
-           // Check if the first child is a text node
-   
-       
-    
+
     const formulaType = getFormulaType(formulaText);
+
+    let formulaExpanded = false; // Flag to track if formula was actually expanded
 
     if (formulaType === 'box arbitrary') {
         handleBoxArbitrary(formulaDiv);
-    } else{
-    const isUsed = formulaDiv.getAttribute('data-used') === 'true';
-
-    if (isUsed) return;
-
-    if (formulaType === 'diamond arbitrary') {
-        handleDiamondArbitrary(formulaDiv);
+        formulaExpanded = true; // Assuming handleBoxArbitrary always expands
     } else {
+        const isUsed = formulaDiv.getAttribute('data-used') === 'true';
+        if (!isUsed) {
+            if (formulaType === 'diamond arbitrary') {
+                formulaExpanded = handleDiamondArbitrary(formulaDiv); // Modify this function to return true if expanded
+            } else if (['conjunction', 'diamond sincere'].includes(formulaType)) {
+                addVerticalChildren(formulaDiv);
+                formulaExpanded = true;
+            } else if (['belief with free announcement', 'negation with free announcement', 'box sincere', 'disjunction'].includes(formulaType)) {
+                addBranchChildren(formulaDiv);
+                formulaExpanded = true;
+            }
+        }
+    }
 
-    if (['conjunction', 'diamond sincere', ].includes(formulaType)) {
-        addVerticalChildren(formulaDiv);
-    } else if (['belief with free announcement', 'negation with free announcement', 'box sincere', 'disjunction'].includes(formulaType)) {
-        addBranchChildren(formulaDiv);
-    }}
-
-    
-    formulaDiv.setAttribute('data-used', 'true');
-    formulaDiv.ondblclick = null;
-    formulaDiv.classList.add('expanded');
-    updateLeaves();
-}
+    if (formulaExpanded) {
+        formulaDiv.setAttribute('data-used', 'true');
+        formulaDiv.ondblclick = null;
+        formulaDiv.classList.add('expanded');
+        updateLeaves();
+    }
 }
 
 function updateLeaves() {
@@ -584,6 +580,11 @@ function updateBoxSincere(formula) {
 function handleDiamondArbitrary(formulaDiv) {
     const formulaText = formulaDiv.childNodes[0].nodeValue.trim();
     const variable = promptForUniqueVariable(formulaDiv);
+    
+    if (variable === null) {
+        console.log("Prompt cancelled, diamond arbitrary formula not expanded.");
+        return false; // Return false indicating formula was not expanded
+    }
     if (variable) {
         const newFormulaObject = updateDiamondArbitrary(formulaText, variable);
         if (newFormulaObject && newFormulaObject.vertical) {
@@ -598,6 +599,7 @@ function handleDiamondArbitrary(formulaDiv) {
             console.error('Error updating Diamond Arbitrary formula');
         }
     }
+    return true; 
 }
 
 
@@ -606,6 +608,9 @@ function promptForUniqueVariable(formulaDiv) {
     let variable;
     do {
         variable = prompt("Enter a unique variable (suggested: x, y, z, u, v, w):");
+        if (variable === null) { // Check if prompt was cancelled
+            return null; // Return null to indicate cancellation
+        }
     } while (variableExistsInTableau(variable, formulaDiv));
 
     return variable;
@@ -692,90 +697,91 @@ function updateBoxArbitrary(formula, message) {
 }
 }
 
-
-
 function checkTableauCompletion() {
-    let isComplete = true;
-    let unexpandedFormulas = [];
     const tableauOutput = document.querySelector('.tableau-output');
     const allFormulas = tableauOutput.querySelectorAll('.formula');
+    let isComplete = true;
+    let unexpandedFormulas = [];
+    let openBranchesMessage = "";
+
+    // Check for unexpanded formulas
     allFormulas.forEach(formulaDiv => {
         const formulaText = formulaDiv.childNodes[0].nodeValue.trim();
         const formulaType = getFormulaType(formulaText);
         const isUsed = formulaDiv.getAttribute('data-used') === 'true';
 
-        if (!['atomic belief', 'atomic negation', 'following formula'].includes(formulaType) && (!isUsed && formulaType !== 'box arbitrary')) {
+        if (!['atomic belief', 'atomic negation', 'following formula'].includes(formulaType) && !isUsed) {
             isComplete = false;
-             unexpandedFormulas.push(formulaText);
+            unexpandedFormulas.push(formulaText);
         }
     });
 
-    if (isComplete) {
-        // Tableau is complete, find all branches
-        const branches = findAllBranches(tableauOutput);
-    
-        console.log('Tableau is complete. Processing branches...');
-        branches.forEach((branch, index) => {
-            console.log(`Branch ${index + 1}:`, branch.filter(isFormulaComplete));
-            console.log(`Processing Branch ${index + 1}`);
-            processBranch(branch);
-            const isClosed = isBranchClosed(branch);
-            console.log(`Branch ${index + 1} is ${isClosed ? 'closed' : 'open'}.`);
-        });
-    
-        messageArea.innerHTML = "<p>The tableau is complete. You may stop expanding further.</p>";
-    } else {
-        
-        console.log("The tableau is not yet complete. Continue expanding formulas.");
-        messageArea.innerHTML = "<p>The tableau is not yet complete. Continue expanding formulas.</p>";
-    }
-
-
+    // Process branches and check if all are closed
     let allBranchesClosed = true;
     if (isComplete) {
         const branches = findAllBranches(tableauOutput);
-        branches.forEach(branch => {
+        console.log('Tableau is complete. Processing branches...');
+
+        branches.forEach((branch, index) => {
+            console.log(`Branch ${index + 1}:`, branch.filter(isFormulaComplete));
+            console.log(`Processing Branch ${index + 1}`);
             const isClosed = processBranch(branch);
+            console.log(`Branch ${index + 1} is ${isClosed ? 'closed' : 'open'}.`);
+
             if (isClosed) {
+               
+                console.log("branch:",branch);
                 markBranchClosed(branch);
             } else {
                 allBranchesClosed = false;
+                openBranchesMessage += `Branch ${index + 1} is open. `; // Add the open branch message
             }
         });
 
         messageArea.innerHTML = allBranchesClosed ?
             "<p>The set of formulas is unsatisfiable.</p>" :
-            "<p>The set of formulas is satisfiable. Click an open branch to generate a model.</p>";
+            `<p>The set of formulas is satisfiable. Click 'Draw Graph' button to generate a model. ${openBranchesMessage}</p>`;
     } else {
         console.log("The tableau is not yet complete. Unexpanded Formulas:", unexpandedFormulas.join(', '));
         messageArea.innerHTML = "<p>The tableau is not yet complete. Continue expanding formulas.</p>";
     }
-    }
+}
 
+function markBranchClosed(branch) {
+    // Start from the root of the tableau
+    let currentElement = document.querySelector('.tableau-output');
 
+    // Navigate through the branch
+    for (let i = 0; i < branch.length; i++) {
+        const formulaText = branch[i];
+        const childFormulas = currentElement.querySelectorAll('.formula');
 
-    
+        // Find the child formula that matches the text
+        let found = false;
+        childFormulas.forEach(child => {
+            if (child.textContent.includes(formulaText) && !found) {
+                currentElement = child;
+                found = true;
+            }
+        });
 
-    function markBranchClosed(branch) {
-        // Assuming the last formula in the branch array is the leaf formula
-        const leafFormulaText = branch[branch.length - 1];
-    
-        // Find the corresponding DOM element for the leaf formula
-        const allLeaves = findLeafNodes(document.querySelector('.tableau-output'));
-        const leafNode = allLeaves.find(leaf => leaf.textContent.includes(leafFormulaText));
-    
-        if (leafNode) {
-            // Create a cross symbol and append it inside the leaf node
-            const crossSymbol = document.createElement('span');
-            crossSymbol.textContent = 'X';
-            crossSymbol.classList.add('closed-branch-mark');
-            leafNode.appendChild(crossSymbol);
-        } else {
-            console.error('Could not find leaf node for the branch:', branch);
+        // If not found, then it's an error
+        if (!found) {
+            console.error('Could not find formula in branch:', formulaText);
+            return;
         }
     }
-    
-    
+
+    // At this point, currentElement should be the leaf node
+    if (currentElement && !currentElement.querySelector('.formula')) {
+        const crossSymbol = document.createElement('span');
+        crossSymbol.textContent = 'X';
+        crossSymbol.classList.add('closed-branch-mark');
+        currentElement.appendChild(crossSymbol);
+    } else {
+        console.error('Could not find leaf node for the branch:', branch);
+    }
+}
 
 
 // Create the 'Check if Complete' button
@@ -821,30 +827,42 @@ function isFormulaComplete(formula) {
     return ['atomic belief', 'atomic negation', 'following formula'].includes(formulaType);
 }
 
-
 function processBranch(branch) {
     // Reset agentBeliefs for each branch
-    agentBeliefs = {};
     Agt = [];
     Prop = [];
+    const positiveFollowers = {};
+    const negativeFollowers = {};
 
     // Extract propositional variables and agents from formulas
     branch.forEach(formula => {
         // Match for belief formulas like Bap, ~Bb(r>q)
-        const beliefMatch = formula.match(/~?B([a-e])/);
+        const beliefMatch = formula.match(/~?B([a-z])/);
         if (beliefMatch) {
             const agent = beliefMatch[1];
             if (!Agt.includes(agent)) Agt.push(agent);
         }
 
         // Match for following relationships like aFd, ~cFe
-        const followingMatch = formula.match(/([a-e])F([a-e])/);
+        const followingMatch = formula.match(/(~?)([a-e])F([a-e])/);
         if (followingMatch) {
-            const [agent1, agent2] = [followingMatch[1], followingMatch[2]];
+            const [negation, agent1, agent2] = [followingMatch[1], followingMatch[2], followingMatch[3]];
             if (!Agt.includes(agent1)) Agt.push(agent1);
             if (!Agt.includes(agent2)) Agt.push(agent2);
-        }
 
+            if (negation === '~') {
+                if (!negativeFollowers[agent2]) negativeFollowers[agent2] = [];
+                if (!negativeFollowers[agent2].includes(agent1)) {
+                    negativeFollowers[agent2].push(agent1);
+                }
+            } else {
+                if (!positiveFollowers[agent2]) positiveFollowers[agent2] = [];
+                if (!positiveFollowers[agent2].includes(agent1)) {
+                    positiveFollowers[agent2].push(agent1);
+                }
+            }
+        }
+        
         // Extract propositions
         const propVars = formula.match(/[p-z]/g) || [];
         propVars.forEach(propVar => {
@@ -852,12 +870,18 @@ function processBranch(branch) {
         });
     });
 
-    // Initialize belief states for agents
+    // Initialize belief states and agent followers for agents
     Agt.forEach(agent => {
         agentBeliefs[agent] = {
             messages: [],
             denotation: formatDenotation(powerSet(Prop))
         };
+
+        // Determine agent followers considering negative relationships
+        agentFollowers[agent] = positiveFollowers[agent]
+            ? positiveFollowers[agent].filter(follower => 
+                !(negativeFollowers[agent] && negativeFollowers[agent].includes(follower)))
+            : [];
     });
 
     // Assign beliefs based on belief formulas in the branch
@@ -872,10 +896,12 @@ function processBranch(branch) {
     console.log("Agt:", Agt);
     console.log("Prop:", Prop);
     console.log("agentBeliefs:", agentBeliefs);
+    console.log("agentFollowers:", agentFollowers);
 
     // Determine if the branch is closed
     return isBranchClosed(branch);
 }
+
 
 
 function assignagtBelief(agent, proposition) {
@@ -925,7 +951,6 @@ function isBranchClosed(branch) {
     console.log('Branch is open');
     return false;
 }
-
 function generateAgentFollowersFromBranch(selectedBranch) {
 
     // Initialize agentFollowers for each agent
@@ -959,7 +984,11 @@ function generateAgentFollowersFromBranch(selectedBranch) {
 
 
 
-function handleSelectedBranch(generatedAgentFollowers) {
+function handleSelectedBranch(generatedAgentFollowers, selectedBranch) {
+
+    // Process the branch to extract agents' beliefs
+    processBranch(selectedBranch);
+
     let colorCounter = 0;
     const colors = ['#D67293', '#73DEFA', '#5DB117', '#5A8CD7', '#CCCC00', '#9A5FD7', '#FA1CA8', '#A300A3', '#00A3A3']; // An array of colors for agents
 
@@ -975,6 +1004,9 @@ function handleSelectedBranch(generatedAgentFollowers) {
 
     // Call drawNetwork with the generated agentFollowers
     drawNetwork(generatedAgentFollowers);
+
+     // Now call displayPowerSet to generate the belief network
+    displayPowerSet();
 }
 
 function setupBranchSelection() {
@@ -997,12 +1029,14 @@ function setupBranchSelection() {
         const generatedAgentFollowers = generateAgentFollowersFromBranch(selectedBranch);
         console.log(generatedAgentFollowers);
 
-        handleSelectedBranch(generatedAgentFollowers);
+        handleSelectedBranch(generatedAgentFollowers, selectedBranch);
     });
 }
 
 
 // Call this function after the tableau is complete
 setupBranchSelection();
+
+
 
 
