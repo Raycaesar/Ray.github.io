@@ -100,34 +100,39 @@ function expandFormula(formulaDiv) {
     console.log('Expanding formula:', formulaText);
 
     const formulaType = getFormulaType(formulaText);
-
     let formulaExpanded = false; // Flag to track if formula was actually expanded
-
+    let clickable = true; 
     if (formulaType === 'box arbitrary') {
         handleBoxArbitrary(formulaDiv);
         formulaExpanded = true; // Assuming handleBoxArbitrary always expands
+        clickable = true;
     } else {
         const isUsed = formulaDiv.getAttribute('data-used') === 'true';
         if (!isUsed) {
             if (formulaType === 'diamond arbitrary') {
-                formulaExpanded = handleDiamondArbitrary(formulaDiv); // Modify this function to return true if expanded
+                formulaExpanded = handleDiamondArbitrary(formulaDiv);
+                clickable = false;
             } else if (['conjunction', 'diamond sincere'].includes(formulaType)) {
                 addVerticalChildren(formulaDiv);
                 formulaExpanded = true;
+                clickable = false;
             } else if (['belief with free announcement', 'negation with free announcement', 'box sincere', 'disjunction'].includes(formulaType)) {
                 addBranchChildren(formulaDiv);
                 formulaExpanded = true;
+                clickable = false;
             }
         }
     }
 
     if (formulaExpanded) {
         formulaDiv.setAttribute('data-used', 'true');
-        formulaDiv.ondblclick = null;
         formulaDiv.classList.add('expanded');
         updateLeaves();
-    }
+        if(!clickable)
+    {formulaDiv.ondblclick = null;
+    }}
 }
+
 
 function updateLeaves() {
     // Clear existing leaf highlighting
