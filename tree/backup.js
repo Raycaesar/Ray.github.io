@@ -100,37 +100,41 @@ function expandFormula(formulaDiv) {
     console.log('Expanding formula:', formulaText);
 
     const formulaType = getFormulaType(formulaText);
-    let formulaExpanded = false; // Flag to track if formula was actually expanded
-    let clickable = true; 
-    if (formulaType === 'box arbitrary') {
-        handleBoxArbitrary(formulaDiv);
-        formulaExpanded = true; // Assuming handleBoxArbitrary always expands
-        clickable = true;
-    } else {
-        const isUsed = formulaDiv.getAttribute('data-used') === 'true';
-        if (!isUsed) {
-            if (formulaType === 'diamond arbitrary') {
-                formulaExpanded = handleDiamondArbitrary(formulaDiv);
-                clickable = false;
-            } else if (['conjunction', 'diamond sincere'].includes(formulaType)) {
-                addVerticalChildren(formulaDiv);
-                formulaExpanded = true;
-                clickable = false;
-            } else if (['belief with free announcement', 'negation with free announcement', 'box sincere', 'disjunction'].includes(formulaType)) {
-                addBranchChildren(formulaDiv);
-                formulaExpanded = true;
-                clickable = false;
-            }
-        }
+    let formulaExpanded = false;
+
+    switch (formulaType) {
+        case 'box arbitrary':
+            handleBoxArbitrary(formulaDiv);
+            formulaExpanded = true; // Box arbitrary formulas are always expandable
+            break;
+        case 'diamond arbitrary':
+            formulaExpanded = handleDiamondArbitrary(formulaDiv);
+            break;
+        case 'conjunction':
+        case 'diamond sincere':
+            addVerticalChildren(formulaDiv);
+            formulaExpanded = true;
+            break;
+        case 'belief with free announcement':
+        case 'negation with free announcement':
+        case 'box sincere':
+        case 'disjunction':
+            addBranchChildren(formulaDiv);
+            formulaExpanded = true;
+            break;
+        default:
+            // Handle other types or do nothing for unsupported types
+            break;
     }
 
     if (formulaExpanded) {
         formulaDiv.setAttribute('data-used', 'true');
         formulaDiv.classList.add('expanded');
         updateLeaves();
-        if(!clickable)
-    {formulaDiv.ondblclick = null;
-    }}
+        if (formulaType !== 'box arbitrary') {
+            formulaDiv.ondblclick = null; // Disable double-click for non-box arbitrary formulas
+        }
+    }
 }
 
 
