@@ -1061,7 +1061,8 @@ function setupBranchSelection() {
             return;
         }
 
-        const selectedBranch = branches[branchNumber - 1]; // Arrays are zero-indexed
+        // Access the branchArray of the selected branch
+        const selectedBranch = branches[branchNumber - 1].branchArray;
         console.log("selectedBranch:", selectedBranch);
 
         const generatedAgentFollowers = generateAgentFollowersFromBranch(selectedBranch);
@@ -1070,6 +1071,7 @@ function setupBranchSelection() {
         handleSelectedBranch(generatedAgentFollowers, selectedBranch);
     });
 }
+
 
 
 // Call this function after the tableau is complete
