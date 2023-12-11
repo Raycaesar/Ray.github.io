@@ -705,7 +705,6 @@ function updateBoxArbitrary(formula, message) {
     throw new Error('Invalid Box Arbitrary: ' + formula);
 }
 }
-
 function checkTableauCompletion() {
     const tableauOutput = document.querySelector('.tableau-output');
     const allFormulas = tableauOutput.querySelectorAll('.formula');
@@ -731,19 +730,23 @@ function checkTableauCompletion() {
         const branches = findAllBranches(tableauOutput);
         console.log('Tableau is complete. Processing branches...');
 
-        branches.forEach((branch, index) => {
+        branches.forEach((branchObj, index) => {
+            const branch = branchObj.branchArray;
+            const leafNode = branchObj.leafNode;
             console.log(`Branch ${index + 1}:`, branch.filter(isFormulaComplete));
             console.log(`Processing Branch ${index + 1}`);
             const isClosed = processBranch(branch);
             console.log(`Branch ${index + 1} is ${isClosed ? 'closed' : 'open'}.`);
 
             if (isClosed) {
-               
-                console.log("branch:",branch);
-                markBranchClosed(branch);
+                // Add a red cross to the leaf node of the closed branch
+                const redCross = document.createElement('span');
+                redCross.style.color = 'red';
+                redCross.textContent = ' X';
+                leafNode.appendChild(redCross);
             } else {
                 allBranchesClosed = false;
-                openBranchesMessage += `Branch ${index + 1} is open. `; // Add the open branch message
+                openBranchesMessage += `Branch ${index + 1} is open. `;
             }
         });
 
@@ -756,6 +759,7 @@ function checkTableauCompletion() {
     }
 }
 
+/*
 function markBranchClosed(branch) {
     // Start from the root of the tableau
     let currentElement = document.querySelector('.tableau-output');
@@ -791,7 +795,7 @@ function markBranchClosed(branch) {
         console.error('Could not find leaf node for the branch:', branch);
     }
 }
-
+*/
 
 // Create the 'Check if Complete' button
 const checkCompletionButton = document.createElement('button');
@@ -806,7 +810,7 @@ const tableauOutput = document.querySelector('.tableau-output');
 tableauOutput.insertAdjacentElement('afterend', checkCompletionButton);
 
 
-
+/*
 function findAllBranches(node) {
     let branches = [];
     let leaves = findLeafNodes(node);
@@ -824,6 +828,31 @@ function findAllBranches(node) {
         }
 
         branches.push(branch);
+    });
+
+    return branches;
+}
+*/
+
+function findAllBranches(node) {
+    let branches = [];
+    let leaves = findLeafNodes(node);
+
+    leaves.forEach(leaf => {
+        let branch = [];
+        let current = leaf;
+
+        // Build the branch array
+        while (current !== null && current !== node) {
+            const formulaText = current.childNodes[0]?.nodeValue?.trim();
+            if (formulaText) {
+                branch.unshift(formulaText); // Add to the beginning of the branch array
+            }
+            current = current.parentElement.closest('.formula');
+        }
+
+        // Store both the branch array and the leaf node reference
+        branches.push({ branchArray: branch, leafNode: leaf });
     });
 
     return branches;
