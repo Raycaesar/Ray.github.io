@@ -902,7 +902,7 @@ function processBranch(branch) {
         }
         
         // Extract propositions
-        const propVars = formula.match(/[p-z]/g) || [];
+        const propVars = formula.match(/[g-z]/g) || [];
         propVars.forEach(propVar => {
             if (!Prop.includes(propVar) && !Agt.includes(propVar)) Prop.push(propVar);
         });
