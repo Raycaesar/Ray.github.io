@@ -1077,6 +1077,27 @@ function setupBranchSelection() {
 // Call this function after the tableau is complete
 setupBranchSelection();
 
+function autoExpandTableau() {
+    const unexpandedFormulas = Array.from(document.querySelectorAll('.formula[data-used="false"]'));
+    let newFormulasGenerated = false;
+
+    unexpandedFormulas.forEach(formulaDiv => {
+        const formulaType = getFormulaType(formulaDiv.childNodes[0].nodeValue.trim());
+        if (['conjunction', 'diamond sincere', 'belief with free announcement', 'negation with free announcement', 'box sincere', 'disjunction'].includes(formulaType)) {
+            expandFormula(formulaDiv);
+            newFormulasGenerated = true;
+        }
+    });
+
+    // If new formulas were generated, call the function again
+    if (newFormulasGenerated) {
+        autoExpandTableau();
+    }
+}
+
+document.getElementById('AutoExpansion').addEventListener('click', autoExpandTableau);
+
+
 
 
 
