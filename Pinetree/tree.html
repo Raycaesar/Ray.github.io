@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tableau Proof Assistant</title>
+    <link rel="stylesheet" href="refine.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Tableau Proof Assistant</h1>
+    
+        <!-- Formula -->
+
+        <div class="tutorial">
+            <h3>Formulas of ASAL:</h3>
+            <ul>
+                <li><strong>Literal Belief formula:</strong> Baθ or ~Baθ where a is an element of <b>Agents</b> and θ is an element of <b>Prop</b>.</li>
+                <li><strong>Conjunction:</strong> Use the ampersand symbol <span class="example">&</span> between two formulas. E.g., <span class="example">(φ&ψ) where both φ and ψ are formulas</span>.</li>
+                <li><strong>Disjunction:</strong> Use the plus symbol <span class="example">+</span> between two formulas. E.g., <span class="example">(φ+ψ)</span>.</li>
+                <li><strong>Free Announcement:</strong> Use the symbol [a:θ] <span class="example"></span> before the formula. E.g., <span class="example">[a:θ]φ</span>.</li>
+                <li><strong>Diamond Sincere Announcement:</strong> Use the symbol  &lt;a!θ&gt; <span class="example"></span> before the formula. E.g., <span class="example"> &lt;a!θ&gt;φ</span>.</li>
+                <li><strong>Box Sincere Announcement:</strong> Use the symbol [a!θ] <span class="example"></span> before the formula. E.g., <span class="example">[a!θ]φ</span>.</li>
+                <li><strong>Diamond Arbitrary Announcement:</strong> Use the symbol &lt;a!&gt; <span class="example"></span> before the formula. E.g., <span class="example"> &lt;a!&gt; φ</span>.</li>
+                <li><strong>Box Arbitrary Announcement:</strong> Use the symbol [a!] <span class="example"></span> before the formula. E.g., <span class="example">[a!]φ</span>.</li>
+                <li><strong>Brackets:</strong> Every formula connected by a binary operator should be enclosed within a pair of brackets. E.g., <span class="example">(φ+ψ)</span>, not <span class="example">φ+ψ</span>.</li>
+            </ul>
+        </div>
+      
+        <!-- Tableau Rules -->
+    
+        <div class="tableau-rules">
+        <h2>Tableau Rules</h2>
+        <div class="tree-container">
+            <!-- Tree 1 -->
+            <div class="tree" id ="disjunction">
+                <div class="node">
+                    <div class="content">[:]<sub>∨</sub> [b:γ]...[c:χ](φ∨ψ)</div>
+                    <div class="children">
+                        <div class="node">
+                            <div class="content">[b:γ]...[c:χ]φ</div>
+                        </div>
+                        <div class="node">
+                            <div class="content">[b:γ]...[c:χ]ψ</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+             <!-- Tree 2 -->
+            <div class="tree" id ="conjunction">
+                <div class="node">
+                    <div class="content">[:]<sub>∧</sub> [b:γ]...[c:χ](φ∧ψ)</div>
+                    <div class="children">
+                        <div class="node">
+                            <div class="content">[b:γ]...[c:χ]φ</div>
+                            <div class="node">
+                                <div class="content">[b:γ]...[c:χ]ψ</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+               <!-- Tree 3 -->
+               <div class="tree" id ="belief with free announcement">
+                <div class="node">
+                    <div class="content">[:]<sub>K</sub> [b:γ]...[c:χ][a:θ]Bdε</div>
+                    <div class="children">
+                        <div class="node">
+                            <div class="content">[b:γ]...[c:χ]Bdε</div>
+                        </div>
+                        <div class="node">
+                            <div class="content">[b:γ]...[c:χ]Bd(θ>ε)</div>
+                            <div class="children">
+                                <div class="node">
+                                    <div class="content">dFa</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+               <!-- Tree 4 -->
+               <div class="tree" id ="negation with free announcement">
+                <div class="node">
+                    <div class="content">[:]<sub>~K</sub> [b:γ]...[c:χ][a:θ]~Bdε</div>
+                    <div class="children">
+                        <div class="node">
+                            <div class="content">[b:γ]...[c:χ]~Bd(θ>ε)</div>
+                        </div>
+                        <div class="node">
+                            <div class="content">[b:γ]...[c:χ]~Bdε</div>
+                            <div class="children">
+                                <div class="node">
+                                    <div class="content">~dFa</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+        
+            <!-- Tree 5 -->
+            <div class="tree" id ="diamond sincere">
+                <div class="node">
+                    <div class="content">&lt;!θ&gt; [b:γ]...[c:χ]&lt;a!θ&gt;φ</div>
+                    <div class="children">
+                        <div class="node">
+                            <div class="content">[b:γ]...[c:χ]Baθ</div>
+                            <div class="children">
+                                <div class="node">
+                                    <div class="content">[b:γ]...[c:χ][a:θ]φ</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Tree 6 -->
+            <div class="tree" id ="box sincere">
+                <div class="node">
+                    <div class="content">[!θ] [b:γ]...[c:χ][a!θ]φ</div>
+                    <div class="children">
+                        <div class="node">
+                            <div class="content">[b:γ]...[c:χ]~Baθ</div>
+                        </div>
+                        <div class="node">
+                            <div class="content">[b:γ]...[c:χ][a:θ]φ</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        
+            <!-- Tree 7 -->
+            <div class="tree" id ="diamond arbitrary">
+                <div class="node">
+                    <div class="content">&lt;!&gt; [b:γ]...[c:χ]&lt;a!&gt;φ</div>
+                    <div class="children">
+                        <div class="node">
+                            <div class="content">[b:γ]...[c:χ]&lt;a!p&gt;φ</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        
+            <!-- Tree 8 -->
+            <div class="tree" id ="box arbitrary">
+                <div class="node">
+                    <div class="content">[!] [b:γ]...[c:χ][a!]φ</div>
+                    <div class="children">
+                        <div class="node">
+                            <div class="content">[b:γ]...[c:χ][a!θ]φ</div>
+                        </div>
+                      
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+
+        where [b:γ]...[c:χ] is either a sequence of free announcement operators or empty and p is a new atomic message which does not occur in any ancestor.
+        <br/>
+        Due to my fault, currently agents should be only denoted by one letter from a to e. And propositional variable should be from p to z. Do not use a_1, b_2, p_1, x_2 and etc..
+    </div>
+        
+</div>
+  <!-- Input Area -->
+  <div class="input-area">
+    <textarea id="formula-input" rows="4" placeholder="Enter formulas here..."></textarea>
+    <button id="generate-tableau">Generate Tableau</button>
+</div>
+
+  <!-- Tableau Output -->
+  <div class="tableau-output">
+    <h2>Tableau Output</h2>
+    <!-- The tableau will be displayed here -->
+    
+</div>
+<div id="messageArea"></div>
+
+
+   
+<div id = "Termination">
+    <p>Expand the tableau by double clicking compound formula. Or do it automatically except arbitrary formulas. <button id="AutoExpansion">Auto Expansion</button></p>
+    <h2>Closure Condition</h2>
+   
+    <ul>
+<li> A branch is closed if it contains a formula ~Baθ such that θ is a
+tautology, or, in addition, formulas Baθ<sub>1</sub>, ...Baθ<sub>n</sub> such that (θ<sub>1</sub> & ... & θ<sub>n</sub> > θ)
+is a tautology.
+<li> A branch is closed  if it contains both bFa and ~bFa.
+</ul>
+</div>
+<!-- Counter-Model -->
+
+<div class="counter-model">
+    <h2>Model</h2>
+    <button id="drawGraph">Draw Graph</button>
+    <p>Please choose an open branch when prompted, selecting from left to right. Opting for a closed branch to create a model is not advisable.</p>
+    <div id="network">
+        <!-- We'll use this SVG to display our network -->
+        <svg id="networkCanvas" width="1200" height="600"></svg>
+    </div>
+    <div id="cy">
+        <svg id="beliefCanvas" width="1800" height="800"></svg>
+        </div>
+        
+    <!-- The counter-model will be displayed here -->
+</div>
+<script src="https://cdn.jsdelivr.net/npm/js-confetti@latest/dist/js-confetti.browser.js"></script>
+<script src="https://d3js.org/d3.v5.min.js"></script>
+<script src="../parse/parse.js"></script>
+<script src="../parse/drawGraph.js"></script>
+<script src="backup.js"></script>
+
+</body>
+</html>

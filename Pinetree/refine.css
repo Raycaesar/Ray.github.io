@@ -1,0 +1,342 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 0;
+    
+}
+
+
+.container {
+    max-width: none; /* Set a maximum width */
+    width: 80%; /* Allows width to adjust based on content */
+    margin: auto; /* Centers the container */
+    overflow: hidden; /* Keeps content within the container */
+    
+}
+
+@import url('https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap');
+
+h1, h2 {
+    font-family: 'Great Vibes', cursive;
+}
+h1 {
+    text-align: center;
+    /*color: #333;*/
+}
+h2 {
+    text-align: left;
+   /*color: #333;*/
+}
+
+h1, h2 {
+    color: #d23d3d; /* A festive red  A Christmas only  */
+}
+
+.container, .input-area, .tableau-output {
+    border-style: dashed;  /* A Christmas only green */
+    border-width: 0.2cm;  /* A Christmas only green */
+    border-color: #3d8b3d; /* A Christmas only green */
+}
+
+.tutorial, #Termination{
+    line-height: 1.6;
+}
+
+.input-area, .tableau-rules, .tableau-output, .counter-model, .tutorial, #Termination {
+    background: #fff;
+    padding: 20px;
+    margin: 20px 0;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+
+.used-formula {
+    color: rgb(71, 103, 172); /* Change text color to grey */
+    background-color: #f0f0f0; /* Change background to a light grey */
+}
+
+
+
+
+.tableau-output {
+    overflow-x: auto; /* Enables horizontal scrolling for wide content */
+    overflow-y: hidden; /* Disables vertical scrolling */
+    white-space: nowrap; /* Prevents text wrapping to a new line */
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start; /* Aligns content to the start */
+  
+    width: auto; /* Sets the initial width */
+    min-width: 100%; /* Ensures a minimum width of the container */
+    max-width: none; /* Allows the container to expand as needed */
+    padding: 10px; /* Adds some padding inside the container */
+    border: 1px solid #ddd; /* Adds a border for visual structure */
+    margin-bottom: 20px; /* Space below the container */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Adds subtle shadow for depth */
+}
+
+/* Style adjustments for Webkit browsers like Chrome and Safari */
+.tableau-output::-webkit-scrollbar {
+    height: 12px; /* Height of the horizontal scrollbar */
+}
+
+.tableau-output::-webkit-scrollbar-track {
+    background: #f0f0f0; /* Color of the scrollbar track */
+}
+
+.tableau-output::-webkit-scrollbar-thumb {
+    background-color: #888; /* Color of the scrollbar thumb */
+    border-radius: 6px; /* Rounded corners for the scrollbar thumb */
+    border: 3px solid #f0f0f0; /* Border around the scrollbar thumb */
+}
+
+
+
+.tree-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    width: auto;
+    max-width: none; /* Allow for a wider tableau */
+    overflow-x: auto; /* Horizontal scroll for larger tableaus */
+
+   
+}
+
+
+
+#formula-input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+#generate-tableau {
+    width: 100%;
+    padding: 10px;
+    background-color: #5cb85c;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+#generate-tableau{
+    background-color: #4cae4c;
+}
+
+.tableau-rules {
+    display: flex;
+    flex-wrap: wrap; /* Allow wrapping of child elements */
+    margin-top: 20px; /* Space from the top */
+    
+}
+
+.tree {
+    flex: 0 0 40%; /* Adjust the width to fit two trees in a row */
+    margin: 10px;
+    text-align: center;
+    border: 1px solid #ccc; /* Optional: adds a border around each tree */
+    border-style: dotted;/*christmas only */
+    border-width: 0.1cm; /*christmas only */
+    border-color: #3d8b3d; /*christmas only */
+    padding: 10px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1); /* Optional: adds a subtle shadow */
+}
+
+
+
+
+
+
+.vec {
+    font-style: italic;
+}
+
+
+
+.node .children .node::before {
+    content: '';
+    position: absolute;
+    width: 2px;
+    height: 100%;
+    background: black;
+    z-index: -1;
+    display: none;
+}
+
+
+
+
+.node .children .node:first-child::before {
+    left: 50%;
+    bottom: 0;
+    height: 100%; /* Adjust based on your layout */
+    transform: rotate(-45deg); /* Adjust angle for left child */
+    transform-origin: bottom left;
+}
+
+.node .children .node:last-child::before {
+    right: 50%;
+    bottom: 0;
+    height: 100%; /* Adjust based on your layout */
+    transform: rotate(45deg); /* Adjust angle for right child */
+    transform-origin: bottom right;
+}
+
+/* Adjustments to avoid overlapping with formulas */
+.node .content {
+    position: relative;
+    z-index: 2;
+    padding: 5px;
+    background: white;
+    display: inline-block;
+}
+
+.bold {
+    font-weight: bold;
+}
+
+.leaf {
+    color: rgb(15, 110, 15);
+
+}
+
+
+
+/* Styling for the branch containers */
+.branch {
+    display: flex;
+    justify-content: center; /* Aligns children at the center */
+    margin-top: 10px;
+}
+
+
+
+/* Additional styling for visual separation (if needed) */
+.node:not(:last-child) {
+    border-right: 2px solid #ccc;
+}
+
+
+/* Ensuring formula and node styles don't interfere */
+.formula, .node {
+    text-align: center;
+    margin: 5px 0; /* Adjusts vertical spacing */
+}
+
+
+/* Individual branches */
+.node {
+    flex: 1; /* Allow branches to flexibly fill the space */
+    text-align: center;
+    margin: 0 5px; /* Margin for some spacing */
+    min-width: 50px; /* Minimum width for each branch */
+}
+
+/* Style for the formula within each node */
+.formula {
+    margin: 5px;
+    padding: 5px;
+    /* Remove or adjust the border as needed */
+    border: 1px solid #ddd; /* Update or remove this line based on your requirement */
+    background-color: #f9f9f9;
+    text-align: center;
+    justify-content: space-between;
+    border-radius: 20px;
+    border-style: dotted;/*christmas only */
+    border-width: 0.1cm; /*christmas only */
+    border-color: #3d8b3d; /*christmas only */
+}
+
+
+
+
+/* Container for the branches */
+.children {
+    display: inline-flex; /* Align children in a row */
+    justify-content: space-around; /* Space out children evenly */
+    align-items: center;
+    width: 100%;
+    gap: 20px;
+}
+
+/* Individual branches */
+.left-branch, .right-branch {
+    flex: 1;
+    text-align: center;
+    background-color: #f9f9f9; /* Set background color */
+    padding: 5px;
+    margin: 0 5px;
+    display: inline-flex;
+}
+
+
+
+/* Optional: Visual connection between parent formula and branches */
+.branch::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: 2px;
+    height: auto;
+    background-color: #ccc;
+    z-index: -1;
+}
+
+.formula.data-used {
+    color: #888; /* Grayed out */
+    background-color: #f0f0f0; /* Lighter background */
+    border-color: #ccc; /* Lighter border */
+}
+
+.check-completion-button,#drawGraph {
+    display: block;
+    width: auto;
+    padding: 10px;
+    margin: 20px auto;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.check-completion-button, #drawGraph:hover {
+    background-color: #45a049;
+}
+#AutoExpansion{
+    position:relative;
+    width: auto;
+    padding: 10px;
+    margin: 20px auto;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+}
+#AutoExpansion:hover{
+    background-color: #45a049;
+}
+#messageArea {
+    margin: 10px 0;
+    padding: 10px;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    text-align: center;
+}
+
+.closed-branch-mark {
+    color: red;
+    font-weight: bold;
+    padding-left: 5px;
+}
