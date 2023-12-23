@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Announceable Test</title>
+    <link rel="stylesheet" type="text/css" href="style.css"> <!-- Stylesheet link -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+   
+</head>
+
+<body>
+    <!-- Agent Size Setup -->
+    <h2>Set the Size of Agents</h2>
+    <input type="number" id="agentSize" placeholder="Enter the size of Agents">
+    <button onclick="setAgentSize()">Set Size</button>
+    <h3 id="agentOutput"></h3>
+
+    <!-- Agent Follower Selection -->
+    <h2>Select Agent's Followers</h2>
+    <p>Select an agent:</p>
+    <select id="selectedAgent"></select>
+    <p>Select its followers:</p>
+    <select id="agentFollowers" multiple></select>
+    <button onclick="setAgentFollowers()">Set Followers</button>
+    <h3 id="followerOutput"></h3>
+    <div id="network">
+        <!-- We'll use this SVG to display our network -->
+        <svg id="networkCanvas" width="1200" height="600"></svg>
+    </div>
+    <button id="drawFollow" onclick="drawNetwork()">Draw Network</button>
+    <button onclick="downloadsocial()">Download Network</button>
+
+    <hr/>
+
+    <!-- Prop Size Setup -->
+    <h2>Set the Size of Prop</h2>
+    <input type="number" id="propSize" placeholder="Explicit prop size: 1 to 5">
+    <button onclick="propSize()">Set Size</button>
+    
+    <h3>Explicit Prop:</h3>
+    <p id="explicitPropOutput"></p>
+    
+    <h3>Implicit Prop:</h3>
+    <p id="implicitPropOutput"></p>
+    
+    <h3>Augment Prop:</h3>
+    <p id="augmentPropOutput"></p>
+
+    <!-- Belief Assignment to Agent -->
+    <h2>Assign beliefs:</h2>
+
+    <button id="drawBackgound">Draw Background</button>
+
+    
+
+   
+
+    <hr/>
+
+    <div id="cy">
+<svg id="beliefCanvas" width="2400" height="800"></svg>
+</div>
+<button id="ExpandGraph">Expand Graph</button>  <button id="dispel">dispel x</button>
+<button onclick="downloadSVG()">Download SVG</button>
+
+    <!-- Formula Entry and Denotation Computation -->
+    <h2>Enter Message</h2>
+    <input type="text" id="messageInput" placeholder="Potential Announcement" maxlength="300" size="80">
+    <button onclick="preservation()">Preserve Arbitraryness</button>
+
+
+    <!-- Formula Entry and Denotation Computation -->
+    <h2>Enter Your Formula</h2>
+    <input type="text" id="formulaInput" placeholder="Check the satisfiability" maxlength="300" size="80">
+    <button onclick="satisfiability()">Check</button>
+    <h3>Result:</h3>
+    <p id="satisfaction"></p>
+
+
+    
+    <script src="https://d3js.org/d3.v5.min.js"></script>
+    <script src="announce.js" defer></script> 
+    <script src="../parse/drawGraph.js" defer></script>
+    
+</body>
+
+</html>
+    

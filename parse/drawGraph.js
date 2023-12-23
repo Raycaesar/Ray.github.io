@@ -166,8 +166,10 @@ const svg = document.getElementById('beliefCanvas'); // Select the SVG element f
     
 function getDenotationResult(agent) {
     if (agentBeliefs[agent] && typeof agentBeliefs[agent].denotation === 'string') {
+        //console.log("agentBeliefs[agent].denotation:", agentBeliefs[agent].denotation);
         // Check if the agent has beliefs and the denotation is a string.
         const subsets = agentBeliefs[agent].denotation.slice(2, -2).split('}, {'); // Split the string into subsets.
+        //console.log("subsets:", subsets);
         return subsets.map(subset => subset.split(', ').filter(Boolean)); // Split each subset into individual elements and filter out any empty strings.
     }
     return []; // If the conditions are not met, return an empty array.
@@ -207,13 +209,13 @@ document.getElementById('propSize').addEventListener('change', function() {
 
 
 
-// This code snippet is an event listener attached to an HTML element with the id "drawGraph".
-// When the element is clicked, it triggers the displayPowerSet function to visualize a power set.
 document.getElementById("drawGraph").addEventListener("click", function() {
+   
     displayPowerSet(); // Call the function to display the power set.
 });
     // This function is responsible for visualizing the power set of propositions on an SVG canvas.
     function displayPowerSet() {
+        //console.log("Prop:", Prop)
         console.log("Displaying power set...");
         const powerSetOfProp = powerSet(Prop); // Generate the power set of the propositions.
         console.log("Displaying power set of Prop:", powerSetOfProp);
@@ -239,8 +241,10 @@ document.getElementById("drawGraph").addEventListener("click", function() {
 
             // Calculate which agents believe in each subset.
             Agt.forEach(agent => {
+                //console.log(`Agent ${agent} beliefs:`, agentBeliefs[agent].denotation);
                 const denotationResult = getDenotationResult(agent);
                 subsetsOfSizeI.forEach(subset => {
+                    //console.log(`Comparing subset [${subset.join(", ")}] with agent ${agent} beliefs [${agentBeliefs[agent].denotation}]`);
                     const subsetStr = subset.sort().join(',');
                     const isSubsetInDenotation = denotationResult.some(denotedSubset => 
                         denotedSubset.length === subset.length && 
@@ -257,6 +261,7 @@ document.getElementById("drawGraph").addEventListener("click", function() {
 
             // Create circles for each subset with the corresponding beliefs.
             subsetsOfSizeI.forEach((subset, j) => {
+                
                 const subsetStr = subset.sort().join(',');
                 const yOffset = (Prop.length - i + 1) * verticalGap;
                 const horizontalGap = svgContainer.width.baseVal.value / (subsetsOfSizeI.length + 1);
@@ -266,6 +271,8 @@ document.getElementById("drawGraph").addEventListener("click", function() {
         }
     }
     
+
+
     function createCircle(x, y, label, svgContainer, radius, believingAgents) {
         // Create an SVG circle element.
         const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
@@ -277,6 +284,7 @@ document.getElementById("drawGraph").addEventListener("click", function() {
     
         // Filter out agents with an empty denotation.
         const agentsWithBeliefs = believingAgents.filter(agent => agentBeliefs[agent] && agentBeliefs[agent].denotation !== '{}');
+        //console.log("agentsWithBeliefs:", agentsWithBeliefs);
     
         // Determine the fill color based on the believing agents.
         let fillColor = "white"; // Default to white (no belief).
@@ -289,10 +297,12 @@ document.getElementById("drawGraph").addEventListener("click", function() {
          });
 
         if (agentsWithBeliefs.length === 1) {
+            console.log(`Assigning color for single agent belief: ${agentsWithBeliefs[0]}`);
             // If there is exactly one believing agent with non-empty denotation.
             const agent = agentsWithBeliefs[0];
             fillColor = agentColors[agent];
         } else if (agentsWithBeliefs.length > 1) {
+            console.log(`Assigning color for multiple agents: ${agentsWithBeliefs.join(", ")}`);
             // If there are multiple believing agents with non-empty denotation, we will create arcs later.
             fillColor = "none";
         }
@@ -301,6 +311,7 @@ document.getElementById("drawGraph").addEventListener("click", function() {
     
         // If there are multiple believing agents with non-empty denotation, create arcs for each agent's belief.
         if (agentsWithBeliefs.length > 1) {
+            
             let startAngle = 0;
             const angleIncrement = 360 / agentsWithBeliefs.length;
     
@@ -310,7 +321,9 @@ document.getElementById("drawGraph").addEventListener("click", function() {
                 startAngle = endAngle;
             });
         }
-    
+        
+
+
         // Add a label to the circle.
         const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
         text.setAttribute("x", x);
