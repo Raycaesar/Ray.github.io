@@ -36,11 +36,11 @@ console.log("Links:", links);
 
     // Define the force simulation for the nodes and links
     const simulation = d3.forceSimulation(nodes) // Create a new force simulation with the nodes.
-        .force("link", d3.forceLink(links).id(d => d.id).distance(150)) // Add a link force with the links array and set the id accessor and distance.
-        .force("charge", d3.forceManyBody().strength(-500)) // Add a charge force to repel nodes from each other.
+        .force("link", d3.forceLink(links).id(d => d.id).distance(220)) // Add a link force with the links array and set the id accessor and distance.
+        .force("charge", d3.forceManyBody().strength(-200)) // Add a charge force to repel nodes from each other.
         .force("center", d3.forceCenter(width / 2, height / 2)) // Add a centering force to center the nodes in the SVG.
         .force("collide", d3.forceCollide(30)) // Add a collision force to prevent nodes from overlapping.
-        .force("radial", d3.forceRadial(width / 2.5, width / 2, height / 2)); // Add a radial force to position nodes in a radial layout.
+        .force("radial", d3.forceRadial(width / 3.5, width / 3, height / 3)); // Add a radial force to position nodes in a radial layout.
     simulation.alphaDecay(0.05); // Set the alpha decay rate, which controls the cooling of the simulation.
 
     // Define drag behaviors for the nodes
