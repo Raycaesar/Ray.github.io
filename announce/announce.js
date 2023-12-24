@@ -67,8 +67,8 @@ let Prop = [];
 // Other existing global variables
 const baseExplicitProp = ['p', 'q', 'r', 's', 't'];
 let explicitProp = []; // This was already in your code
-const implicitProp = ['x', 'y', 'z'];
-const augmentProp = ['ω'];
+const implicitProp = ['w', 'x', 'y'];
+const augmentProp = ['z'];
 
 function propSize() {
     let size = parseInt(document.getElementById("propSize").value);
@@ -83,7 +83,7 @@ function propSize() {
     // Display the sets
     document.getElementById("explicitPropOutput").innerText = `Explicit Prop = {${explicitProp.join(', ')}}`;
     document.getElementById("implicitPropOutput").innerText = `Implicit Prop = {${implicitProp.join(', ')}}`;
-    document.getElementById("augmentPropOutput").innerText = `Augment Prop = {${augmentProp.join(', ')}}`;
+    document.getElementById("augmentPropOutput").innerText = `Augment = {${augmentProp.join(', ')}}`;
 }
 
 // Modified drawBackground function to update the global Prop variable
@@ -409,9 +409,9 @@ document.getElementById("dispel").addEventListener("click", function() {
 
             for (let i = 0; i < denotationSets.length; i++) {
                 denotationSets[i] = denotationSets[i].map(element => {
+                    if (element === 'w') return 'x';
                     if (element === 'x') return 'y';
                     if (element === 'y') return 'z';
-                    if (element === 'z') return 'ω';
                     return element;
                 });
             }
@@ -434,8 +434,8 @@ function preservation() {
 
             for (let i = 0; i < denotationSets.length; i++) {
                 if (isInMessageDenotation(denotationSets[i], messageDenotation)) {
-                    if (!denotationSets[i].includes('x')) {
-                        denotationSets[i].push('x');
+                    if (!denotationSets[i].includes('w')) {
+                        denotationSets[i].push('w');
                     }
                 }
             }
@@ -658,4 +658,250 @@ function arraysAreEqual(arr1, arr2) {
         if (arr1[i] !== arr2[i]) return false;
     }
     return true;
+}
+
+function denotationToString(denotation) {
+    if (denotation.length === 0) return '{}';
+    return `{{${denotation.map(set => set.join(', ')).join('}, {')}}}`;
+}
+
+function stringToDenotation(denotationStr) {
+    if (denotationStr === '{}' || denotationStr === '') return [];
+    return denotationStr.slice(2, -2).split('}, {')
+        .map(str => str.split(',').map(element => element.trim()).filter(Boolean));
+}
+
+
+function tokenizeFormula(formula) {
+    if (typeof formula !== 'string') {
+        throw new TypeError('Formula must be a string.');
+    }
+
+    const pattern = /\[[a-z]:[^[\]]+\]|B[a-z]|~|&|\+|>|\(|\)|[a-z]_[0-9]+|[a-z]|T|F/g;
+    return formula.match(pattern);
+}
+
+function parseFormula(tokens) {
+    if (!tokens.length) {
+        throw new Error('No tokens to parse');
+    }
+
+    const token = tokens.shift(); 
+
+    if (token === '~') {
+        // Negation case
+        return {
+            type: 'negation',
+            subformula: parseFormula(tokens)
+        };
+    } else if (token.startsWith('[')) {
+        // Free announcement case
+        const agent = token[1];
+        const content = token.slice(3, -1); // Extracts (p>q) from [a:(p>q)]
+        const announcement = token; // The full token [a:(p>q)]
+        return {
+            type: 'free announcement',
+            agent: agent,
+            content: content,
+            announcement: announcement,
+            subformula: parseFormula(tokens)
+        };
+    
+    } else if (token.startsWith('B')) {
+        const agent = token[1];
+        let message = '';
+
+        // Handle consecutive negations
+        while (tokens.length > 0 && tokens[0] === '~') {
+            message += tokens.shift();
+        }
+
+        // Handle complex expression or single propositional variable
+        if (tokens[0] === '(') {
+            // Belief with a complex expression inside parentheses
+            message += tokens.shift(); // Include '('
+            while (tokens.length > 0 && tokens[0] !== ')') {
+                message += tokens.shift();
+            }
+            if (tokens[0] === ')') {
+                message += tokens.shift(); // Include ')'
+            }
+        } else {
+            // Belief with a single propositional variable (or followed by negations)
+            message += tokens.shift();
+        }
+
+        return {
+            type: 'belief',
+            agent: agent,
+            message: message
+        };
+    }
+ else if (token === '(') {
+        // Binary operation case
+        const left = parseFormula(tokens); // Parse left subformula
+        const operator = tokens.shift(); // Get the operator (&, +, or >)
+        const right = parseFormula(tokens); // Parse right subformula
+
+        if (tokens.shift() !== ')') {
+            throw new Error('Expected closing parenthesis');
+        }
+
+        return {
+            type: operator,
+            left: left,
+            right: right
+        };
+    } else {
+        throw new Error('Unexpected token: ' + token);
+    }
+}
+
+function parseAnnouncement(announcementString) {
+    if (typeof announcementString !== 'string' || announcementString.trim() === '') {
+        throw new Error('Announcement must be a non-empty string');
+    }
+
+    // Tokenize the announcement string
+    const tokens = tokenizeFormula(announcementString);
+
+    if (!tokens.length) {
+        throw new Error('No tokens to parse');
+    }
+
+    // Extract the first token, which should be the announcement
+    const token = tokens.shift();
+
+    // Assuming the token is a well-formed announcement
+    const agent = token[1];
+    const content = token.slice(3, -1); // Extracts the content (e.g., 'p>q' from '[a:(p>q)]')
+    const announcement = token; // The full token (e.g., '[a:(p>q)]')
+
+    return {
+        agent: agent,
+        content: content,
+        announcement: announcement
+    };
+}
+
+function updatedmodels(announcement) {
+
+    
+
+    const parsedAnnouncement = parseAnnouncement(announcement);
+
+    const announcementAgent = parsedAnnouncement.agent;
+    const announcementProposition = parsedAnnouncement.content;
+    const announcementDenotation = replaceWithDenotation(parse(tokenize(announcementProposition)));
+ 
+    const announcementWorlds = stringToDenotation(announcementDenotation);
+    
+
+    for (let agt of agentFollowers[announcementAgent]) { 
+     
+
+   
+        let agentBeliefWorlds = stringToDenotation(agentBeliefs[agt].denotation);
+   
+
+        agentBeliefWorlds = setIntersection(agentBeliefWorlds, announcementWorlds);
+      
+
+        agentBeliefs[agt].denotation = denotationToString(agentBeliefWorlds);
+    }
+    
+
+}
+
+
+function extractLiterals(formula) {
+    let literals = formula.match(/B[a-z](~+)?\([^)]+\)|B[a-z](~+)?[a-z]/g) || [];
+    return literals;
+}
+
+
+function isSubsetOf(subsetWorlds, supersetWorlds) {
+    // Convert the arrays of worlds to strings for easier comparison
+    const supersetStrings = supersetWorlds.map(set => JSON.stringify(set.sort()));
+    const subsetStrings = subsetWorlds.map(set => JSON.stringify(set.sort()));
+
+    // Check if every world in subsetWorlds is included in supersetWorlds
+    return subsetStrings.every(subset => supersetStrings.includes(subset));
+}
+
+
+function evaluateLiteral(message, agent) {
+    console.log("agent:", agent);
+    console.log("message:", message);
+    
+
+    // Assuming replaceWithDenotation returns a set of worlds where the message is true.
+    const parsedMessage = parse(tokenize(message));
+   
+
+    const messageDenotation = replaceWithDenotation(parsedMessage);
+    
+
+    // Convert the denotation string into a set of worlds.
+    let messageWorlds = parseSet(messageDenotation);
+  
+    // Start with the agent's belief worlds.
+    let agentBeliefWorlds = parseSet(agentBeliefs[agent].denotation);
+   
+     
+    // Check if the proposition is true in all of the agent's belief worlds.
+    const result = isSubsetOf(agentBeliefWorlds, messageWorlds);
+   
+    return result;
+}
+
+  
+
+function evaluateFormula(formula) {
+
+    switch (formula.type) {
+        case 'belief':
+            // Pass the message part of the belief formula to evaluateLiteral
+            return evaluateLiteral(formula.message, formula.agent);
+        case 'negation':
+            return !evaluateFormula(formula.subformula);
+        case '&':
+            return evaluateFormula(formula.left) && evaluateFormula(formula.right);
+        case '+':
+            return evaluateFormula(formula.left) || evaluateFormula(formula.right);
+        case '>':
+            return !evaluateFormula(formula.left) || evaluateFormula(formula.right);
+
+        case 'free announcement':
+                    console.log("Evaluating free announcement:", formula.announcement);
+        
+                    // Temporarily store the current belief states
+                    const originalBeliefs = JSON.parse(JSON.stringify(agentBeliefs));
+        
+                    // Update models based on the announcement
+                    updatedmodels(formula.announcement);
+        
+                    // Evaluate the subformula in the context of the updated models
+                    const result = evaluateFormula(formula.subformula);
+        
+                    // Restore the original belief states
+                    agentBeliefs = originalBeliefs;
+        
+                    return result;
+
+    }
+}
+
+
+
+function satisfiability() {
+    const formulaInput = document.getElementById("formulaInput").value.trim();
+    console.log("formula:", formulaInput);
+    
+    const parsedFormula = parseFormula(tokenizeFormula(formulaInput));
+    console.log("parsedFormula:", parsedFormula);
+    
+    const satResult = evaluateFormula(parsedFormula, []);
+    
+    document.getElementById("satisfaction").innerText = satResult ? "Satisfied" : "Unsatisfied";
 }

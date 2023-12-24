@@ -84,3 +84,13 @@ button:hover {
         flex: 100%;
     }
 }
+
+h5 {
+    font-size: 14px; /* Slightly smaller than the body text for distinction */
+    color: #4e0e57; /* A softer color for readability */
+    margin-top: 10px; /* Add some space above the h5 */
+    margin-bottom: 10px; /* Add some space below the h5 */
+    line-height: 1.6; /* Increased line height for easier reading */
+    font-weight: normal; /* Optional: Adjust weight if needed */
+    font-family: cursive;
+}

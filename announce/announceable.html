@@ -12,14 +12,21 @@
 </head>
 
 <body>
+<h2> Notice</h2>
+<h5> This program demonstrates a core proof to illustrate the soundness of an arbitrary elimination rule. While it does not support all formula types, the program still effectively conveys the proof's essence. Simply follow the instructions in the given order to use it effectively. </h5>
+    
     <!-- Agent Size Setup -->
     <h2>Set the Size of Agents</h2>
+    <h5> Firstly, determine the number of agents for your scenario. Note that there are only 9 predefined colors, so having up to 9 agents is advisable. </h5>
+
     <input type="number" id="agentSize" placeholder="Enter the size of Agents">
     <button onclick="setAgentSize()">Set Size</button>
     <h3 id="agentOutput"></h3>
 
     <!-- Agent Follower Selection -->
     <h2>Select Agent's Followers</h2>
+    <h5> Secondly, define the social network among agents. </h5>
+   
     <p>Select an agent:</p>
     <select id="selectedAgent"></select>
     <p>Select its followers:</p>
@@ -37,47 +44,56 @@
 
     <!-- Prop Size Setup -->
     <h2>Set the Size of Prop</h2>
-    <input type="number" id="propSize" placeholder="Explicit prop size: 1 to 5">
+    <h5> Thirdly, decide on the number of explicit propositional variables in your scenario. A range of 3 to 5 is recommended. </h5>
+    
+    <input type="number" id="propSize" placeholder="Explicit prop size: 3 to 5">
     <button onclick="propSize()">Set Size</button>
     
-    <h3>Explicit Prop:</h3>
+    <h3>Explicit Prop :</h3>
+    <h5> Explicit variables are the sole variables occur in the formulas being tested. </h5>
     <p id="explicitPropOutput"></p>
     
     <h3>Implicit Prop:</h3>
+    <h5> Implicit variables may appear in arbitrary announcements but are not occur in the formulas. </h5>
     <p id="implicitPropOutput"></p>
     
-    <h3>Augment Prop:</h3>
+    <h3>Augment:</h3>
+    <h5> Augmentation abstracts the concept of infinite variables in Propositional Variables, indicating that new variables not occur in formulas can always be found, both explicitly and implicitly. This property is known as "non-cofiniteness" or "non-greediness." </h5>
     <p id="augmentPropOutput"></p>
 
     <!-- Belief Assignment to Agent -->
     <h2>Assign beliefs:</h2>
 
     <button id="drawBackgound">Draw Background</button>
-
-    
-
-   
+    <h5> Fourthly, after defining agents and propositional variables, click the button below to generate a background for assigning beliefs to agents. </h5>
 
     <hr/>
 
     <div id="cy">
 <svg id="beliefCanvas" width="2400" height="800"></svg>
 </div>
-<button id="ExpandGraph">Expand Graph</button>  <button id="dispel">dispel x</button>
-<button onclick="downloadSVG()">Download SVG</button>
+<h5> Fifthly, to assign beliefs, click on a node. A dropdown list will appear for you to select agents. Press "Enter" to confirm your choices. Hold "Ctrl" to select multiple agents. To illustrate the proof correctly, avoid clicking "Expand Graph" or "dispel w" initially. </h5>
+<button id="ExpandGraph">Expand Graph</button>  <button id="dispel">dispel w</button>
 
-    <!-- Formula Entry and Denotation Computation -->
+<button onclick="downloadSVG()">Download SVG</button>
+<h5> Sixthly, input a formula below to test its satisfiability within the defined model. The formula should follow the format [i:θ]φ, where 'i' represents an agent, 'θ' can include any combination of implicit and explicit variables, and 'φ' should only contain implicit variables within announcements. </h5>
+<!-- Formula Entry and Denotation Computation -->
+<h2>Enter Your Formula </h2>
+<input type="text" id="formulaInput" placeholder="Check the satisfiability" maxlength="300" size="80">
+<button onclick="satisfiability()">Check</button>
+<h3>Result:</h3>
+<p id="satisfaction"></p>
+
+    <!-- MessageEntry and Denotation Computation -->
+    
     <h2>Enter Message</h2>
     <input type="text" id="messageInput" placeholder="Potential Announcement" maxlength="300" size="80">
     <button onclick="preservation()">Preserve Arbitraryness</button>
+    <h5> Seventhly, with your formula still in the input box, click "Expand Graph" and then "dispel w". Next, enter 'θ' in the box below. If 'θ' contains implicit variables, replace each with its successor (e.g., change (p&~x) to (p&~y)), and then click "Preserve Arbitrariness." </h5>
+    <h5> Finally, return to the "Enter Your Formula" section. Replace 'θ' with 'w' in the input box, and in 'φ', substitute each implicit variable with its successor. Note that 'w' will not occur in 'φ'. Check the satisfiability again; it should remain consistent. </h5>
+   
 
 
-    <!-- Formula Entry and Denotation Computation -->
-    <h2>Enter Your Formula</h2>
-    <input type="text" id="formulaInput" placeholder="Check the satisfiability" maxlength="300" size="80">
-    <button onclick="satisfiability()">Check</button>
-    <h3>Result:</h3>
-    <p id="satisfaction"></p>
 
 
     
