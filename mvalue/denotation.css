@@ -1,0 +1,89 @@
+body {
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 20px;
+    background-color: #1e1e1e; /* Dark background */
+    color: #f0f0f0; /* Light text */
+}
+
+.container {
+    max-width: 2000px;
+    margin: 0 auto;
+    background-color: #252526; /* Slightly lighter dark for container */
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+}
+.svg-container {
+    overflow: auto; /* Enable scrolling */
+    margin-top: 20px;
+    border: 1px solid #3C3C3C;
+}
+
+h1 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #9CDCFE; /* Light blue for headings */
+}
+
+label {
+    display: block;
+    margin-bottom: 10px;
+}
+
+input, button {
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #3C3C3C;
+    background-color: #3C3C3C;
+    color: #D4D4D4;
+    margin-top: 5px;
+}
+
+button {
+    width: 150px;
+    background-color: #007ACC; /* Blue for buttons */
+    color: white;
+    cursor: pointer;
+    border: none;
+}
+
+button:hover {
+    background-color: #005A9C;
+}
+
+
+
+#hasseDiagram {
+    margin-top: 20px;
+    width: 100%; /* Increase to full width to accommodate more circles */
+    height: 600px;
+    border: 1px solid #3C3C3C;
+}
+
+circle {
+    stroke: #D4D4D4;
+    stroke-width: 1.5;
+    fill: #3C3C3C;
+}
+
+text {
+    font-size: 12px;
+    fill: #FFF; /* Ensure high contrast for text */
+}
+
+.circle-in-denotation {
+    fill: #7ea5c5; /* Adjust for visibility */
+}
+
+
+.tutorial {
+    border: 1px solid #3C3C3C;
+    padding: 20px;
+    margin-top: 20px;
+}
+
+.tutorial h3 {
+    color: #9CDCFE;
+}
+

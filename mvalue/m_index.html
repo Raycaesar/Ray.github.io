@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Denotation Calculator</title>
+
+  
+    <link rel="stylesheet" type="text/css" href="denotation.css">
+</head>
+<body>
+    <h2>Set the Size of Prop</h2>
+    <input type="number" id="propSize" placeholder="Enter the size of Prop">
+    <button onclick="setPropSize()">Set Size</button>
+
+    <h3 id="propOutput"></h3>
+    <h3 id="prop0Output"></h3>
+    <h3 id="prop1Output"></h3>
+    <h5 id="backgroundOutput"></h3>
+
+    <h2>Enter Your Formula</h2>
+    <input type="text" id="formulaInput" placeholder="Enter the formula">
+    <button onclick="displayDenotation()">Compute Denotation</button>
+
+    <h3>Result:</h3>
+    <p id="resultOutput"></p>
+
+    <h3>Hasse Diagram of Power Set of Prop:</h3>
+    
+    <div class="svg-container">
+        <svg id="hasseDiagram"></svg>
+    </div>
+    <br/>
+    <button id="generateDiagram">Generate Hasse Diagram</button>
+
+    
+
+    <div class="tutorial">
+        <h3>How to Write Well-formed Formulas:</h3>
+        <ul>
+            <li><strong>Propositional Variables:</strong> Use elements in <b>Prop</b>.</li>
+            <li><strong>Negation:</strong> Use the tilde symbol <span class="example">~</span> before the propositional variable or formula. E.g., <span class="example">~p</span>.</li>
+            <li><strong>Conjunction:</strong> Use the ampersand symbol <span class="example">&</span> between two formulas. E.g., <span class="example">(p&q)</span>.</li>
+            <li><strong>Disjunction:</strong> Use the plus symbol <span class="example">+</span> between two formulas. E.g., <span class="example">(p+q)</span>.</li>
+            <li><strong>Brackets:</strong> Every formula connected by a binary operator should be enclosed within a pair of brackets. E.g., <span class="example">(p&q)</span>, not <span class="example">p&q</span>.</li>
+        </ul>
+    </div>
+<script src="m_deno.js"></script>
+</body>
+</html>
+
+
+
