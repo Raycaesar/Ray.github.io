@@ -355,19 +355,23 @@ document.getElementById("generateDiagram").addEventListener("click", function() 
         }
     
         const resultSets = result.slice(2, -2).split('}, {').map(str => str.split(', ').filter(Boolean));
-        const denotationStrings = resultSets.map(subset => subset.join(','));
-    
-        console.log("Expected subsets to color:", denotationStrings); // Log expected subsets
+        const denotationStrings = resultSets.map(subset => subset.join(', '));
     
         circles.forEach(circle => {
-            console.log("Circle subset:", circle.getAttribute("data-text")); // Log each circle's subset
-            if (denotationStrings.includes(circle.getAttribute("data-text"))) {
-                circle.style.fill = "#7ea5c5"; // Change this color to your preference
+            const circleText = circle.getAttribute("data-text").trim(); // Ensure no leading/trailing whitespace
+            if (denotationStrings.includes(circleText)) {
+                circle.style.fill = "#7ea5c5"; // Denotation color
+            } else {
+                circle.style.fill = "#3C3C3C"; // Original color (assuming this is the original fill color)
             }
         });
     }
     
+    
+    
+    
     const denotationResult = getDenotationResult(); 
+    console.log("denotationResult:", denotationResult);
     colorDenotation(denotationResult);
 });
 
