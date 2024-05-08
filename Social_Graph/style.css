@@ -1,0 +1,38 @@
+body {
+    margin: 10;
+    padding: 10;
+    box-sizing: border-box;
+    background-color: black;
+}
+
+#canvas1 {
+    background: radial-gradient(rgb(153, 153, 228),rgb(78, 78, 210), rgb(35, 35, 220),navy, black);
+    position: relative;
+    top: 0;
+    left: 0;
+   
+}
+
+.container {
+    display: flex;
+   background:radial-gradient( rgb(35, 35, 220),navy,black);
+    padding: 20px;
+    margin: 10px;
+    border-radius: 10px;
+}
+
+.column {
+    flex:40%;
+    background-color:rgb(108, 192, 218);
+    border-radius: 25px;
+margin: 20px;
+  padding: 20px;
+    
+  }
+  
+  /* Clear floats after the columns */
+  .container:after {
+    content: "";
+    display: table;
+    clear: both;
+  }

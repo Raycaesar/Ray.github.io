@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Particles</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="column">
+        
+     <!-- Agent Size Setup -->
+     <h2>Set the Size of Agents</h2>
+     <input type="number" id="agentSize" placeholder="Enter the size of Agents">
+     <button onclick="setAgentSize()">Set Size</button>
+     <h3 id="agentOutput"></h3>
+ 
+     <!-- Agent Follower Selection -->
+     <h2>Select Agent's Followers</h2>
+     <p>Select an agent:</p>
+     <select id="selectedAgent"></select>
+     <p>Select its followers:</p>
+     <select id="agentFollowers" multiple></select>
+     <button onclick="setAgentFollowers()">Set Followers</button>
+     <h3 id="followerOutput"></h3>
+
+     <button id="drawFollow" onclick="drawNetwork()">Draw Network</button>
+     <button onclick="downloadsocial()">Download Network</button>
+    </div>
+     
+
+     <div class="column">
+     <!-- Prop Size Setup -->
+     <h2>Set the Size of Prop</h2>
+     <input type="number" id="propSize" placeholder="Enter the size of Prop">
+     <button onclick="setPropSize()">Set Size</button>
+     <h3 id="propOutput"></h3>
+     <h2>Select an Agent for Belief Assignment:</h2>
+     <select id="beliefAgent"></select>
+     <h3>Input the Belief Message:</h3>
+     <input type="text" id="beliefmessage" placeholder="Enter the belief message">
+     <button onclick="assignBelief()">Assign Belief</button>
+     <h3>Agent Beliefs:</h3>
+     <p id="beliefOutput"></p>
+ 
+    </div>
+    
+    </div>
+    
+    <canvas id="canvas1"></canvas>
+
+    <script src="script1.js"></script>
+    <script src="parse.js"></script>
+</body>
+</html>
