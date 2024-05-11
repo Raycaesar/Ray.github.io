@@ -1,0 +1,77 @@
+body {
+    font-family: Arial, sans-serif;
+    padding: 20px;
+    background-color: #f4f4f4;
+}
+
+h3 {
+    color: #333;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 10px;
+}
+
+.tutorial {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+}
+
+.tutorial ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.tutorial li {
+    margin-bottom: 10px;
+}
+
+.example {
+    background-color: #f9f9f9;
+    padding: 2px 5px;
+    border-radius: 3px;
+}
+#network {
+    width: 1200px;
+    height: 600px;
+    border: 1px solid black;
+}
+
+#cy {
+    width: 1800px;
+    height: 800px;
+    border: 1px solid black;
+}
+
+.selected {
+    fill: #007bff; /* Change the fill color for highlighting */
+    cursor: move; /* Change cursor to indicate draggable */
+}
+.definition-box {
+    background-color: #f9f9f9;
+    border: 1px solid black;
+    max-width: 1000px;
+    padding: 10px;
+    margin-top: 10px;
+    width: 100%;
+}
+
+.axioms {
+    margin-top: 10px;
+}
+.content {
+    font-family: Arial, sans-serif;
+    max-width: 700px;
+    padding: 20px;
+}
+.definition {
+    border: 1px solid #ccc;
+    padding: 20px;
+    margin-top: 20px;
+}
+.verification{
+    font-family: Arial, sans-serif;
+    max-width: 1000px;
+    padding: 20px;
+    color:brown;
+}

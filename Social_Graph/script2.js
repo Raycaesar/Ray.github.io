@@ -35,49 +35,57 @@ function powerSet(nums) {
     return result;
 }
 
-function deepArrayContains(mainArray, searchArray) {
-    const mainString = JSON.stringify(mainArray);
-    const searchString = JSON.stringify(searchArray);
-    return mainString.includes(searchString);
+function deepArrayContains(haystack, needle) {
+    return haystack.some(set => 
+        set.length === needle.length &&
+        set.every(item => needle.includes(item.trim()))
+    );
+}
+
+
+function getIndexAndBinaryTransform(element) {
+    // Transform index to binary with 3 digits
+    const binary = element.toString(2).padStart(3, '0');
+
+    // Separate binary into row and col parts
+    const row = parseInt(binary[0], 2);
+    const col = parseInt(binary.substring(1), 2); 
+    return { row, col };
 }
 
 function updateMatrix() {
-    
     const inputSetString = document.getElementById('truth-table-set').value;
     if (inputSetString.trim() === "{}") {
         console.log("Input string is empty, returning default matrix.");
-        matrix = [['0', '0', '0', '0'], ['0', '0', '0', '0']];
+        return Array.from({ length: matrix.length }, () => Array(matrix[0].length).fill('0'));
     }
-    else{
-    // Remove curly braces and split by comma
+
     const inputArray = inputSetString.match(/\{[^{}]*\}/g);
-    // Map over the array to transform each element into a set
-    const inputResult = inputArray.map(item => {
-        if (item === "{}") return []; // Handle empty set
-        return item.replace(/[{}]/g, "").split(",");
-    });
+    const inputResult = inputArray.map(item => 
+        item === "{}" ? [] : item.replace(/[{}]/g, "").split(",").map(x => x.trim())
+    );
 
     const powers = powerSet(Prop);
 
-    for (let i = 0; i < powers.length; i++) {
-        const { row, col } = getIndexAndBinaryTransform(i);
-        if (deepArrayContains(inputResult, powers[i])) {
-            matrix[row][col] = 1;
-        } else {
-            matrix[row][col] = 0;
-        }
-    }
-    }
+    matrix.forEach((row, rowIndex) => {
+        row.forEach((_, colIndex) => {
+            const index = rowIndex * row.length + colIndex; // Calculate flat index
+            const power = powers[index];
+            matrix[rowIndex][colIndex] = deepArrayContains(inputResult, power) ? '1' : '0';
+        });
+    });
+
     console.log("matrix", matrix);
-    return matrix; // Return the matrix array
-};
+    return matrix;
+}
 
 
 function extractMatrix() {
+    
     const extractedMatrix = [];
     for (let i = 0; i < matrix.length; i++) {
         for (let j = 0; j < matrix[i].length; j++) {
-            if (matrix[i][j] === 1) {
+            if (matrix[i][j] === '1') {
                 extractedMatrix.push(`${i}${j}`);
             }
         }
@@ -88,8 +96,9 @@ function extractMatrix() {
 
 
 
-function generateExpressions(matrix) {
-    const valuedMatrix = extractMatrix(matrix);
+function generateExpressions() {
+    updateMatrix();
+    const valuedMatrix = extractMatrix();
     console.log("valuedMatrix ", valuedMatrix);
     const selectedParts = findMGTE(valuedMatrix);
     console.log("selectedParts", selectedParts);
@@ -118,7 +127,7 @@ function findMGTE(array) {
     ];
 
     let selectedParts = {
-        fullMatrix: [],
+        fullMatrix: false,
         groups: [],
         tuples: [],
         elements: []
@@ -126,8 +135,9 @@ function findMGTE(array) {
 
     // Check if the input array is equal to the full matrix
     const arrayEqualFullMatrix = array.length === fullMatrix.length && array.every((elem, idx) => elem === fullMatrix[idx]);
+    console.log("arrayEqualFullMatrix ", arrayEqualFullMatrix);
     if (arrayEqualFullMatrix) {
-        selectedParts.fullMatrix = fullMatrix;
+        selectedParts.fullMatrix = true;
     } else {
         // Check if the input array is a subset of any group
         for (const group of groups) {
@@ -184,7 +194,7 @@ function generateSOP(object) {
         return (object.fullMatrix.length !== 0) ?  'p+~p' :'(p&~p)';
     }
 
-    const groupsInterpretation = ['~r', 'r', '~q', 'q', '~p', 'p'];
+    const groupsInterpretation = ['~r', 'r', '~q', 'p', '~p', 'q'];
     const tuplesInterpretation = ['(~r&~q)', '(~r&q)', '(~r&~p)', '(~r&p)', '(r&~q)', '(r&q)', '(r&~p)', '(r&p)', '(~p&~q)', '(p&~q)', '(q&~p)', '(q&p)'];
     const elementInterpretation = ['(~p&~q&~r)', '(p&~q&~r)', '(~p&q&~r)', '(p&q&~r)', '(~p&~q&r)', '(p&~q&r)', '(~p&q&r)', '(p&q&r)'];
 
@@ -250,15 +260,6 @@ function generateSOP(object) {
 */
 
 
-function getIndexAndBinaryTransform(element) {
-    // Transform index to binary with 3 digits
-    const binary = element.toString(2).padStart(3, '0');
-
-    // Separate binary into row and col parts
-    const row = parseInt(binary[0], 2);
-    const col = parseInt(binary.substring(1), 2); 
-    return { row, col };
-}
 
 
 

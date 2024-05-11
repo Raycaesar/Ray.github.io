@@ -12,7 +12,6 @@ const colors = ['#D67293', ' #73DEFA', '#5DB117', '#5A8CD7', '#CCCC00', '#9A5FD7
 
 
 // Set Agent Size and Update Dropdowns
-
 function setAgentSize() {
     const size = parseInt(document.getElementById("agentSize").value);
     Agt = Array.from({length: size}, (_, i) => i < 4 ? ['a', 'b', 'c', 'd'][i] : `a_${i + 1}`);
@@ -20,14 +19,7 @@ function setAgentSize() {
     Agt.forEach((agent, index) => {
         agentColors[agent] = colors[index % colors.length];
     });
-
-    if (window.effect) {
-        window.effect.setNumberOfParticles(Agt);
-        window.effect.resetParticles();
-    } else {
-        console.error("Effect object is not initialized");
-    }
-
+    
     updateDropdown("selectedAgent");
     updateDropdown("agentFollowers");
     updateDropdown("beliefAgent");
@@ -84,6 +76,10 @@ function setPropSize() {
         const additionalProps = Array.from({ length: size - baseProp.length }, (_, i) => `p_${i + 2}`);
         Prop = [...baseProp, ...additionalProps];
     }
+    const numRows = Prop.length < 4 ? 2 : 4;
+    const numCols = 4;
+    matrix = Array.from({ length: numRows }, () => Array(numCols).fill(0));
+    console.log("matrix", matrix);
 
     document.getElementById("propOutput").innerText = `Prop = {${Prop.join(', ')}}`;
 }
@@ -151,13 +147,7 @@ function isWellFormedSimpleCheck(message) {
     return operatorCount === bracketPairsCount;
 }
 
-function drawNetwork() {
-    if (window.effect) {
-        window.effect.drawNetwork(agentFollowers);
-    } else {
-        console.error("Effect object is not initialized");
-    }
-}
+
 
 // ===============================================
 // ============== Denotation Compute==============
@@ -577,9 +567,6 @@ function updatedmodels(announcement) {
 }
 
 
-
-
-
 function handleUpdateModelClick() {
     const inputElement = document.getElementById("beliefupdate");
     if (!inputElement) {
@@ -600,205 +587,243 @@ function handleUpdateModelClick() {
 }
 
 
+let matrix = [];
+let Prop = [];
 
 
-/*
-For checking the functions above
+//make an objrect strongAnnounce = {Agt[i]:strong } for i in size of Agt
+let strongAnnounce = {};
 
-let Prop = ["p", "q", "r"];
-
-agentFollowers["a"] = ["b", "c"] 
-agentFollowers["b"] = [ "c"]
-agentFollowers["c"] = ["b"]
-// Initialize beliefs for each agent
-agentBeliefs["a"] = { denotation: "{{p}, {p,q}, {p,r}, {p,q,r} }" };
-agentBeliefs["b"] = { denotation: "{{q}, {p,q}, {q,r}, {p,q,r} }" };
-agentBeliefs["c"] = { denotation: "{{p}, {r}}" };
-updatedmodels("[a:r]Bbq");
-*/
-
-
-
-// ================================================
-// =============== Evalutate Formula ==============
-// ================================================
-
-function extractLiterals(formula) {
-    let literals = formula.match(/B[a-z](~+)?\([^)]+\)|B[a-z](~+)?[a-z]/g) || [];
-    return literals;
-}
-
-
-function isSubsetOf(subsetWorlds, supersetWorlds) {
-    // Convert the arrays of worlds to strings for easier comparison
-    const supersetStrings = supersetWorlds.map(set => JSON.stringify(set.sort()));
-    const subsetStrings = subsetWorlds.map(set => JSON.stringify(set.sort()));
-
-    // Check if every world in subsetWorlds is included in supersetWorlds
-    return subsetStrings.every(subset => supersetStrings.includes(subset));
-}
-
-
-function evaluateLiteral(message, agent) {
-    console.log("agent:", agent);
-    console.log("message:", message);
-    
-
-    // Assuming replaceWithDenotation returns a set of worlds where the message is true.
-    const parsedMessage = parse(tokenize(message));
-    console.log("parsedMessage:", parsedMessage);
-
-    const messageDenotation = replaceWithDenotation(parsedMessage);
-    console.log("messageDenotation:", messageDenotation);
-
-    // Convert the denotation string into a set of worlds.
-    let messageWorlds = parseSet(messageDenotation);
-    console.log("messageWorlds:", messageWorlds);
-
-    // Start with the agent's belief worlds.
-    let agentBeliefWorlds = parseSet(agentBeliefs[agent].denotation);
-    console.log("agentBeliefWorlds:", agentBeliefWorlds);
-     
-    // Check if the proposition is true in all of the agent's belief worlds.
-    const result = isSubsetOf(agentBeliefWorlds, messageWorlds);
-    console.log("result:", result);
-    return result;
-}
-
-  
-/*
-For verification:
-f(a) = {b, c}
-f(b) = {c}
-
-[a:p]Bbp
-
-[a:p][b:(p>q)]Bcq 
- 
-[a:p]([b:(p>q)]Bcq & Bcq) 
-
-
-[a:p]([b:(p>q)]Bcq &[a:q](Bcq +[c:q]Baq)) 
-
-*/
-
-
-function evaluateFormula(formula) {
-
-    switch (formula.type) {
-        case 'belief':
-            // Pass the message part of the belief formula to evaluateLiteral
-            return evaluateLiteral(formula.message, formula.agent);
-        case 'negation':
-            return !evaluateFormula(formula.subformula);
-        case '&':
-            return evaluateFormula(formula.left) && evaluateFormula(formula.right);
-        case '+':
-            return evaluateFormula(formula.left) || evaluateFormula(formula.right);
-        case '>':
-            return !evaluateFormula(formula.left) || evaluateFormula(formula.right);
-
-        case 'free announcement':
-                    console.log("Evaluating free announcement:", formula.announcement);
-        
-                    // Temporarily store the current belief states
-                    const originalBeliefs = JSON.parse(JSON.stringify(agentBeliefs));
-        
-                    // Update models based on the announcement
-                    updatedmodels(formula.announcement);
-        
-                    // Evaluate the subformula in the context of the updated models
-                    const result = evaluateFormula(formula.subformula);
-        
-                    // Restore the original belief states
-                    agentBeliefs = originalBeliefs;
-        
-                    return result;
-
+function calculateStrong() {
+    // Loop over all agents in Agt
+    for (const agt of Agt) {
+        const matrix = updateMatrix(agt);
+        const strong = generateExpressions(matrix);
+        strongAnnounce[agt] = strong;
+        console.log(`Agent ${agt}'s strong announcement: ${strong}`);
     }
 }
 
 
+function powerSet2(nums) {
+    const result = [[]]; // Initialize with empty set
 
-function satisfiability() {
-    const formulaInput = document.getElementById("formulaInput").value.trim();
-    console.log("formula:", formulaInput);
-    
-    const parsedFormula = parseFormula(tokenizeFormula(formulaInput));
-    console.log("parsedFormula:", parsedFormula);
-    
-    const satResult = evaluateFormula(parsedFormula, []);
-    
-    document.getElementById("satisfaction").innerText = satResult ? "Satisfied" : "Unsatisfied";
+    for (const num of nums) {
+        const subsets = [];
+        for (const subset of result) {
+            subsets.push([...subset, num]); // Add current number to existing subsets
+        }
+        result.push(...subsets); // Add new subsets to result
+    }
+
+    return result;
+}
+
+
+function deepArrayContains(haystack, needle) {
+    return haystack.some(set => 
+        set.length === needle.length &&
+        set.every(item => needle.includes(item.trim()))
+    );
+}
+
+
+
+function updateMatrix(agt) {
+    console.log("All agent beliefs:", JSON.stringify(agentBeliefs));
+    console.log("Current agent:", agt);
+    // Ensure the agent has been initialized in agentBeliefs
+    if (!agentBeliefs[agt] || !agentBeliefs[agt].denotation) {
+        console.log(`No beliefs found for agent ${agt}, returning default matrix.`);
+        return Array.from({ length: 2 }, () => Array(4).fill('0')); // Adjust dimensions as needed
+    }
+
+    const inputSetString = agentBeliefs[agt].denotation;
+
+    if (inputSetString.trim() === "{}") {
+        console.log("Input string is empty, returning default matrix.");
+        return Array.from({ length: matrix.length }, () => Array(matrix[0].length).fill('0'));
+    }
+
+    const inputArray = inputSetString.match(/\{[^{}]*\}/g);
+    const inputResult = inputArray.map(item =>
+        item === "{}" ? [] : item.replace(/[{}]/g, "").split(",").map(x => x.trim())
+    );
+
+    const powers = powerSet(Prop);
+
+    matrix.forEach((row, rowIndex) => {
+        row.forEach((_, colIndex) => {
+            const index = rowIndex * row.length + colIndex; // Calculate flat index
+            const power = powers[index];
+            matrix[rowIndex][colIndex] = deepArrayContains(inputResult, power) ? '1' : '0';
+        });
+    });
+
+    console.log("matrix", matrix);
+    return matrix;
 }
 
 
 
 
-/*for verification: 
-f(a) = {b, c}
-f(b) = {c}
-f(c) = {a}
-
-a believes p and k(a) = {{p}, {q, p}, {r, p}, {r, q, p}}
-b believes q and k(b) = {{q}, {q, p}, {r, q}, {r, q, p}}
-c believes r and k(c) = {{r}, {r, p}, {r, q}, {r, q, p}}
-
-(~(Ba~(q+r)+Bbr)&Bcr) satisified
-(~(F+F)&T)
-
-((~Ba(~p>q)&Bbr)+(Bc(~q>r)&~Bb(p>q))) unsatisfied
-((~T&F)+(T&~T))
-
-((Ba~(~p&r) + ~Bb~(r+q)) + ~Bc~(p>q)) Satisfied
-((T + ~F) + ~F)
-
-(~Ba(p>q)&~Bbr)+(Bc~~r+Bb~(r>q))  Satisfied
-(~F&~F)+(T+F)
-
-(Ba~(p>q)&(Bb(r>~q)+Bc(p+~r))) unsatisfied
-(F&(F+F))
-
-~(Ba(r>p)&~(Bb~q+~Bc(p+~r))) satisfied
-~(T&~(F+~F))
-
-[a:r]([a:p]Bbp&Bcp)  unsatisfied
-(T&F)
-
-[b:q](~Ba~q&Bcq)      satisfied
-(~F&T)
-
-[b:q]([a:(p&q)]Baq+Bcp)   unsatisfied
-(F+F)
-
-[a:(r>q)]([b:(q>p)]Bcp & [c:q](~Bcp&Baq))   satisfied
-(T & (~F&T))
 
 
-[a:(~r+~q)]([b:~~q]([c:~q]Ba~(q+~p)& Bc(p&~r))&[a:r]Bb(~q&r))  satisfied
-((T&T)&T)
+function extractMatrix() {
+    
+    const extractedMatrix = [];
+    for (let i = 0; i < matrix.length; i++) {
+        for (let j = 0; j < matrix[i].length; j++) {
+            if (matrix[i][j] === '1') {
+                extractedMatrix.push(`${i}${j}`);
+            }
+        }
+    }
+    console.log("extractedMatrix", extractedMatrix);
+    return extractedMatrix;
+}
 
-[a:~q](Bc(q&r)+~Bb(p&~p))  unsatisfied
-(F+F)
 
-[c:(q>r)](Bar+[a:~q](Bb(q>~q)&[b:q]Bc(p&~p))) satisfied
-(F + (T & T))
+function generateExpressions() {
+    updateMatrix();
+    const valuedMatrix = extractMatrix();
+    console.log("valuedMatrix ", valuedMatrix);
+    const selectedParts = findMGTE(valuedMatrix);
+    console.log("selectedParts", selectedParts);
+   const sop = generateSOP(selectedParts);
+   console.log('sop', sop);
+document.getElementById('sop-expression').textContent = sop;
+}
 
 
-[a:q](Bbq>Bcp)  unsatisfied
-(T>F)
+function findMGTE(array) {
+    const fullMatrix = ['00', '01', '02', '03', '10', '11', '12', '13'];
+    const groups = [
+        ['00', '01', '02', '03'],
+        ['10', '11', '12', '13'],
+        ['00', '01', '10', '11'],
+        ['01', '03', '11', '13'],
+        ['00', '02', '10', '12'],
+        ['02', '03', '12', '13']
+    ];
+    const tuples = [
+        ['00', '01'], ['02', '03'],
+        ['00', '02'], ['01', '03'],
+        ['10', '11'], ['12', '13'],
+        ['10', '12'], ['11', '13'],
+        ['00', '10'], ['01', '11'],
+        ['02', '12'], ['03', '13']
+    ];
+
+    let selectedParts = {
+        fullMatrix: [],
+        groups: [],
+        tuples: [],
+        elements: []
+    };
+
+    // Check if the input array is equal to the full matrix
+    const arrayEqualFullMatrix = array.length === fullMatrix.length && array.every((elem, idx) => elem === fullMatrix[idx]);
+    if (arrayEqualFullMatrix) {
+        selectedParts.fullMatrix = fullMatrix;
+    } else {
+        // Check if the input array is a subset of any group
+        for (const group of groups) {
+            if (group.every(elem => array.includes(elem))) {
+                selectedParts.groups.push(group);
+            }
+        }
+
+        // Check if the input array contains any tuples not covered by the groups
+        const uncoveredTuples = tuples.filter(tuple => {
+            const isTupleCovered = selectedParts.groups.some(group => tuple.every(elem => group.includes(elem)));
+            return tuple.every(elem => array.includes(elem)) && !isTupleCovered;
+        });
+        selectedParts.tuples = uncoveredTuples;
+
+        // Check if the input array contains any elements not covered by groups or tuples
+        const uncoveredElements = array.filter(elem => {
+            const isElementCovered = selectedParts.groups.some(group => group.includes(elem)) ||
+                selectedParts.tuples.some(tuple => tuple.includes(elem));
+            return !isElementCovered;
+        });
+        selectedParts.elements = uncoveredElements.map(elem => [elem]);
+    }
+
+    return selectedParts;
+}
 
 
-axioms 
- (Ba(p>q)>(Bap > Baq)) satisfied, [KB] 
+function generateSOP(object) {
+    const fullMatrix = ['00', '01', '02', '03', '10', '11', '12', '13'];
+    const groups = [
+        ['00', '01', '02', '03'],
+        ['10', '11', '12', '13'],
+        ['00', '01', '10', '11'],
+        ['01', '03', '11', '13'],
+        ['00', '02', '10', '12'],
+        ['02', '03', '12', '13']
+    ];
+    const tuples = [
+        ['00', '01'], ['02', '03'],
+        ['00', '02'], ['01', '03'],
+        ['10', '11'], ['12', '13'],
+        ['10', '12'], ['11', '13'],
+        ['00', '10'], ['01', '11'],
+        ['02', '12'], ['03', '13']
+    ];
+    const elements = [
+        ['00'], ['01'], ['02'], ['03'],
+        ['10'], ['11'], ['12'], ['13']
+    ];
 
-([a:q](Bbq>Bcp) > ([a:q]Bbq>[a:q]Bcp)) satisfied, axiom [K[:]] 
+    if (object.groups.length === 0 && object.tuples.length === 0 && object.elements.length === 0) {
+        // If there are no groups, tuples, or elements, return p+~p or (p&~p) if fullMatrix is not empty
+        return (object.fullMatrix.length !== 0) ?  'p+~p' :'(p&~p)';
+    }
 
-（Bbp>[a:q]Bbp） satisfied,[UMon]
+    const groupsInterpretation = ['~r', 'r', '~q', 'p', '~p', 'q'];
+    const tuplesInterpretation = ['(~r&~q)', '(~r&q)', '(~r&~p)', '(~r&p)', '(r&~q)', '(r&q)', '(r&~p)', '(r&p)', '(~p&~q)', '(p&~q)', '(q&~p)', '(q&p)'];
+    const elementInterpretation = ['(~p&~q&~r)', '(p&~q&~r)', '(~p&q&~r)', '(p&q&~r)', '(~p&~q&r)', '(p&~q&r)', '(~p&q&r)', '(p&q&r)'];
 
-([a:p]Bbq > Bb(p > q))  satisfied, [SDMon] 
+    let sop = "";
 
-([a:r]~Bbr > ([a:p]Bbq> Bbq)) satisfied, [RDMon] 
-*/
+    // Translate groups into expressions
+    object.groups.forEach(group => {
+        const index = groups.findIndex(item => item.every(elem => group.includes(elem)));
+        if (index !== -1) {
+            sop += (sop !== "") ? "+" + groupsInterpretation[index] : groupsInterpretation[index];
+        }
+    });
+
+    // Translate tuples into expressions
+    object.tuples.forEach(tuple => {
+        const index = tuples.findIndex(item => item.every(elem => tuple.includes(elem)));
+        if (index !== -1) {
+            sop += (sop !== "") ? "+" + tuplesInterpretation[index] : tuplesInterpretation[index];
+        }
+    });
+
+    // Translate elements into expressions
+    object.elements.forEach(element => {
+        const index = elements.findIndex(item => item.every(elem => element.includes(elem)));
+        if (index !== -1) {
+            sop += (sop !== "") ? "+" + elementInterpretation[index] : elementInterpretation[index];
+        }
+    });
+
+    return sop;
+}
+
+
+function getIndexAndBinaryTransform(element) {
+    // Transform index to binary with 3 digits
+    const binary = element.toString(2).padStart(3, '0');
+
+    // Separate binary into row and col parts
+    const row = parseInt(binary[0], 2);
+    const col = parseInt(binary.substring(1), 2); 
+    return { row, col };
+}
 
 
