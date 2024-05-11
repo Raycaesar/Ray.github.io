@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>K-map Expression Generator</title>
+    <link rel="stylesheet" href="style2.css">
+</head>
+<body>
+    <div class="container">
+        <h1>K-map Expression Generator</h1>
+        <div class="input-section">
+            <h2>Set the Size of Prop</h2>
+            <input type="number" id="propSize" placeholder="size of Prop, only 3 currently. ">
+            <button onclick="setPropSize()">Set Size</button>
+            <h3 id="propOutput"></h3>
+            
+
+            <label for="truth-table-set">Enter Truth Table Set:</label>
+            <textarea id="truth-table-set" placeholder="Enter the truth table set"></textarea>
+            <button onclick="updateMatrix()">update matrix</button>
+            
+           <!-- <button onclick="generateTruthtable()">Generate Truth table</button>-->
+            <table id="tableOutput"></table>
+            <button onclick="generateExpressions()">Generate Expressions</button>
+        </div>
+
+
+
+
+
+
+        <h2>SOP Expression:</h2>
+        <pre id="sop-expression"></pre>
+        <!--<h2>POS Expression:</h2>
+        <pre id="pos-expression"></pre>-->
+    </div>
+
+    <script src="script2.js"></script>
+</body>
+</html>
