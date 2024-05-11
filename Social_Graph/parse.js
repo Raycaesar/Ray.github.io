@@ -19,6 +19,13 @@ function setAgentSize() {
     Agt.forEach((agent, index) => {
         agentColors[agent] = colors[index % colors.length];
     });
+
+      if (window.effect) {
+        window.effect.setNumberOfParticles(Agt);
+        window.effect.resetParticles();
+    } else {
+        console.error("Effect object is not initialized");
+    }
     
     updateDropdown("selectedAgent");
     updateDropdown("agentFollowers");
@@ -52,6 +59,14 @@ function setAgentFollowers() {
     console.log("a's followers", agentFollowers['a'])
 }
 
+
+function drawNetworkdy() {
+    if (window.effect) {
+        window.effect.drawNetwork(agentFollowers);
+    } else {
+        console.error("Effect object is not initialized");
+    }
+}
 
 // Display Followers
 function displayFollowers() {
