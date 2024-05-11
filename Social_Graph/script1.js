@@ -1,4 +1,4 @@
-// setup
+
 const canvas = document.getElementById('canvas1');
 const ctx = canvas.getContext('2d');
 canvas.width = window.innerWidth;
@@ -33,6 +33,7 @@ class Particle {
         this.pushY = 0;
         this.friction = 0.95;
         this.isMouseOver = false;
+        this.agentStrongestBeliefs = {}; // Initialize with null
     }
 
     draw(context) {
@@ -67,7 +68,7 @@ class Particle {
             context.fillText(agentNameText, this.x-padding, this.y - this.radius + 2*padding);
 
             // Draw strongest belief at the center
-            const strongestBeliefText = 'Strongest Belief';
+            const strongestBeliefText = this.agentStrongestBeliefs[this.agentName] || '';  
             const strongestBeliefFontSize = 18;
             context.font = `bold ${strongestBeliefFontSize}px Arial`;
             const strongestBeliefTextWidth = context.measureText(strongestBeliefText).width;
@@ -83,7 +84,7 @@ class Particle {
         }
     }
 
-    strongestBeliefs(belief) {
+    strongestAnnounces(belief) {
         this.belief = belief;
     }
 
@@ -291,34 +292,30 @@ class Effect {
         this.context.fillStyle = gradient;
         this.context.strokeStyle = 'white';
     }
-}
-
-function handleParseFunction() {
+handleParseFunction() {
     return {
         setNumberOfParticles: (agentNames) => {
-            window.effect.setNumberOfParticles(agentNames);
+            this.setNumberOfParticles(agentNames);
         },
         resetParticles: () => {
-            window.effect.resetParticles();
+            this.resetParticles();
         },
-        strongestBeliefs: (belief) => {
-            window.effect.strongestBeliefs(belief);
+        strongestAnnounces: (agt) => {
+            const strongestBelief = window.exportedStrongAnnounce[agt];
+            this.particles.forEach(particle => {
+                particle.agentStrongestBeliefs[agt] = strongestBelief;
+            });
         }
-        
-       
     };
 }
-/* resetParticles: () => {
-            window.effect.resetParticles();
-        }
-,
-       
-        */
+}
+
+
+
 // Create an instance of the Effect class after it's defined
 window.effect = new Effect(canvas, ctx);
 
 
-// Move the rest of the code after the handleParseFunction
 console.log(ctx);
 
 function animate() {

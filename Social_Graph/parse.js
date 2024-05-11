@@ -311,6 +311,7 @@ function assignBelief() {
         //console.log("agent c's belief:", agentBeliefs['c'].denotation);
         // Update the displayed beliefs for all agents
         displayAgentBeliefs();
+        calculateStrong();
     } catch (error) {
         alert(error.message);
     }
@@ -598,6 +599,7 @@ function handleUpdateModelClick() {
     }
 
     updatedmodels(announcement);
+    calculateStrong();
 
 }
 
@@ -611,14 +613,14 @@ let strongAnnounce = {};
 
 function calculateStrong() {
     // Loop over all agents in Agt
-    for (const agt of Agt) {
-        const matrix = updateMatrix(agt);
-        const strong = generateExpressions(matrix);
-        strongAnnounce[agt] = strong;
-        console.log(`Agent ${agt}'s strong announcement: ${strong}`);
+    for (const agent of Agt) {
+        generateExpressions(agent);
+        const handleParseFunction = window.effect.handleParseFunction();
+        handleParseFunction.strongestAnnounces(agent);
     }
 }
 
+window.exportedStrongAnnounce = strongAnnounce;
 
 function powerSet2(nums) {
     const result = [[]]; // Initialize with empty set
@@ -680,10 +682,6 @@ function updateMatrix(agt) {
 }
 
 
-
-
-
-
 function extractMatrix() {
     
     const extractedMatrix = [];
@@ -699,15 +697,17 @@ function extractMatrix() {
 }
 
 
-function generateExpressions() {
-    updateMatrix();
+function generateExpressions(agt) {
+   updateMatrix(agt);
     const valuedMatrix = extractMatrix();
     console.log("valuedMatrix ", valuedMatrix);
     const selectedParts = findMGTE(valuedMatrix);
     console.log("selectedParts", selectedParts);
-   const sop = generateSOP(selectedParts);
-   console.log('sop', sop);
-document.getElementById('sop-expression').textContent = sop;
+    const sop = generateSOP(selectedParts);
+    console.log('sop', sop);
+    strongAnnounce[agt] = sop; // Store the strong announcement using the agent name as the key
+    console.log(`Agent ${agt}'s strong announcement: ${strongAnnounce[agt]}`);
+    document.getElementById('sop-expression').textContent = sop;
 }
 
 
