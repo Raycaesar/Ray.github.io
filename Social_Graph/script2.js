@@ -56,8 +56,8 @@ function getIndexAndBinaryTransform(element) {
 function updateMatrix() {
     const inputSetString = document.getElementById('truth-table-set').value;
     if (inputSetString.trim() === "{}") {
-        console.log("Input string is empty, returning default matrix.");
-        return Array.from({ length: matrix.length }, () => Array(matrix[0].length).fill('0'));
+        console.log("Input string is empty, returning zero matrix.");
+        return [['0','0','0','0'],['0','0','0','0']];
     }
 
     const inputArray = inputSetString.match(/\{[^{}]*\}/g);
@@ -197,6 +197,9 @@ function generateSOP(object) {
     const groupsInterpretation = ['~r', 'r', '~q', 'p', '~p', 'q'];
     const tuplesInterpretation = ['(~r&~q)', '(~r&q)', '(~r&~p)', '(~r&p)', '(r&~q)', '(r&q)', '(r&~p)', '(r&p)', '(~p&~q)', '(p&~q)', '(q&~p)', '(q&p)'];
     const elementInterpretation = ['(~p&~q&~r)', '(p&~q&~r)', '(~p&q&~r)', '(p&q&~r)', '(~p&~q&r)', '(p&~q&r)', '(~p&q&r)', '(p&q&r)'];
+
+
+
 
     let sop = "";
 
