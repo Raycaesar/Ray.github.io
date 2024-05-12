@@ -191,7 +191,7 @@ function generateSOP(object) {
 
     if (object.groups.length === 0 && object.tuples.length === 0 && object.elements.length === 0) {
         // If there are no groups, tuples, or elements, return p+~p or (p&~p) if fullMatrix is not empty
-        return (object.fullMatrix.length !== 0) ?  'p+~p' :'(p&~p)';
+        return (object.fullMatrix) ?  'p+~p' :'(p&~p)';
     }
 
     const groupsInterpretation = ['~r', 'r', '~q', 'p', '~p', 'q'];
