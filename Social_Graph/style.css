@@ -3,6 +3,7 @@ body {
     padding: 10;
     box-sizing: border-box;
     background-color: black;
+    
 }
 
 #canvas1 {
@@ -19,12 +20,13 @@ body {
     padding: 20px;
     margin: 10px;
     border-radius: 10px;
+    color:white;
 }
 
 .column {
     flex:40%;
-    background-color:rgb(108, 192, 218);
-    border-radius: 25px;
+    background-color:rgba(108, 162, 179, 0.3);
+    border-radius: 35px;
 margin: 20px;
   padding: 20px;
     
@@ -35,4 +37,27 @@ margin: 20px;
     content: "";
     display: table;
     clear: both;
+  }
+
+  #sop-expression{
+    display: none;
+  }
+  #toggleButton {
+    background-color: #ccc;
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    cursor: pointer;
+  }
+  
+  #toggleButton.on {
+    background-color: #236e58;
+  }
+  
+  #toggleButton.off {
+    background-color: #80150d;
   }

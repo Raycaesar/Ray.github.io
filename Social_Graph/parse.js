@@ -56,7 +56,7 @@ function setAgentFollowers() {
     agentFollowers[selectedAgent] = agentFollowers[selectedAgent] || [];
     agentFollowers[selectedAgent] = selectedFollowers;
     displayFollowers();
-    console.log("a's followers", agentFollowers['a'])
+    //console.log("a's followers", agentFollowers['a'])
 }
 
 
@@ -94,7 +94,7 @@ function setPropSize() {
     const numRows = Prop.length < 4 ? 2 : 4;
     const numCols = 4;
     matrix = Array.from({ length: numRows }, () => Array(numCols).fill(0));
-    console.log("matrix", matrix);
+    //console.log("matrix", matrix);
 
     document.getElementById("propOutput").innerText = `Prop = {${Prop.join(', ')}}`;
 }
@@ -591,7 +591,7 @@ function handleUpdateModelClick() {
     }
 
     const announcement = inputElement.value;
-    console.log("Retrieved announcement:", announcement); // Check the retrieved value
+   // console.log("Retrieved announcement:", announcement); // Check the retrieved value
 
     if (typeof announcement !== 'string' || announcement.trim() === '') {
         console.error("Invalid input: Announcement must be a string and cannot be empty.");
@@ -617,6 +617,7 @@ function calculateStrong() {
         generateExpressions(agent);
         const handleParseFunction = window.effect.handleParseFunction();
         handleParseFunction.strongestAnnounces(agent);
+        //console.log('handleParseFunction', handleParseFunction);
     }
 }
 
@@ -647,19 +648,20 @@ function deepArrayContains(haystack, needle) {
 
 
 function updateMatrix(agt) {
-    console.log("All agent beliefs:", JSON.stringify(agentBeliefs));
-    console.log("Current agent:", agt);
+    //console.log("All agent beliefs:", JSON.stringify(agentBeliefs));
+    //console.log("Current agent:", agt);
     // Ensure the agent has been initialized in agentBeliefs
     if (!agentBeliefs[agt] || !agentBeliefs[agt].denotation) {
-        console.log(`No beliefs found for agent ${agt}, returning default matrix.`);
+       // console.log(`No beliefs found for agent ${agt}, returning default matrix.`);
         return Array.from({ length: 2 }, () => Array(4).fill('0')); // Adjust dimensions as needed
     }
 
     const inputSetString = agentBeliefs[agt].denotation;
 
     if (inputSetString.trim() === "{}") {
-        console.log("Input string is empty, returning default matrix.");
-        return Array.from({ length: matrix.length }, () => Array(matrix[0].length).fill('0'));
+       // console.log("Input string is empty, returning zero matrix.");
+        matrix = [['0','0','0','0'],['0','0','0','0']];
+        return matrix;
     }
 
     const inputArray = inputSetString.match(/\{[^{}]*\}/g);
@@ -677,7 +679,7 @@ function updateMatrix(agt) {
         });
     });
 
-    console.log("matrix", matrix);
+   // console.log("matrix", matrix);
     return matrix;
 }
 
@@ -692,7 +694,7 @@ function extractMatrix() {
             }
         }
     }
-    console.log("extractedMatrix", extractedMatrix);
+   // console.log("extractedMatrix", extractedMatrix);
     return extractedMatrix;
 }
 
@@ -700,13 +702,13 @@ function extractMatrix() {
 function generateExpressions(agt) {
    updateMatrix(agt);
     const valuedMatrix = extractMatrix();
-    console.log("valuedMatrix ", valuedMatrix);
+   // console.log("valuedMatrix ", valuedMatrix);
     const selectedParts = findMGTE(valuedMatrix);
-    console.log("selectedParts", selectedParts);
+   // console.log("selectedParts", selectedParts);
     const sop = generateSOP(selectedParts);
-    console.log('sop', sop);
+   // console.log('sop', sop);
     strongAnnounce[agt] = sop; // Store the strong announcement using the agent name as the key
-    console.log(`Agent ${agt}'s strong announcement: ${strongAnnounce[agt]}`);
+   // console.log(`Agent ${agt}'s strong announcement: ${strongAnnounce[agt]}`);
     document.getElementById('sop-expression').textContent = sop;
 }
 
@@ -731,41 +733,42 @@ function findMGTE(array) {
     ];
 
     let selectedParts = {
-        fullMatrix: [],
+        fullMatrix: false,
         groups: [],
         tuples: [],
         elements: []
     };
 
-    // Check if the input array is equal to the full matrix
-    const arrayEqualFullMatrix = array.length === fullMatrix.length && array.every((elem, idx) => elem === fullMatrix[idx]);
-    if (arrayEqualFullMatrix) {
-        selectedParts.fullMatrix = fullMatrix;
-    } else {
-        // Check if the input array is a subset of any group
-        for (const group of groups) {
-            if (group.every(elem => array.includes(elem))) {
-                selectedParts.groups.push(group);
-            }
-        }
+  // Check if the input array is equal to the full matrix
+  const arrayEqualFullMatrix = array.length === fullMatrix.length && array.every((elem, idx) => elem === fullMatrix[idx]);
+ // console.log("arrayEqualFullMatrix ", arrayEqualFullMatrix);
+  if (arrayEqualFullMatrix) {
+      selectedParts.fullMatrix = true;
+  } else {
+      // Check if the input array is a subset of any group
+      for (const group of groups) {
+          if (group.every(elem => array.includes(elem))) {
+              selectedParts.groups.push(group);
+          }
+      }
 
-        // Check if the input array contains any tuples not covered by the groups
-        const uncoveredTuples = tuples.filter(tuple => {
-            const isTupleCovered = selectedParts.groups.some(group => tuple.every(elem => group.includes(elem)));
-            return tuple.every(elem => array.includes(elem)) && !isTupleCovered;
-        });
-        selectedParts.tuples = uncoveredTuples;
+      // Check if the input array contains any tuples not covered by the groups
+      const uncoveredTuples = tuples.filter(tuple => {
+          const isTupleCovered = selectedParts.groups.some(group => tuple.every(elem => group.includes(elem)));
+          return tuple.every(elem => array.includes(elem)) && !isTupleCovered;
+      });
+      selectedParts.tuples = uncoveredTuples;
 
-        // Check if the input array contains any elements not covered by groups or tuples
-        const uncoveredElements = array.filter(elem => {
-            const isElementCovered = selectedParts.groups.some(group => group.includes(elem)) ||
-                selectedParts.tuples.some(tuple => tuple.includes(elem));
-            return !isElementCovered;
-        });
-        selectedParts.elements = uncoveredElements.map(elem => [elem]);
-    }
+      // Check if the input array contains any elements not covered by groups or tuples
+      const uncoveredElements = array.filter(elem => {
+          const isElementCovered = selectedParts.groups.some(group => group.includes(elem)) ||
+              selectedParts.tuples.some(tuple => tuple.includes(elem));
+          return !isElementCovered;
+      });
+      selectedParts.elements = uncoveredElements.map(elem => [elem]);
+  }
 
-    return selectedParts;
+  return selectedParts;
 }
 
 
@@ -794,7 +797,7 @@ function generateSOP(object) {
 
     if (object.groups.length === 0 && object.tuples.length === 0 && object.elements.length === 0) {
         // If there are no groups, tuples, or elements, return p+~p or (p&~p) if fullMatrix is not empty
-        return (object.fullMatrix.length !== 0) ?  'p+~p' :'(p&~p)';
+        return (object.fullMatrix) ?  'p+~p' :'(p&~p)';
     }
 
     const groupsInterpretation = ['~r', 'r', '~q', 'p', '~p', 'q'];
@@ -840,5 +843,4 @@ function getIndexAndBinaryTransform(element) {
     const col = parseInt(binary.substring(1), 2); 
     return { row, col };
 }
-
 

@@ -3,6 +3,21 @@ const canvas = document.getElementById('canvas1');
 const ctx = canvas.getContext('2d');
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
+let switchOn = false; 
+
+function toggleButton() {
+    var button = document.getElementById("toggleButton");
+    switchOn = !switchOn; // Toggle switch state
+    if (switchOn) {
+        button.innerHTML = "SCRUTINIZE";
+        button.classList.remove("off");
+        button.classList.add("on");
+    } else {
+        button.innerHTML = "OFF";
+        button.classList.remove("on");
+        button.classList.add("off");
+    }
+}
 
 const gradient = ctx.createRadialGradient(canvas.width * 0.5, canvas.height * 0.5, 100, canvas.width * 0.5, canvas.height * 0.5, 600)
 gradient.addColorStop(0, "white");
@@ -89,7 +104,7 @@ class Particle {
     }
 
     update() {
-        if ( this.isMouseOver &&this.effect.mouse.pressed) {  /*this.isMouseOver &&*/
+        if (this.isMouseOver && switchOn) {  /*this.isMouseOver &&*/
             this.radius = 60;
         } else {
             this.radius = 30;
@@ -246,7 +261,7 @@ class Effect {
             const dx = particle.x - x;
             const dy = particle.y - y;
             const distance = Math.hypot(dx, dy);
-            particle.isMouseOver = distance < particle.radius;
+            particle.isMouseOver = distance < particle.radius*1.5;
         });
     }
 
