@@ -246,17 +246,18 @@ function getDenotationResult(agent) {
         console.log("agentBeliefs[agent].denotation:", agentBeliefs[agent].denotation);
         // Check if the agent has beliefs and the denotation is a string.
         const subsets = agentBeliefs[agent].denotation.slice(2, -2).split('}, {'); // Split the string into subsets.
-        //console.log("subsets:", subsets);
-        return subsets.map(subset => subset.split(', ').filter(Boolean)); // Split each subset into individual elements and filter out any empty strings.
+        console.log("subsets:", subsets);
+        return subsets.map(subset => 
+            subset.split(',').map(element => element.trim()).filter(Boolean)
+        ); // Split each subset into individual elements, trim whitespace, and filter out any empty strings.
     }
     return []; // If the conditions are not met, return an empty array.
 }
 
 
 
-
 function drawcoherence() {
-    console.log("Displaying power set...");
+    //console.log("Displaying power set...");
     const powerSetOfProp = powerSet(Prop);
     console.log("Displaying power set of Prop:", powerSetOfProp);
     const svgContainer = document.getElementById("beliefCanvas");
