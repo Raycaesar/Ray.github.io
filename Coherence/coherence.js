@@ -1,5 +1,28 @@
 let agentFollowers = {};
-let agentBeliefs = {};
+let agentBeliefs =  {'a':{
+    messages: [],
+    denotation: '{}'
+},
+'b':{
+    messages: [],
+    denotation: '{}'
+},
+'c':{
+    messages: [],
+    denotation: '{}'
+},
+'d':{
+    messages: [],
+    denotation: '{}'
+},
+'e':{
+    messages: [],
+    denotation: '{}'
+}
+};
+
+
+
 let Agt = ['a', 'b', 'c', 'd', 'e']; // Global agents array
 let Prop = ['p', 'q', 'r', 's', 't'];
 
@@ -8,7 +31,7 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 const agentColors = {}; // We use in graph Drawing
-const colors = ['#D67293', '#73DEFA', '#5DB117', '#5A8CD7', '#CCCC00', '#9A5FD7', '#FA1CA8', '#A300A3', '#00A3A3']; // An array of colors for agents
+const colors = ['#D67293', '#73DEFA', '#5DB117', '#5A8CD7', '#CCCC00', '#9A5FD7', '#FA1CA8', '#A300A3', '#00A3A3', '#F5DAD2', '#DFD0B8', '#BACD92', '#75A47F']; // An array of colors for agents
 
 Agt.forEach((agent, index) => {
     agentColors[agent] = colors[index % colors.length];
@@ -67,10 +90,11 @@ function setAgentFollowers() {
     if (selectedAgent) {
         agentFollowers[selectedAgent] = Array.from(selectedFollowers);
        
-        console.log(`${selectedAgent}'s followers`, agentFollowers[selectedAgent]);
+        //console.log(`${selectedAgent}'s followers`, agentFollowers[selectedAgent]);
     } else {
         alert("Please select an agent first.");
     }
+    console.log("agentFollowers", agentFollowers);
 }
 
 // Display Followers
@@ -97,15 +121,15 @@ function drawNetwork() {
 
     const nodes = Agt.map(agent => ({ id: agent }));
     const links = [];
-    console.log("agentFollowers inside drawNetwork:", agentFollowers);
+    //console.log("agentFollowers inside drawNetwork:", agentFollowers);
     for (let agent in agentFollowers) {
         for (let follower of agentFollowers[agent]) {
             links.push({ source: follower, target: agent });
         }
     }
 
-    console.log("Nodes:", nodes);
-    console.log("Links:", links);
+    //console.log("Nodes:", nodes);
+    //console.log("Links:", links);
 
     const width = svg.node().getBoundingClientRect().width;
     const height = svg.node().getBoundingClientRect().height;
@@ -225,6 +249,7 @@ function drawBackground() {
 document.getElementById('drawBackgound').addEventListener('click', drawBackground);
 
 
+
 function powerSet(set) {
     const powerSet = [];
     const total = Math.pow(2, set.length);
@@ -243,10 +268,17 @@ function powerSet(set) {
 
 function getDenotationResult(agent) {
     if (agentBeliefs[agent] && typeof agentBeliefs[agent].denotation === 'string') {
-        console.log("agentBeliefs[agent].denotation:", agentBeliefs[agent].denotation);
-        // Check if the agent has beliefs and the denotation is a string.
-        const subsets = agentBeliefs[agent].denotation.slice(2, -2).split('}, {'); // Split the string into subsets.
+       // console.log("agentBeliefs[agent].denotation:", agentBeliefs[agent].denotation);
+
+        // Remove the outermost curly braces
+        const denotationCore = agentBeliefs[agent].denotation.slice(2, -2);
+
+        // Split the string by `}, {`
+        const subsets = denotationCore.split(/},\s*{/);
+
         console.log("subsets:", subsets);
+
+        // Further process each subset
         return subsets.map(subset => 
             subset.split(',').map(element => element.trim()).filter(Boolean)
         ); // Split each subset into individual elements, trim whitespace, and filter out any empty strings.
@@ -256,10 +288,11 @@ function getDenotationResult(agent) {
 
 
 
+
 function drawcoherence() {
     //console.log("Displaying power set...");
     const powerSetOfProp = powerSet(Prop);
-    console.log("Displaying power set of Prop:", powerSetOfProp);
+    //console.log("Displaying power set of Prop:", powerSetOfProp);
     const svgContainer = document.getElementById("beliefCanvas");
     svgContainer.innerHTML = '';
 
@@ -281,7 +314,7 @@ function drawcoherence() {
 
     for (let i = 0; i <= Prop.length; i++) {
         const subsetsOfSizeI = powerSetOfProp.filter(subset => subset.length === i);
-        console.log("subsetsOfSizeI", subsetsOfSizeI);
+        //console.log("subsetsOfSizeI", subsetsOfSizeI);
 
         let beliefsForSubset = {};
 
@@ -291,19 +324,19 @@ function drawcoherence() {
             subsetsOfSizeI.forEach(subset => {
                 //console.log(`Comparing subset [${subset.join(", ")}] with agent ${agent} beliefs [${agentBeliefs[agent].denotation}]`);
                 const subsetStr = subset.sort().join(',');
-                console.log("subsetStr", subsetStr);
-                console.log("denotationResult", denotationResult);
+                //console.log("subsetStr", subsetStr);
+                //console.log("denotationResult", denotationResult);
                 const isSubsetInDenotation = denotationResult.some(denotedSubset => 
                     denotedSubset.length === subset.length && 
                     denotedSubset.every(element => subset.includes(element))
                    
                 );
-                console.log("isSubsetInDenotation", isSubsetInDenotation);
+                //console.log("isSubsetInDenotation", isSubsetInDenotation);
                 if (isSubsetInDenotation) {
                     if (!beliefsForSubset[subsetStr]) beliefsForSubset[subsetStr] = [];
                     if (!beliefsForSubset[subsetStr].includes(agent)) { // Avoid double counting agents.
                         beliefsForSubset[subsetStr].push(agent);
-                        console.log("beliefsForSubset", beliefsForSubset);
+                        //console.log("beliefsForSubset", beliefsForSubset);
                     }
                     
                 }
@@ -338,7 +371,7 @@ function createCircle(x, y, label, svgContainer, radius, believingAgents) {
     // Filter out agents with an empty denotation.
     const agentsWithBeliefs = believingAgents.filter(agent => agentBeliefs[agent] && agentBeliefs[agent].denotation !== '{}');
 
-    console.log("agentsWithBeliefs:", agentsWithBeliefs);
+    //console.log("agentsWithBeliefs:", agentsWithBeliefs);
 
     // Determine the fill color based on the believing agents.
     let fillColor = "white"; // Default to white (no belief).
@@ -351,12 +384,12 @@ function createCircle(x, y, label, svgContainer, radius, believingAgents) {
      });
 
     if (agentsWithBeliefs.length === 1) {
-        console.log(`Assigning color for single agent belief: ${agentsWithBeliefs[0]}`);
+        //console.log(`Assigning color for single agent belief: ${agentsWithBeliefs[0]}`);
         // If there is exactly one believing agent with non-empty denotation.
         const agent = agentsWithBeliefs[0];
         fillColor = agentColors[agent];
     } else if (agentsWithBeliefs.length > 1) {
-        console.log(`Assigning color for multiple agents: ${agentsWithBeliefs.join(", ")}`);
+        //console.log(`Assigning color for multiple agents: ${agentsWithBeliefs.join(", ")}`);
         // If there are multiple believing agents with non-empty denotation, we will create arcs later.
         fillColor = "none";
     }
@@ -403,9 +436,9 @@ function createCircle(x, y, label, svgContainer, radius, believingAgents) {
 
  // This function is responsible for visualizing the power set of propositions on an SVG canvas.
  function displayBackground() {
-    console.log("Displaying power set...");
+   // console.log("Displaying power set...");
     const powerSetOfProp = powerSet(Prop);
-    console.log("Displaying power set of Prop:", powerSetOfProp);
+   // console.log("Displaying power set of Prop:", powerSetOfProp);
     const svgContainer = document.getElementById("beliefCanvas");
     svgContainer.innerHTML = '';
 
@@ -505,7 +538,7 @@ function attachNodeClickHandler(node, svgContainer) {
 
         dropdown.addEventListener('change', function() {
             selectedAgents = Array.from(dropdown.selectedOptions).map(option => option.value);
-            console.log("selectedAgents:", selectedAgents);
+            //console.log("selectedAgents:", selectedAgents);
         });
 
         dropdown.addEventListener('keydown', function(e) {
@@ -692,7 +725,7 @@ function updateDenotationString(agent, nodeText) {
 
     // Ensure that the sets are joined with ', ' for consistent formatting
     agentBeliefs[agent].denotation = `{${currentSets.map(set => `{${set.join(', ')}}`).join(', ')}}`;
-    console.log(`Agent '${agent}'s belief:`, agentBeliefs[agent].denotation);
+    console.log(`agentBeliefs ${agent}'s denotation:`, agentBeliefs[agent].denotation);
 }
 
 
@@ -704,13 +737,21 @@ document.addEventListener('DOMContentLoaded', function() {
 
 function initializeCoherence() {
     const coherenceSelector = document.getElementById('coherenceSelector');
-    coherences.forEach(coherent => {
+    coherences.forEach((coherent, index) => {
         const coherenceButton = document.createElement('button');
+        // Add coherenceButton.className = 'coherence-button'; 
+        coherenceButton.style.backgroundColor = colors[8 + index];
         coherenceButton.innerText = coherent;
         coherenceButton.onclick = () => coherenceGenerate(coherent);
         coherenceSelector.appendChild(coherenceButton);
     });
 }
+
+
+
+
+
+
 
 function coherenceGenerate(coherent) {
 
@@ -725,31 +766,226 @@ function coherenceGenerate(coherent) {
             agentFollowers['c'] = ['b', 'c'];
             agentFollowers['d'] = ['a', 'c'];
             agentFollowers['e'] = ['b', 'e'];
-            agentBeliefs['a'].messages = ['p', 'p,r'];
-            agentBeliefs['a'].denotation = '{{p}, {p,r}}';
-            agentBeliefs['b'].messages = ['q', 'p,r'];
-            agentBeliefs['b'].denotation = '{{q}, {p,r}}';
-            agentBeliefs['c'].messages = ['r', 'p,r'];
-            agentBeliefs['c'].denotation = '{{r}, {p,r}}';
-            agentBeliefs['d'].messages = ['s', 'p,r'];
-            agentBeliefs['d'].denotation = '{{s}, {p,r}}';
-            agentBeliefs['e'].messages = ['t', 'p,r'];
-            agentBeliefs['e'].denotation = '{{t}, {p,r}}';
-            console.log("agentBeliefs", agentBeliefs);
+            
+            agentBeliefs['a'].denotation = '{{p}, {p,r}, {p,s}}';
+           
+            agentBeliefs['b'].denotation = '{{q,r}, {p,r}}';
+           
+            agentBeliefs['c'].denotation = '{{p,r,t}, {p,r}, {p,s}}';
+       
+            agentBeliefs['d'].denotation = '{{s}, {p,q}, {p,r}, {p,r,t}}';
+            
+            agentBeliefs['e'].denotation = '{{t}, {p,r}, {p,s}, {p,q,r,s}}';
+           
             drawNetwork();
             drawcoherence();
             break;
-        default:
+
+        case 'lc':
+            agentFollowers['a'] = ['d', 'b', 'c'];
+            agentFollowers['b'] = ['c'];
+            agentFollowers['c'] = ['b', 'c'];
+            agentFollowers['d'] = ['e', 'd'];
+            agentFollowers['e'] = ['d', 'e'];
+            
+            agentBeliefs['a'].denotation = '{{p}, {p,r}, {p,s}}';
+            
+            agentBeliefs['b'].denotation = '{{q,r}, {p,r}}';
+            
+            agentBeliefs['c'].denotation = '{{p,r}, {p,r,t}, {p,s}}';
+        
+            agentBeliefs['d'].denotation = '{{s}, {p,q}, {p,s}, {p,r,t}}';
+
+            agentBeliefs['e'].denotation = '{{t}, {p,s}, {p,q,r,s}}';
+            
+            drawNetwork();
+            drawcoherence();
+            break;
+
+        case 'wc':
+            agentFollowers['a'] = ['d'];
+            agentFollowers['b'] = ['c'];
+            agentFollowers['c'] = ['b', 'c'];
+            agentFollowers['d'] = ['a', 'd'];
+            agentFollowers['e'] = ['d', 'e'];
+            
+            agentBeliefs['a'].denotation = '{{p}}';
+            
+            agentBeliefs['b'].denotation = '{{q,r}, {p,r}}';
+            
+            agentBeliefs['c'].denotation = '{{p,r}, {p,r,t}}';
+        
+            agentBeliefs['d'].denotation = '{{s}}';
+
+            agentBeliefs['e'].denotation = '{{t}}';
+            
+            drawNetwork();
+            drawcoherence();
+            break;
+        case 'cc':
+            agentFollowers['a'] = [];
+            agentFollowers['b'] = ['c'];
+            agentFollowers['c'] = ['a','b', 'c'];
+            agentFollowers['d'] = ['a', 'd'];
+            agentFollowers['e'] = [];
+            
+            agentBeliefs['a'].denotation = '{{p,r}, {s}}';
+            
+            agentBeliefs['b'].denotation = '{{q,r}, {p,r}}';
+            
+            agentBeliefs['c'].denotation = '{{p,r}, {p,r,t}}';
+        
+            agentBeliefs['d'].denotation = '{{p,r},{s}}';
+
+            agentBeliefs['e'].denotation = '{}';
+            
+            drawNetwork();
+            drawcoherence();
+            break;
+        case 'fc':
+            agentFollowers['a'] = [];
+            agentFollowers['b'] = ['c'];
+            agentFollowers['c'] = ['a','b', 'c'];
+            agentFollowers['d'] = ['a', 'd'];
+            agentFollowers['e'] = [];
+            
+            agentBeliefs['a'].denotation = '{{p}, {s}}';
+            
+            agentBeliefs['b'].denotation = '{{q,r}, {p,r}}';
+            
+            agentBeliefs['c'].denotation = '{{p,r}, {p,r,t}}';
+        
+            agentBeliefs['d'].denotation = '{{p,r},{s}}';
+
+            agentBeliefs['e'].denotation = '{}';
+            
+            drawNetwork();
+            drawcoherence();
+            break;
+    default:
             throw new Error("Invalid or non-well-formed formula.");
     }
 }
 
 
 
+function followingChain() {
+    let chains = [];
 
+    function buildChain(agent, currentChain) {
+        const followers = agentFollowers[agent];
+        if (followers) {
+            followers.forEach(follower => {
+                if (!currentChain.includes(follower)) {
+                    buildChain(follower, [...currentChain, follower]);
+                }
+            });
+        } else {
+            chains.push(currentChain);
+        }
+    }
 
+    Object.keys(agentFollowers).forEach(agent => {
+        buildChain(agent, [agent]);
+    });
 
+    // Remove subchains by keeping only maximal chains
+    chains = chains.filter((chain, index, self) =>
+        self.every((otherChain, otherIndex) => 
+            otherIndex === index || !chain.every((val, i) => val === otherChain[i])
+        )
+    );
 
+    console.log("chains", chains);
+    return chains;
+}
+
+function checkCoherence() {
+    let output = new Set();
+    const chains = followingChain();
+    const allAgents = Object.keys(agentBeliefs);
+
+    function getIntersection(sets) {
+        if (!sets.length) return new Set();
+        return sets.reduce((acc, set) => {
+            return new Set([...acc].filter(x => set.has(x)));
+        });
+    }
+
+    function parseDenotation(agent) {
+        return getDenotationResult2(agent).map(set => new Set(set));
+    }
+
+    function isIntersectionNotEmpty(agent) {
+        const sets = parseDenotation(agent);
+        return getIntersection(sets).size > 0;
+    }
+
+    function isDenotationEmpty(agent) {
+        console.log("parseDenotation(agent).length", parseDenotation(agent).length);
+        return parseDenotation(agent).length === 0;
+    }
+
+    let globalCondition = allAgents.every(isIntersectionNotEmpty);
+    let chainCondition = chains.every(chain => chain.every(isIntersectionNotEmpty));
+
+    if (globalCondition) {
+        output.add('gc');
+    }
+    if (globalCondition || chainCondition) {
+        output.add('lc');
+    }
+
+    let weakCoherence = false;
+    let chainCoherence = false;
+    let followerCoherence = false;
+
+    
+
+    if (Agt.every(agent => !isDenotationEmpty(agent))) {
+            weakCoherence = true;
+        }   
+
+    chains.forEach(chain => {
+        if (chain.some(agent => isIntersectionNotEmpty(agent)) &&
+                   chain.every(agent => isDenotationEmpty(agent) || isIntersectionNotEmpty(agent))) {
+            chainCoherence = true;
+            followerCoherence = true;
+        } else if (chain.some(agent => isIntersectionNotEmpty(agent))) {
+            followerCoherence = true;
+        }
+    });
+
+    if (weakCoherence) {
+        output.add('wc');
+    }
+    if (chainCoherence) {
+        output.add('cc');
+    }
+    if (followerCoherence) {
+        output.add('fc');
+    }
+
+    if (output.size === 0) output.add('No coherence');
+    document.getElementById('coherenceCheck').innerHTML = Array.from(output).join(', ').trim();
+    console.log("output", Array.from(output).join(', '));
+}
+
+document.getElementById('checkCoherence').addEventListener('click', checkCoherence);
+
+function getDenotationResult2(agent) {
+    if (agentBeliefs[agent] && typeof agentBeliefs[agent].denotation === 'string') {
+        const denotationCore = agentBeliefs[agent].denotation.slice(2, -2);
+        console.log(`agentBeliefs${agent}.denotation`, agentBeliefs[agent].denotation);
+        console.log("denotationCore", denotationCore);
+        const subsets = denotationCore.split(/},\s*{/).map(subset => {
+            return subset.replace('{', '').replace('}', '').split(',').map(element => element.trim()).filter(Boolean);
+        });
+        console.log("subsets", subsets);
+        return subsets.filter(subset => subset.length > 0);
+    }
+    return [];
+}
 
 
 
@@ -1140,8 +1376,8 @@ function isSubsetOf(subsetWorlds, supersetWorlds) {
 
 
 function evaluateLiteral(message, agent) {
-    console.log("agent:", agent);
-    console.log("message:", message);
+    //console.log("agent:", agent);
+    //console.log("message:", message);
     
 
     // Assuming replaceWithDenotation returns a set of worlds where the message is true.
@@ -1182,7 +1418,7 @@ function evaluateFormula(formula) {
             return !evaluateFormula(formula.left) || evaluateFormula(formula.right);
 
         case 'free announcement':
-                    console.log("Evaluating free announcement:", formula.announcement);
+                    //console.log("Evaluating free announcement:", formula.announcement);
         
                     // Temporarily store the current belief states
                     const originalBeliefs = JSON.parse(JSON.stringify(agentBeliefs));
