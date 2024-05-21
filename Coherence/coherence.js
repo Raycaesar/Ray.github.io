@@ -686,8 +686,6 @@ function clearNodeColors(node) {
 
 
 function updateAgentBeliefFromNode(agent, nodeText) {
-    // Removed the check for empty nodeText
-
     // Check if 'agent' is defined and a valid key in 'agentBeliefs'
     if (typeof agent === 'undefined' || !Agt.includes(agent)) {
         console.error(`Agent '${agent}' is not defined or not in the list of agents.`);
@@ -703,8 +701,9 @@ function updateAgentBeliefFromNode(agent, nodeText) {
     }
 
     // Update the messages array
-    if (nodeText && !agentBeliefs[agent].messages.includes(nodeText)) {
+    if (nodeText === "" || !agentBeliefs[agent].messages.includes(nodeText)) {
         agentBeliefs[agent].messages.push(nodeText);
+        console.log(`agentBeliefs ${agent}'s messages:`, agentBeliefs[agent].messages);
     }
 
     // Update the denotation string
@@ -714,12 +713,14 @@ function updateAgentBeliefFromNode(agent, nodeText) {
 
 // Helper function to update the denotation string
 function updateDenotationString(agent, nodeText) {
+    // Parse the existing denotation into an array of sets
     let currentSets = agentBeliefs[agent].denotation === '{}' ? [] : 
-        agentBeliefs[agent].denotation.slice(2, -2).split('}, {').map(set => set.split(', ').map(s => s.trim()));
+        agentBeliefs[agent].denotation.slice(1, -1).split('}, {').map(set => set.replace(/[{}]/g, '').split(', ').map(s => s.trim()));
 
+    // Add the new nodeText as a set if it doesn't already exist
     if (!currentSets.some(set => set.join(', ') === nodeText)) {
         // Split the nodeText to ensure that each element is separated and trimmed
-        let newNodeTextArray = nodeText.split(',').map(s => s.trim());
+        let newNodeTextArray = nodeText === "" ? [] : nodeText.split(',').map(s => s.trim());
         currentSets.push(newNodeTextArray);
     }
 
@@ -728,12 +729,24 @@ function updateDenotationString(agent, nodeText) {
     console.log(`agentBeliefs ${agent}'s denotation:`, agentBeliefs[agent].denotation);
 }
 
+function displayAgentBeliefs() {
+    Agt.forEach(agent => {
+        console.log(`agentBeliefs ${agent}'s messages:`, agentBeliefs[agent].messages);
+        console.log(`agentBeliefs ${agent}'s denotation:`, agentBeliefs[agent].denotation);
+    });
+}
+
+
+
+
 
 const coherences = ['gc', 'lc', 'wc', 'cc', 'fc'];
 
 document.addEventListener('DOMContentLoaded', function() {
     initializeCoherence();
 });
+
+
 
 function initializeCoherence() {
     const coherenceSelector = document.getElementById('coherenceSelector');
@@ -762,14 +775,19 @@ function coherenceGenerate(coherent) {
             agentFollowers['e'] = ['b', 'e'];
             
             agentBeliefs['a'].denotation = '{{p}, {p,r}, {p,s}}';
+            agentBeliefs['a'].messages = [['p'], ['p,r'], ['p,s']];
            
             agentBeliefs['b'].denotation = '{{q,r}, {p,r}}';
+            agentBeliefs['b'].messages = [['q,r'], ['p,r']];
            
             agentBeliefs['c'].denotation = '{{p,r,t}, {p,r}, {p,s}}';
+            agentBeliefs['c'].messages = [['p,r,t'], ['p,r'], ['p,s']];
        
             agentBeliefs['d'].denotation = '{{s}, {p,q}, {p,r}, {p,r,t}}';
+            agentBeliefs['d'].messages = [['s'], ['p,q'], ['p,r'], ['p,r,t']];
             
             agentBeliefs['e'].denotation = '{{t}, {p,r}, {p,s}, {p,q,r,s}}';
+            agentBeliefs['e'].messages = [['t'], ['p,r'], ['p,s'], ['p,q,r,s']];
            
             drawNetwork();
             drawcoherence();
@@ -909,20 +927,22 @@ function parseSet(denotation) {
 }
 
 function setIntersection(setA, setB) {
-    function areSetsEqual(set1, set2) {
-        const sortedSet1 = cleanSet(set1).sort();
-        const sortedSet2 = cleanSet(set2).sort();
-        return sortedSet1.length === sortedSet2.length && sortedSet1.every((element, index) => element === sortedSet2[index]);
-    }
-
-    return setA.filter(subsetA => 
-        setB.some(subsetB => areSetsEqual(subsetA, subsetB))
-    );
+    const cleanSetA = cleanSet(setA);
+    const cleanSetB = cleanSet(setB);
+    return cleanSetA.filter(element => cleanSetB.includes(element));
 }
+
 
 function cleanSet(set) {
+    if (!Array.isArray(set)) {
+        console.error("cleanSet expects an array but got:", set);
+        return [];
+    }
     return set.map(element => element.replace(/[{}]/g, '').trim());
 }
+
+
+
 
 function arraysAreEqual(arr1, arr2) {
     if (arr1.length !== arr2.length) return false;
@@ -940,35 +960,32 @@ function parseDenotation(denotation) {
 
 
 function getIntersection(sets) {
-    if (sets.length === 1) {
-
-       if(sets[0] === ['']){
+    if (!Array.isArray(sets) || sets.length === 0) {
+        console.error("getIntersection expects a non-empty array but got:", sets);
         return [];
-       }
-       else {return sets[0]};
     }
 
-    else{
-    let intersection = sets[0];
-    
-    for (let i = 0; i < sets.length; i++){
-
-    intersection = setIntersection(intersection, sets[i])
-    console.log(`intersection__:`, intersection);
+    return sets.reduce((acc, currentSet) => {
+        if (!Array.isArray(currentSet)) {
+            console.error("Expected an array but got:", currentSet);
+            return acc;
+        }
+        return setIntersection(acc, currentSet);
+    });
 }
-
-return intersection
-}}
-
 
 
 function isIntersectionNotEmpty(chain, agentBeliefs) {
-    const denotations = chain.map(agent => parseDenotation(agentBeliefs[agent].denotation));
-    console.log(`denotations:`, denotations);
-    const intersection = getIntersection(denotations);
+    const setOfmessages = chain.map(agent => agentBeliefs[agent].messages);
+    console.log(`setOfmessages:`, setOfmessages);
+    const intersection = getIntersection(setOfmessages);
     console.log("intersection:", intersection);
-    return intersection.length > 0;
+    return Array.isArray(intersection) && intersection.length > 0;
 }
+
+
+
+
 
 function isDenotationEmpty(agent, agentBeliefs) {
     const denotation = agentBeliefs[agent].denotation;
@@ -976,23 +993,29 @@ function isDenotationEmpty(agent, agentBeliefs) {
 }
 
 
+
 function checkCoherence() {
     let output = new Set();
 
-    //const chains = removeSubchains(buildChain(agentFollowers));
     const chains = buildChain(agentFollowers);
     console.log("chains:", chains);
     const chainsNoTail = cutTail(chains);
     console.log("chainsNoTail:", chainsNoTail);
 
-    const globalCondition = Agt.every(agent => isIntersectionNotEmpty([agent], agentBeliefs));
+    // Compute globalCondition as the intersection of messages of all agents
+    const allMessages = Agt.map(agent => agentBeliefs[agent].messages);
+    console.log(`allMessages:`, allMessages);
+    const globalIntersection = getIntersection(allMessages);
+    console.log("globalIntersection:", globalIntersection);
+    const globalCondition = Array.isArray(globalIntersection) && globalIntersection.length > 0;
+    console.log("globalCondition:", globalCondition);
+
     const chainCondition = chains.every(chain => isIntersectionNotEmpty(chain, agentBeliefs));
     console.log("chainCondition:", chainCondition);
     const followerCoherence = chainsNoTail.every(chain => isIntersectionNotEmpty(chain, agentBeliefs));
     console.log("followerCoherence:", followerCoherence);
-    let weakCoherence = Agt.every(agent => !isDenotationEmpty(agent, agentBeliefs));
+    const weakCoherence = Agt.every(agent => !isDenotationEmpty(agent, agentBeliefs));
     console.log("weakCoherence:", weakCoherence);
-
 
     if (chainCondition) {
         output.add('cc');
@@ -1007,6 +1030,9 @@ function checkCoherence() {
     if (globalCondition) {
         output.add('gc');
     }
+    if (followerCoherence) {
+        output.add('fc');
+    }
     if (output.size === 0) output.add('No coherence');
 
     document.getElementById('coherenceCheck').innerHTML = Array.from(output).join(', ').trim();
@@ -1014,6 +1040,12 @@ function checkCoherence() {
 }
 
 document.getElementById('checkCoherence').addEventListener('click', checkCoherence);
+
+
+
+
+
+
 
 
 

@@ -12,7 +12,8 @@
 
 <body>
     <h1>Coherences</h1>
-    <h5> This program demonstrates five coherences we defined in social announcement logic.</h5>
+    <h5> This program demonstrates five coherences we defined in social announcement logic. <br>
+        The "Check Coherence" button only works for users-assigned networks and beliefs, not for the provided examples. Additionally, it is recommended to refresh the page to reassign a network and beliefs before performing the next coherence check</h5>
     
     <div class="row">
         <div class="column">
@@ -39,12 +40,15 @@
 
             <div id="cy">
                 <svg id="beliefCanvas"></svg>
+                
             </div>
-            
             <button id="drawBackgound">Draw Background</button>
-            <h4>Example of Coherences</h5>
+            
+            <h4>Example of Coherences</h4>
             <div id="coherenceSelector"></div>
+            <h4>Check Coherences (Only assigned, not examples)</h4>
             <button id="checkCoherence">Check Coherence</button><p id="coherenceCheck"></p>
+            
         </div>
         
     </div>
