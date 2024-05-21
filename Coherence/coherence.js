@@ -747,12 +747,6 @@ function initializeCoherence() {
     });
 }
 
-
-
-
-
-
-
 function coherenceGenerate(coherent) {
 
     
@@ -868,16 +862,15 @@ function coherenceGenerate(coherent) {
 }
 
 
-
-function followingChain() {
+function buildChain(agentFollowers) {
     let chains = [];
 
-    function buildChain(agent, currentChain) {
+    function buildChainRecursively(agent, currentChain) {
         const followers = agentFollowers[agent];
         if (followers) {
             followers.forEach(follower => {
                 if (!currentChain.includes(follower)) {
-                    buildChain(follower, [...currentChain, follower]);
+                    buildChainRecursively(follower, [...currentChain, follower]);
                 }
             });
         } else {
@@ -886,106 +879,142 @@ function followingChain() {
     }
 
     Object.keys(agentFollowers).forEach(agent => {
-        buildChain(agent, [agent]);
+        buildChainRecursively(agent, [agent]);
     });
 
-    // Remove subchains by keeping only maximal chains
-    chains = chains.filter((chain, index, self) =>
+    return chains;
+}
+/*
+function removeSubchains(chains) {
+    return chains.filter((chain, index, self) =>
         self.every((otherChain, otherIndex) => 
             otherIndex === index || !chain.every((val, i) => val === otherChain[i])
         )
     );
-
-    console.log("chains", chains);
-    return chains;
 }
+*/
+function cutTail(chains) {
+    return chains.map(chain => chain.slice(0, -1));
+}
+
+function stringToDenotation(denotationStr) {
+    if (denotationStr === '{}' || denotationStr === '') return [];
+    return denotationStr.slice(2, -2).split('}, {')
+        .map(str => str.split(',').map(element => element.trim()).filter(Boolean));
+}
+function parseSet(denotation) {
+    if (denotation === '{}' || denotation === '') return [];
+    return denotation.slice(2, -2).split('}, {')
+        .map(str => str.split(',').map(element => element.trim()).filter(Boolean));
+}
+
+function setIntersection(setA, setB) {
+    function areSetsEqual(set1, set2) {
+        const sortedSet1 = cleanSet(set1).sort();
+        const sortedSet2 = cleanSet(set2).sort();
+        return sortedSet1.length === sortedSet2.length && sortedSet1.every((element, index) => element === sortedSet2[index]);
+    }
+
+    return setA.filter(subsetA => 
+        setB.some(subsetB => areSetsEqual(subsetA, subsetB))
+    );
+}
+
+function cleanSet(set) {
+    return set.map(element => element.replace(/[{}]/g, '').trim());
+}
+
+function arraysAreEqual(arr1, arr2) {
+    if (arr1.length !== arr2.length) return false;
+    for (let i = 0; i < arr1.length; i++) {
+        if (arr1[i] !== arr2[i]) return false;
+    }
+    return true;
+}
+
+
+function parseDenotation(denotation) {
+    // Remove the outermost braces and split by "}, {", then add the braces back to each group
+    return denotation.slice(2, -2).split('}, {').map(group => [group]);
+}
+
+
+function getIntersection(sets) {
+    if (sets.length === 1) {
+
+       if(sets[0] === ['']){
+        return [];
+       }
+       else {return sets[0]};
+    }
+
+    else{
+    let intersection = sets[0];
+    
+    for (let i = 0; i < sets.length; i++){
+
+    intersection = setIntersection(intersection, sets[i])
+    console.log(`intersection__:`, intersection);
+}
+
+return intersection
+}}
+
+
+
+function isIntersectionNotEmpty(chain, agentBeliefs) {
+    const denotations = chain.map(agent => parseDenotation(agentBeliefs[agent].denotation));
+    console.log(`denotations:`, denotations);
+    const intersection = getIntersection(denotations);
+    console.log("intersection:", intersection);
+    return intersection.length > 0;
+}
+
+function isDenotationEmpty(agent, agentBeliefs) {
+    const denotation = agentBeliefs[agent].denotation;
+    return denotation === '{}';
+}
+
 
 function checkCoherence() {
     let output = new Set();
-    const chains = followingChain();
-    const allAgents = Object.keys(agentBeliefs);
 
-    function getIntersection(sets) {
-        if (!sets.length) return new Set();
-        return sets.reduce((acc, set) => {
-            return new Set([...acc].filter(x => set.has(x)));
-        });
+    //const chains = removeSubchains(buildChain(agentFollowers));
+    const chains = buildChain(agentFollowers);
+    console.log("chains:", chains);
+    const chainsNoTail = cutTail(chains);
+    console.log("chainsNoTail:", chainsNoTail);
+
+    const globalCondition = Agt.every(agent => isIntersectionNotEmpty([agent], agentBeliefs));
+    const chainCondition = chains.every(chain => isIntersectionNotEmpty(chain, agentBeliefs));
+    console.log("chainCondition:", chainCondition);
+    const followerCoherence = chainsNoTail.every(chain => isIntersectionNotEmpty(chain, agentBeliefs));
+    console.log("followerCoherence:", followerCoherence);
+    let weakCoherence = Agt.every(agent => !isDenotationEmpty(agent, agentBeliefs));
+    console.log("weakCoherence:", weakCoherence);
+
+
+    if (chainCondition) {
+        output.add('cc');
+        output.add('fc');
     }
-
-    function parseDenotation(agent) {
-        return getDenotationResult2(agent).map(set => new Set(set));
-    }
-
-    function isIntersectionNotEmpty(agent) {
-        const sets = parseDenotation(agent);
-        return getIntersection(sets).size > 0;
-    }
-
-    function isDenotationEmpty(agent) {
-        console.log("parseDenotation(agent).length", parseDenotation(agent).length);
-        return parseDenotation(agent).length === 0;
-    }
-
-    let globalCondition = allAgents.every(isIntersectionNotEmpty);
-    let chainCondition = chains.every(chain => chain.every(isIntersectionNotEmpty));
-
-    if (globalCondition) {
-        output.add('gc');
-    }
-    if (globalCondition || chainCondition) {
+    if (weakCoherence && chainCondition) {
         output.add('lc');
     }
-
-    let weakCoherence = false;
-    let chainCoherence = false;
-    let followerCoherence = false;
-
-    
-
-    if (Agt.every(agent => !isDenotationEmpty(agent))) {
-            weakCoherence = true;
-        }   
-
-    chains.forEach(chain => {
-        if (chain.some(agent => isIntersectionNotEmpty(agent)) &&
-                   chain.every(agent => isDenotationEmpty(agent) || isIntersectionNotEmpty(agent))) {
-            chainCoherence = true;
-            followerCoherence = true;
-        } else if (chain.some(agent => isIntersectionNotEmpty(agent))) {
-            followerCoherence = true;
-        }
-    });
-
     if (weakCoherence) {
         output.add('wc');
     }
-    if (chainCoherence) {
-        output.add('cc');
+    if (globalCondition) {
+        output.add('gc');
     }
-    if (followerCoherence) {
-        output.add('fc');
-    }
-
     if (output.size === 0) output.add('No coherence');
+
     document.getElementById('coherenceCheck').innerHTML = Array.from(output).join(', ').trim();
     console.log("output", Array.from(output).join(', '));
 }
 
 document.getElementById('checkCoherence').addEventListener('click', checkCoherence);
 
-function getDenotationResult2(agent) {
-    if (agentBeliefs[agent] && typeof agentBeliefs[agent].denotation === 'string') {
-        const denotationCore = agentBeliefs[agent].denotation.slice(2, -2);
-        console.log(`agentBeliefs${agent}.denotation`, agentBeliefs[agent].denotation);
-        console.log("denotationCore", denotationCore);
-        const subsets = denotationCore.split(/},\s*{/).map(subset => {
-            return subset.replace('{', '').replace('}', '').split(',').map(element => element.trim()).filter(Boolean);
-        });
-        console.log("subsets", subsets);
-        return subsets.filter(subset => subset.length > 0);
-    }
-    return [];
-}
 
 
 
@@ -1157,24 +1186,6 @@ function atomDenotation(atom) {
 
 
 
-function parseSet(denotation) {
-    if (denotation === '{}' || denotation === '') return [];
-    return denotation.slice(2, -2).split('}, {')
-                     .map(str => str.split(',').map(element => element.trim()).filter(Boolean));
-}
-
-function setIntersection(setA, setB) {
-    function areSetsEqual(set1, set2) {
-        const sortedSet1 = cleanSet(set1).sort();
-        const sortedSet2 = cleanSet(set2).sort();
-        return sortedSet1.length === sortedSet2.length && sortedSet1.every((element, index) => element === sortedSet2[index]);
-    }
-
-    return setA.filter(subsetA => 
-        setB.some(subsetB => areSetsEqual(subsetA, subsetB))
-    );
-}
-
 function setUnion(setA, setB) {
     const union = [...setA];
     for (const subset of setB) {
@@ -1193,28 +1204,13 @@ function complementOfSet(set) {
         setSubset.length === subset.length && setSubset.every((element, index) => element === subset[index])
     ));
 }
-function cleanSet(set) {
-    return set.map(element => element.replace(/[{}]/g, '').trim());
-}
-
-function arraysAreEqual(arr1, arr2) {
-    if (arr1.length !== arr2.length) return false;
-    for (let i = 0; i < arr1.length; i++) {
-        if (arr1[i] !== arr2[i]) return false;
-    }
-    return true;
-}
 
 function denotationToString(denotation) {
     if (denotation.length === 0) return '{}';
     return `{{${denotation.map(set => set.join(', ')).join('}, {')}}}`;
 }
 
-function stringToDenotation(denotationStr) {
-    if (denotationStr === '{}' || denotationStr === '') return [];
-    return denotationStr.slice(2, -2).split('}, {')
-        .map(str => str.split(',').map(element => element.trim()).filter(Boolean));
-}
+
 
 
 function tokenizeFormula(formula) {
