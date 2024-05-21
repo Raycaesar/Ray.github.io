@@ -1,0 +1,434 @@
+
+
+<!doctype html>
+<html lang="en">
+
+	<head>
+		<meta charset="utf-8">
+
+		<title>reveal.js – The HTML Presentation Framework</title>
+
+		<meta name="description" content="A framework for easily creating beautiful presentations using HTML">
+		<meta name="author" content="Hakim El Hattab">
+
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+		<!--<link rel="stylesheet" type="text/css" href="http://tikzjax.com/v1/fonts.css"> 
+		<script src="http://tikzjax.com/v1/tikzjax.js"></script>
+		<script type="text/tikz">
+			\begin{tikzpicture}
+			  \draw (0,0) circle (1in);
+			\end{tikzpicture}
+		  </script>      
+
+		
+		
+		
+		-->
+
+		<link rel="stylesheet" href="dist/reset.css">
+		<link rel="stylesheet" href="dist/reveal.css">
+        <link rel="stylesheet" href="dist/universestyle.css"> <!--change style by tags-->
+		<link rel="stylesheet" href="dist/theme/league.css" id="theme"> <!--change style by themes-->
+		
+
+		<!-- Theme used for syntax highlighting of code -->
+		<link rel="stylesheet" href="plugin/highlight/monokai.css">
+	</head>
+
+	<body>
+
+		<div class="reveal">
+
+			<!-- Any section element inside of this container is displayed as a slide -->
+			<div class="slides">
+				<section frameBorder="0">
+					<h1>Social Announcement Logic</h1>
+					<h4>Dynamic Epistemic Logic in Social Networks </h4>
+                    
+					<p class="title">
+						<small> Rui Zhu
+							<br/>
+							<br/>
+							Supervised by
+							Dr. Jeremy Seligman</small>
+						<br/>
+						<br/>
+						
+						<small> Department of Philosophy, Humanities, UNIVERSITY OF AUCKALND</small>
+						<br/>
+						<img class="logo" style="background: rgba(255,255,255,0.5);" width="200" height="150" data-src="C:\Users\zrui956\OneDrive - The University of Auckland\Desktop\reveal.js-master\reveal.js-master\material\The University of Auckland.png" alt="Down arrow">
+					</p>
+				</section>
+
+
+				<section>
+					<section>
+					<h3>Motivations</h3>
+
+					<div class="container">
+						<ul class="main_li">
+							<li>Dynamic Epistemic Logic is capable of representing epistemic update, providing us with analyses of following relationships and the structure of social networks.</li>
+							<li><em>Key inquiries</em>:</li>
+							<ol type="1" class="sub_li">
+								<li>Can we establish a logical framework for reasoning about following relationships through belief updates?</li>
+								<li>Is this logical framework axiomatizable?</li>
+								<li>Is the concept of following relationships expressible in this framework, and do epistemic distributions play a significant role?</li>
+								<li>Are there efficient methods available to determine the satisfiability and validity of formulas?</li>
+								<li>How can we effectively apply this logic to practical domains?</li>
+							</ol>
+						</ul>
+					</div>
+				</section>
+					
+						<section data-id="9a06014caaed52eb8f5244b4e49686f9" data-background-interactive="true" data-preload="" data-background-iframe="https://raycaesar.github.io/Ray.github.io/Social_Graph/index1.html"></section>
+						
+						
+				</section>
+
+                <section>
+			
+
+					<section>
+						<h3>Framework</h3>
+						<h6></h6> 
+						<p class="row"> <b>Language of APAL</b>
+						 $\mathsf{A}$ is a finite set of agents. $\mathsf{Prop}$ is the set of propositional variables.  A <u> message </u> is defined as follows
+						 <br>
+						
+						   \[ \theta := p~|~\neg \theta~|~(\theta\wedge \theta)\]
+						 
+						 And we define language $L_{SAL}$ by specifying   
+						 <br>
+					
+						 \[ \phi :=  B_{a} \theta~|~\neg\phi~|~(\phi\wedge\phi)~|~[a: \theta]\phi~|~\langle a! \theta\rangle\phi~|~\langle a \rangle\phi~|~\langle a! \rangle\phi \]  
+						  where $p\in \mathsf{Prop}$, $a \in A$ and for each $a$ there is a modality $B_{a}$ in $L_{APAL}$
+
+							</p>
+						<div class="container">
+						
+						
+<div class="col">
+	<div><b>Denotation</b>
+	
+		<div class ="def">
+			\[V = 2^{\mathsf{Prop}}
+			\\
+			\llbracket p \rrbracket = \{x \in V ~|~ p \in x \}
+			\\
+			\llbracket \neg \theta \rrbracket = V \backslash \llbracket \theta \rrbracket 
+			\\
+			\llbracket (\theta_1 \wedge \theta_2) \rrbracket = \llbracket \theta_1\rrbracket \cap \llbracket\theta_2 \rrbracket\]
+			</div>
+		</div>
+</div>
+							
+<div class="col">
+<b>Model</b>								
+<div class ="def">	
+						
+$~~~~~~~~(f, k)\vDash B_a \theta \Leftrightarrow k(a) \subseteq \llbracket \theta \rrbracket $
+<br>
+$~~~~~~~~(f, k)\vDash \neg \phi  \Leftrightarrow (f, k)\not\vDash \phi $
+<br>
+$~~~~~~~~(f, k)\vDash (\phi\wedge \psi)  \Leftrightarrow  (f, k)\vDash \phi ~\&~ (f, k) \vDash \psi $
+<br>
+$~~~~~~~~(f, k)\vDash  [a:\theta] \phi \Leftrightarrow [a:\theta](f, k)\vDash   \phi$ 
+<br>
+in which $[a:\theta](f, k) = (f, [a:\theta]k)$
+<br>
+where $[a:\theta]k(b) = 
+\begin{cases}
+ k(b)\cap \llbracket \theta \rrbracket~~~~ {\rm if}~b\in f(a), 
+ \\
+ k(b)~~~~~~{\rm otherwise}
+\end{cases}$
+<br>
+$~~~~~~~~(f, k)\vDash  \langle a!\theta\rangle \phi  \Leftrightarrow [a:\theta](f, k)\vDash \phi~\&~k(a)\subseteq \llbracket \theta\rrbracket$
+<br>
+$~~~~~~~~(f, k)\vDash \langle a\rangle\phi  \Leftrightarrow \exists\theta [a :\theta](f, k) \vDash \phi$
+<br>
+$~~~~~~~~(f, k)\vDash \langle a!\rangle\phi \Leftrightarrow \exists\theta (k(a) \subseteq \llbracket \theta\rrbracket~\&~[a :\theta](f, k) \vDash \phi)$
+
+							
+</div>
+</div>
+										
+</section>
+						
+	<section data-id="9a06014caaed52eb8f5244b4e49686f9" data-background-interactive="true" data-preload="" data-background-iframe="https://raycaesar.github.io/Ray.github.io/denotation/denotation.html"></section>
+	<section data-id="9a06014caaed52eb8f5244b4e49686f9" data-background-interactive="true" data-preload="" data-background-iframe="https://raycaesar.github.io/Ray.github.io/parse/parse.html"></section>	
+</section>
+
+				
+
+<section><section>
+					<h3>Arbitrary Announcement</h3>
+					
+
+                    <div class="container">
+						
+                    <div class="col-60">
+						<h3>Kuijer's Counterexample</h3>
+						<p> Currently we do not know if $\mathsf{APAL}$ has <em>finitary</em> axiomatization. The following rule does not preserve validity.</p>
+						From $ \langle \chi\rangle\langle q\rangle\phi\rightarrow\psi$, infer $ \langle \chi\rangle\Diamond\phi\rightarrow\psi$
+						<br>
+where $q\not\in Var(\psi)\cup Var(\phi)\cup Var(\chi)$.
+						<img class="r-frame" style="background: rgba(255,255,255,0.1);" width="450" height="300" data-src="C:\Users\zrui956\OneDrive - The University of Auckland\Desktop\reveal.js-master\reveal.js-master\material\kuijer.png" alt="Down arrow">
+						<br> $\vDash \langle \top\rangle\langle q\rangle(p \wedge \neg B_{b}p \wedge \widehat{B_{a}} B_{b}p)\rightarrow \langle \widehat{B_{b}} p\rangle \Diamond (p \wedge \neg B_{b}p \wedge \widehat{B_{a}} B_{b}p)$ 
+						<br>
+						<br>
+						$m, w_{1}\not\vDash \langle \top\rangle\Diamond(p \wedge \neg B_{b}p \wedge \widehat{B_{a}} B_{b}p)\rightarrow \langle \widehat{B_{b}} p\rangle \Diamond (p \wedge \neg B_{b}p \wedge \widehat{B_{a}} B_{b}p)$
+					
+					</div>
+
+                    <div class="col-40">
+						<h3>Noncompactness</h3>
+						<p> The logic of $L_{SAL}$ is <i>not compact</i>. Here are two counterexamples.</p>
+						$\{\langle a\rangle(B_{a}\bot \wedge \neg B_{b}\bot), \langle a\rangle B_{b}\bot \}\cup \{\neg B_{a}\theta ~~|~~ \theta~~is~~not~~an~~instance ~~of~~tautology~~\}$
+						<br>
+						<br>
+						$\{\langle a!\rangle B_{b}p \wedge \neg B_{b} p \}\cup\{\neg B_{a}\theta ~~|~~ \theta~~is~~not~~an~~instance~~of~~tautology~~\}$
+					
+					<br><br>
+					<h3>Main Results</h3>
+
+					By using <u>free message</u> model and moduolo satisfiability, we show the following rules preserve validity.
+					<br><br>
+					From $\langle a!p\rangle\phi \rightarrow \psi $, infer $ \langle a!\rangle\phi \rightarrow \psi$
+					<br><br>
+					From $[a:p]\phi \rightarrow \psi$, infer $\langle a\rangle\phi\rightarrow \psi$
+					<br><br>
+					where $p$ is a propositional variable that does not occur $\phi$ or $\psi$.
+					<br><br>
+					Thus, by using <u>non-greedy</u> set we have a finitary complete axiomatization $\mathsf{sal}$.
+                    </div>
+					
+				</section>
+
+					<section data-id="9a06014caaed52eb8f5244b4e49686f9" data-background-interactive="true" data-preload="" data-background-iframe="https://raycaesar.github.io/Ray.github.io/announce/announceable.html"></section>
+
+</section>
+
+
+	
+
+				<section><section >
+					
+					<h3>Tableau Calculus</h3>
+                    
+					<ul class="main_li">
+						<li>In Chapter four, we present a complete and <u>non-greedy compact</u> tableau system.</li>
+						<li>
+							This system allows us to easily construct proofs for theorems in $\mathsf{sal}$, such as the distribution of $\langle a!\rangle[a!]$ over conjunction.
+						</li>
+						<li>Also, it can generate models to satisfy any consistent non-greedy set of formulas.</li>
+					
+					</ul>
+				
+				</section>
+					<section data-id="9a06014caaed52eb8f5244b4e49686f9" data-background-interactive="true" data-preload="" data-background-iframe="https://raycaesar.github.io/Ray.github.io/tree/tree.html"></section>
+ 	 
+				</section>
+
+
+	<section>
+		<section >
+					<h3>Epistemic Distribution</h3>
+					
+					<div class="container">
+					<div class="col-60">
+						<h3>Coherences</h3>
+						<p>We define five coherences for our original models.</p>
+						<ul class="bran_li">
+							<li><u>Global coherence</u>: All agents' beliefs are collectively consistent.</li>
+							<li><u>Local coherence</u>: No individual agent's beliefs become inconsistent following sincere announcements.</li>
+							<li><u>Weak coherence</u>:  Each agent's beliefs are internally consistent.</li>
+							<li><u>Cohesive coherence</u>:  Agents with inconsistent beliefs are separated.</li>
+							<li><u>Following coherence</u>:  No contradictory flow can be made.</li>
+						
+						</ul>
+						
+					$$\begin{tikzpicture}
+
+					\definecolor{bubbles}{rgb}{0.91, 1.0, 1.0}
+					\definecolor{capri}{rgb}{0.0, 0.75, 1.0}
+					\definecolor{celadon}{rgb}{0.67, 0.88, 0.69}
+					\definecolor{cottoncandy}{rgb}{1.0, 0.74, 0.85}
+					\definecolor{deepcerise}{rgb}{0.85, 0.2, 0.53}
+					\definecolor{chartreuse}{rgb}{0.87, 1.0, 0.0}
+					\definecolor{britishracinggreen}{rgb}{0.0, 0.26, 0.15}
+
+					\begin{scope} [fill opacity = .5]
+					
+					\draw[fill= bubbles] (-5,5) rectangle (8,-3);
+					\draw[fill=celadon, draw = black] (-1.5,1) circle (3);
+					\draw[fill=deepcerise, draw = black] (1.55,1) circle (2.87);
+					\draw[fill=cottoncandy, draw = black] (2.65,1) ellipse (5cm and 3.2cm); % Adjusted this line
+					\draw[fill=capri, draw = black] (0,1) circle (1);
+					
+					\node at (-4,4) {\color{chartreuse}\LARGE\textbf{SAL}};
+					\node at (-3,2.5) {\color{britishracinggreen}\LARGE\textbf{wc}};
+					\node at (5,2.5) {\color{britishracinggreen}\LARGE\textbf{fc}};
+					\node at (2.5, 2.5) {\color{britishracinggreen}\LARGE\textbf{cc}};
+					\node at (0,2.5) {\color{britishracinggreen}\LARGE\textbf{lc}};
+					\node at (0, 1) {\color{britishracinggreen}\LARGE\textbf{gc}};
+					\end{scope}
+					
+					
+					\end{tikzpicture}
+
+					$$
+					
+					
+				</div>
+
+				<div class="col-40">
+					<h3>Implications</h3>
+					<p> By implementing coherent models, the expressiveness of $L_{SAL}$ is enhanced. These models assist in reasoning about the structure of social networks. Some allow us to represent <i> "following relationships"</i>, but some logical properties might be lost and may not be characterizable.</p>
+				<h3>Main Results</h3>
+				<ul class="bran_li">
+					<li>Following relationship <em>expressible</em>: wc, cc, lc, gc.</li>
+					<li><em>Characterizable</em>: fc, wc.</li>
+					<li><em>Failure</em> of <i>free announcement necessitation</i>: Indirect axiomatizations are needed. An axiomatization without the necessitation rule is available with respect to wc.</li>
+					<li>Preversing <em>validity</em> by <i>sincere announcement necessitation</i>: cc, lc, gc.</li>
+					<li>To express the following relationship using only <i>sincere announcements</i>, we need to refine our model and define the following coherences:</li>
+					<ul class="bran_li">
+						<li><u>Diverse (secret)</u> models: No agent's belief state is a subset of another's.</li>
+						<li><u>Anti--universal</u> models:  No agent's belief state is a subset of the union of others'.</li>
+					
+					</ul>
+				</ul>
+
+	
+				</div>
+			</div>
+		</section>
+
+		<section data-id="9a06014caaed52eb8f5244b4e49686f9" data-background-interactive="true" data-preload="" data-background-iframe="https://raycaesar.github.io/Ray.github.io/Coherence/coherence.html"></section>
+
+	</section>
+	<section>
+		<section >
+					
+				<h3>Variants and Application</h3>
+				
+				<ul class="main_li">
+					<li>
+						In Chapter five, we outline various operations of <u>social announcements</u> within our model, including <u>partial diffussion</u>, <u>cascading broadcasts</u>, and some updates that alter networks.
+					</li>
+					<li>
+						Utilizing these operations allows us to examine sociological phenomena like <i>peer pressure</i>, the  <i>bandwagon
+							effect</i>, and the emergence of <i>polarization</i> within <i>echo chambers</i>.
+						</li>
+					<li>
+						We introduce <u>group announcements</u> and investigate the potential to reduce them into social announcements.
+					 </li>
+					<li>
+						This logic can also be viewed as supporting <b>social epistemology</b>. With this perspective, we extend our analysis by social announcement logic from beliefs to knowledge.
+						</li>
+				</ul>
+			
+		</section>
+
+			<section data-id="9a06014caaed52eb8f5244b4e49686f9" data-background-interactive="true" data-preload="" data-background-iframe="https://raycaesar.github.io/Ray.github.io/tree/tree.html"></section>
+	</section>
+
+
+	<section>
+        <h3>Conclusion</h3>
+		<div class="container">
+			<div class="col-50">
+        <h4>Achievements</h4>
+        <ul>
+            <li>Establishment of the Framework of Social Announcement Logic</li>
+            <li>Proof of the Properties of Social Announcement Logic</li>
+            <li>Model Transformation Technique Dealing with Arbitrary Operators</li>
+            <li>The Development of A Tableau System</li>
+            <li>Practical Applications for Interdisciplinary Studies</li>
+            <li>A Bridge to Social Epistemology</li>
+        </ul>
+		</div>
+		<div class="col-50">
+        <h4>Future Directions</h4>
+        <ul>
+            <li>Axiomatization of Sincere Arbitrary Social Announcement Logic</li>
+            <li>Extension and Variants Investigation</li>
+            <li>Finite Model Property and Decidability of  Arbitrary Social Announcement Logic</li>
+            <li>Relation to Public Announcement Logic</li>
+            <li>Reduction of Group Announcement</li>
+        </ul>
+		</div>
+		</div>
+    </section> 
+				
+
+				<section data-auto-animate data-background-iframe ="https://raycaesar.github.io/Teaching.github.io/control/index1.html" frameBorder="0" >
+					
+					<h3>Thank you</h3>
+                 
+				</section>
+
+			
+
+
+				
+
+
+		
+
+
+
+
+
+
+
+
+		<script src="dist/reveal.js"></script>
+		<script src="plugin/zoom/zoom.js"></script>
+		<script src="plugin/notes/notes.js"></script>
+		<script src="plugin/search/search.js"></script>
+		<script src="plugin/markdown/markdown.js"></script>
+		<script src="plugin/highlight/highlight.js"></script>
+		<script src="plugin/math/math.js"></script>
+		<script src="https://i.upmath.me/latex.js"></script>
+		
+<script>
+  Reveal.initialize({
+	katex: {
+	  version: 'latest',
+	  delimiters: [
+		{left: '$$', right: '$$', display: true},
+		{left: '$', right: '$', display: false},
+		{left: '\\(', right: '\\)', display: false},
+		{left: '\\[', right: '\\]', display: true}
+	 ],
+	 ignoredTags: ['script', 'noscript', 'style', 'textarea', 'pre']
+   },
+   plugins: [ RevealMath.KaTeX ]
+  });
+</script>
+
+
+		<script>
+
+			// Also available as an ES module, see:
+			// https://revealjs.com/initialization/
+			Reveal.initialize({
+				controls: true,
+				progress: true,
+				center: true,
+				hash: true,
+
+				// Learn about plugins: https://revealjs.com/plugins/
+				plugins: [ RevealZoom, RevealNotes, RevealSearch, RevealMarkdown, RevealHighlight ]
+			});
+
+		</script>
+		
+
+	</body>
+</html>
