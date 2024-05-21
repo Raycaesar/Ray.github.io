@@ -335,8 +335,6 @@ function clearNodeColors(node) {
 
 
 function updateAgentBeliefFromNode(agent, nodeText) {
-    // Removed the check for empty nodeText
-
     // Check if 'agent' is defined and a valid key in 'agentBeliefs'
     if (typeof agent === 'undefined' || !Agt.includes(agent)) {
         console.error(`Agent '${agent}' is not defined or not in the list of agents.`);
@@ -352,8 +350,9 @@ function updateAgentBeliefFromNode(agent, nodeText) {
     }
 
     // Update the messages array
-    if (nodeText && !agentBeliefs[agent].messages.includes(nodeText)) {
+    if (nodeText === "" || !agentBeliefs[agent].messages.includes(nodeText)) {
         agentBeliefs[agent].messages.push(nodeText);
+        console.log(`agentBeliefs ${agent}'s messages:`, agentBeliefs[agent].messages);
     }
 
     // Update the denotation string
@@ -363,20 +362,28 @@ function updateAgentBeliefFromNode(agent, nodeText) {
 
 // Helper function to update the denotation string
 function updateDenotationString(agent, nodeText) {
+    // Parse the existing denotation into an array of sets
     let currentSets = agentBeliefs[agent].denotation === '{}' ? [] : 
-        agentBeliefs[agent].denotation.slice(2, -2).split('}, {').map(set => set.split(', ').map(s => s.trim()));
+        agentBeliefs[agent].denotation.slice(1, -1).split('}, {').map(set => set.replace(/[{}]/g, '').split(', ').map(s => s.trim()));
 
+    // Add the new nodeText as a set if it doesn't already exist
     if (!currentSets.some(set => set.join(', ') === nodeText)) {
         // Split the nodeText to ensure that each element is separated and trimmed
-        let newNodeTextArray = nodeText.split(',').map(s => s.trim());
+        let newNodeTextArray = nodeText === "" ? [] : nodeText.split(',').map(s => s.trim());
         currentSets.push(newNodeTextArray);
     }
 
     // Ensure that the sets are joined with ', ' for consistent formatting
     agentBeliefs[agent].denotation = `{${currentSets.map(set => `{${set.join(', ')}}`).join(', ')}}`;
-    console.log(`Agent '${agent}'s belief:`, agentBeliefs[agent].denotation);
+    console.log(`agentBeliefs ${agent}'s denotation:`, agentBeliefs[agent].denotation);
 }
 
+function displayAgentBeliefs() {
+    Agt.forEach(agent => {
+        console.log(`agentBeliefs ${agent}'s messages:`, agentBeliefs[agent].messages);
+        console.log(`agentBeliefs ${agent}'s denotation:`, agentBeliefs[agent].denotation);
+    });
+}
 
 
 
