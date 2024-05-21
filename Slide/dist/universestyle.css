@@ -1,0 +1,77 @@
+.container {
+    display: flex;
+}
+
+.main_li {
+    font-size: 34px; 
+    line-height: 1.2;
+}
+
+.sub_li {
+    font-style: oblique 40deg;
+    font-size: 24px; 
+    font-family:  "Courier New";
+}
+.bran_li {
+    font-style: oblique 40deg;
+    font-size: 18px; 
+}
+.col{
+    flex: 1;
+    font-size: 16px;
+}
+
+.col-60 {
+    text-align: left;
+    flex: 60%;
+    font-size: 16px;
+}
+.col-50 {
+    line-height: 1.8;
+    flex: 60%;
+    font-size: 26px;
+}
+
+.col-40 {
+    text-align: left;
+    flex: 40%;
+    font-size: 16px;
+}
+
+.row{
+    flex: 1;
+    font-size: 18px;
+    
+}
+.describe{
+    font-size: medium;
+}
+em{
+    color: salmon;
+}
+b{ font-family: sans-serif;
+    color: plum;}
+
+u{font-family: cursive;
+    color: aquamarine;
+
+}
+
+i{
+    font-style: italic;
+    color: greenyellow;
+}
+.def{
+    text-align: left;
+}
+
+p{text-align: left;}
+
+.title{
+    text-align: center;
+}
+.noborder .reveal section img {
+    background:none; 
+    border:none; 
+    box-shadow:none;
+    }
