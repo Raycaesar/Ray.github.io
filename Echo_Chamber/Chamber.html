@@ -8,15 +8,18 @@
 </head>
 <body>
     <h1>Unstable Network</h1>
-    <h5>This program demonstrates how an unstable social network will behave.</h5>
+    <h5>This program demonstrates how an unstable social network will behave. If you are going to check chambers, the number of agents less than 15 is more advisable.</h5>
 
     <div id="controls">
         <input type="number" id="agentSize" placeholder="Enter the size of Agents">
         <button id="setSizeBtn">Set Size</button>
         <button id="distributeBtn">Random Distribution</button>
+        <!-- <input type="number" id="announcementNumber" placeholder="Enter the number of Announcements">-->
+        <button id="announcement">Random Announcement</button>
+        <button id="chambers">Echo Chamber Check</button>
     </div>
 
-    <canvas id="chamber"></canvas>
+    <canvas id="network"></canvas>
 
     <script src="https://d3js.org/d3.v5.min.js"></script>
     <script src="chamber.js"></script>
