@@ -14,3 +14,5 @@ According to my supervisor's suggestion. I add a social graph which can show the
 
 Now I add the Coherences pragram into this project. In my thesis, I defined five coherences. This program will show what are they and will help us to check which coherence our designed model belongs to. 
 Besides, I uploaded a slide about main parts of my thesis. 21/5/2024/
+
+Based on a logic in Chapter 5 in my thesis, I write a program to show how to simulate an echo chamber including its formation and collapse. This is an applicable tool which can help us do network analysis with epistemic distribution.  07/6/2024/
