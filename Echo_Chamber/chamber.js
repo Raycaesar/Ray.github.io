@@ -19,11 +19,14 @@ document.addEventListener('DOMContentLoaded', function() {
     const ctx = network.getContext('2d');
     const Ran_AnnoucBtn = document.getElementById('announcement');
     const Cham_CheckBtn = document.getElementById('chambers');
+    const Arc_EstablishBtn = document.getElementById('arcEstablish');
+    
 
     setSizeBtn.addEventListener('click', setAgentSize);
     distributeBtn.addEventListener('click', randomDistribution);
     Ran_AnnoucBtn.addEventListener('click', randomAnnounce);
     Cham_CheckBtn.addEventListener('click', chamberCheck);
+    Arc_EstablishBtn.addEventListener('click', arcEstablish);
 
     function setAgentSize() {
         const agentSize = document.getElementById('agentSize').value;
@@ -189,41 +192,55 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function buildSources(agentFollowers) {
         let sources = {};
+        let reversedFollowers = {};
     
-        // Initialize sources for each agent
+        // Initialize sources and reversedFollowers for each agent
         for (const agent in agentFollowers) {
-            sources[agent] = [];
+            sources[agent] = new Set();
+            reversedFollowers[agent] = [];
         }
     
-        // Build the sources mapping for each agent
+        // Reverse the followers relationship
         for (const agent in agentFollowers) {
-            const followers = agentFollowers[agent];
-            followers.forEach(follower => {
-                if (!sources[follower].includes(agent)) {
-                    sources[follower].push(agent);
-                }
-                agentFollowers[agent].forEach(indirectFollower => {
-                    if (!sources[follower].includes(indirectFollower) && indirectFollower !== follower) {
-                        sources[follower].push(indirectFollower);
-                    }
-                });
-            });
+            for (const follower of agentFollowers[agent]) {
+                reversedFollowers[follower].push(agent);
+            }
         }
     
-        // Remove duplicates from each agent's source
+        // Helper function to perform DFS and collect sources
+        function dfs(agent, current) {
+            if (sources[current].has(agent)) return; // Avoid processing the same agent multiple times
+            sources[current].add(agent);
+    
+            const follows = reversedFollowers[agent] || [];
+            for (const follow of follows) {
+                dfs(follow, current);
+            }
+        }
+    
+        // Perform DFS for each agent to find all agents it follows
+        for (const agent in reversedFollowers) {
+            dfs(agent, agent);
+        }
+    
+        // Convert sets to arrays
         for (const agent in sources) {
-            sources[agent] = [...new Set(sources[agent])];
+            sources[agent] = Array.from(sources[agent]);
         }
     
         return sources;
     }
     
+
+    
+
+
     function chamberCheck() {
         const sources = buildSources(agentFollowers);
         let chambers = [...agents];
         let connectedChambers = [];
     
-        console.log("psedochambers:", sources);
+        console.log("sources:", sources);
     
         // Remove agents with conflicting beliefs from their sources
         chambers = chambers.filter(agent => {
@@ -241,30 +258,44 @@ document.addEventListener('DOMContentLoaded', function() {
             return true;
         });
     
-        // Build connected chambers
-        const visited = new Set();
-    
-        for (const agent of chambers) {
-            if (!visited.has(agent)) {
-                const connectedChamber = [];
-                const queue = [agent];
-    
-                while (queue.length > 0) {
-                    const currentAgent = queue.shift();
-                    if (!visited.has(currentAgent)) {
-                        visited.add(currentAgent);
-                        connectedChamber.push(currentAgent);
-    
-                        const followers = agentFollowers[currentAgent] || [];
-                        followers.forEach(follower => {
-                            if (chambers.includes(follower) && !visited.has(follower)) {
-                                queue.push(follower);
-                            }
-                        });
+        // Helper function to find all agents in the same chamber using BFS
+        function findConnectedChamber(startAgent) {
+            const connectedChamber = [];
+            const queue = [startAgent];
+            const visited = new Set();
+        
+            while (queue.length > 0) {
+                const currentAgent = queue.shift();
+                if (!visited.has(currentAgent)) {
+                    visited.add(currentAgent);
+                    connectedChamber.push(currentAgent);
+        
+                    const followers = agentFollowers[currentAgent] || [];
+                    followers.forEach(follower => {
+                        if (chambers.includes(follower) && !visited.has(follower)) {
+                            queue.push(follower);
+                        }
+                    });
+        
+                    // Add agents followed by the current agent
+                    for (const agent in agentFollowers) {
+                        if (agentFollowers[agent].includes(currentAgent) && !visited.has(agent)) {
+                            queue.push(agent);
+                        }
                     }
                 }
+            }
+        
+            return connectedChamber;
+        }
     
+        // Build connected chambers
+        const visitedAgents = new Set();
+        for (const agent of chambers) {
+            if (!visitedAgents.has(agent)) {
+                const connectedChamber = findConnectedChamber(agent);
                 connectedChambers.push(connectedChamber);
+                connectedChamber.forEach(a => visitedAgents.add(a));
             }
         }
     
@@ -273,12 +304,74 @@ document.addEventListener('DOMContentLoaded', function() {
         drawChambers(connectedChambers);
     }
 
+    function arcEstablish() {
+        // Step 1: Randomly select an agent i from agents
+        const agentsArray = Object.keys(agentFollowers);
+        const selectedAgent = agentsArray[Math.floor(Math.random() * agentsArray.length)];
+    
+        // Build a group A whose members are all not in agentFollowers[selectedAgent]
+        const groupA = agentsArray.filter(agent => !agentFollowers[selectedAgent].includes(agent) && agent !== selectedAgent);
+    
+        if (groupA.length === 0) {
+            // If group A is empty, it means everyone follows the selected agent
+            return;
+        }
+    
+        // Run chamberCheck to get the latest connected chambers and store in a local variable
+        const currentChambers = chamberCheck();
+    
+        // Find the chamber of the selected agent
+        let agentChamber = [];
+        for (const chamber of currentChambers) {
+            if (chamber.includes(selectedAgent)) {
+                agentChamber = chamber;
+                break;
+            }
+        }
+    
+        // Step 2: Build group B as the subset of A in the same chamber as the selected agent
+        const groupB = groupA.filter(agent => agentChamber.includes(agent));
+    
+        // Step 3: Decide which group to choose from and add a follower
+        let newFollower = null;
+        if (groupB.length > 0 && Math.random() < 0.75) {
+            // 75% chance to add an element from B
+            newFollower = groupB[Math.floor(Math.random() * groupB.length)];
+        } else {
+            // 25% chance to add an element from A but not in B
+            newFollower = groupA[Math.floor(Math.random() * groupA.length)];
+        }
+    
+        // Add the new follower to agentFollowers[selectedAgent]
+        if (newFollower) {
+            console.log("newFollower:", newFollower);
+            agentFollowers[selectedAgent].push(newFollower);
+    
+            // Highlight the new arc on the graph
+            //highlightNewArc(selectedAgent, newFollower);
+    
+            // Log the updated agentFollowers for debugging
+            console.log("Updated agentFollowers:", agentFollowers);
+        }
+    }
+    
+    // Helper function to highlight the new arc on the graph
+    function highlightNewArc(fromAgent, toAgent) {
+        // Assuming you have a way to draw and highlight arcs in the network graph
+        console.log(`New arc established from ${fromAgent} to ${toAgent}`);
+    }
+
+
+
+
+
+
     function drawChambers(connectedChambers) {
         const width = network.width = window.innerWidth * 0.9;
         const height = network.height = window.innerHeight * 0.8;
         const radius = 20;
         const padding = 50;
-        const chamberColors = [ '#42D4F4', '#F032E6', '#FABEBE', '#469990', '#DCBEFF', '#9A6324', '#F58231', '#33FF57', '#3357FF', '#53F5F0', '#33FFA1', '#FFA133' ];
+        const chamberColors = [ '#cc3333', '#99cccc', '#ffcc99', '#ffcccc', '#ecce5d', '#e8dbd3', '#42D4F4', '#F032E6', '#FABEBE', '#469990', '#DCBEFF', '#9A6324', '#F58231', '#33FF57', '#3357FF', '#53F5F0', '#33FFA1', '#FFA133' ];
     
         ctx.clearRect(0, 0, width, height);
     
@@ -340,6 +433,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
    /* 
+    function arcEstablish(){
+    //1. random select an agent i in agents, and build a group A whose member are all not in agentFollowers[i]. If A is the empty set, it means everyone follows i. The function will return as nothing happened.
+    //2. Let B, a subset of A, be the set of elements also in the chamber of i, we can check chambers by running chamberCheck(); we have 75% chance to add an element of B into agentFollowers[i] and 25% chance add a member in A but not in B into agentFollowers[i]. So if B is an empty set, we only have 25% chance to establish the following relationship. 
+    //3. if we add some agent into agentFollowers[i], on graph we highlight the new added arc by coloring it.
+}
+
+
 
        function buildSources(agentFollowers) {
         let sources = {};
