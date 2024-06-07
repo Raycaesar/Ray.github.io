@@ -20,8 +20,10 @@ document.addEventListener('DOMContentLoaded', function() {
     const Ran_AnnoucBtn = document.getElementById('announcement');
     const Cham_CheckBtn = document.getElementById('chambers');
     const Arc_EstablishBtn = document.getElementById('arcEstablish');
-    
+    const simulationBtn = document.getElementById('simulation');
 
+    
+    simulationBtn.addEventListener('click', runSimulation);
     setSizeBtn.addEventListener('click', setAgentSize);
     distributeBtn.addEventListener('click', randomDistribution);
     Ran_AnnoucBtn.addEventListener('click', randomAnnounce);
@@ -157,6 +159,16 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
+
+const logElement = document.getElementById('logContainer');
+
+// Function to log messages to the page
+function logToPage(message) {
+  const logEntry = document.createElement('p');
+  logEntry.textContent = message;
+  logElement.appendChild(logEntry);
+}
+
     function randomAnnounce() {
         const announcer = agents[Math.floor(Math.random() * agents.length)];
         const announcedBelief = agentBeliefs[announcer][Math.floor(Math.random() * agentBeliefs[announcer].length)];
@@ -183,7 +195,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             return true;
         });
-
+        logToPage(`${announcer} announced: ${announcedBelief}`);
         console.log("agentBeliefs:", agentBeliefs);
         console.log("agentFollowers:", agentFollowers);
         drawNetwork();
@@ -231,10 +243,6 @@ document.addEventListener('DOMContentLoaded', function() {
         return sources;
     }
     
-
-    
-
-
     function chamberCheck() {
         const sources = buildSources(agentFollowers);
         let chambers = [...agents];
@@ -251,6 +259,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 const sourceBeliefs = new Set(agentBeliefs[source]);
                 for (const belief of agentBeliefSet) {
                     if (sourceBeliefs.has(`~${belief}`) || (belief.startsWith('~') && sourceBeliefs.has(belief.slice(1)))) {
+                        console.log(`Filtering out agent ${agent} due to conflict with source ${source}`);
                         return false;
                     }
                 }
@@ -258,34 +267,36 @@ document.addEventListener('DOMContentLoaded', function() {
             return true;
         });
     
+        console.log("Filtered chambers:", chambers);
+    
         // Helper function to find all agents in the same chamber using BFS
         function findConnectedChamber(startAgent) {
             const connectedChamber = [];
             const queue = [startAgent];
             const visited = new Set();
-        
+    
             while (queue.length > 0) {
                 const currentAgent = queue.shift();
-                if (!visited.has(currentAgent)) {
+                if (!visited.has(currentAgent) && chambers.includes(currentAgent)) {
                     visited.add(currentAgent);
                     connectedChamber.push(currentAgent);
-        
+    
                     const followers = agentFollowers[currentAgent] || [];
                     followers.forEach(follower => {
                         if (chambers.includes(follower) && !visited.has(follower)) {
                             queue.push(follower);
                         }
                     });
-        
+    
                     // Add agents followed by the current agent
                     for (const agent in agentFollowers) {
-                        if (agentFollowers[agent].includes(currentAgent) && !visited.has(agent)) {
+                        if (agentFollowers[agent].includes(currentAgent) && chambers.includes(agent) && !visited.has(agent)) {
                             queue.push(agent);
                         }
                     }
                 }
             }
-        
+    
             return connectedChamber;
         }
     
@@ -302,12 +313,15 @@ document.addEventListener('DOMContentLoaded', function() {
         console.log("connectedChambers:", connectedChambers);
     
         drawChambers(connectedChambers);
+        return connectedChambers;
     }
+    
 
     function arcEstablish() {
         // Step 1: Randomly select an agent i from agents
         const agentsArray = Object.keys(agentFollowers);
         const selectedAgent = agentsArray[Math.floor(Math.random() * agentsArray.length)];
+        console.log("selectedAgent:", selectedAgent);
     
         // Build a group A whose members are all not in agentFollowers[selectedAgent]
         const groupA = agentsArray.filter(agent => !agentFollowers[selectedAgent].includes(agent) && agent !== selectedAgent);
@@ -317,7 +331,7 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
     
-        // Run chamberCheck to get the latest connected chambers and store in a local variable
+        // Run chamberCheck to get the latest connected chambers
         const currentChambers = chamberCheck();
     
         // Find the chamber of the selected agent
@@ -334,38 +348,140 @@ document.addEventListener('DOMContentLoaded', function() {
     
         // Step 3: Decide which group to choose from and add a follower
         let newFollower = null;
-        if (groupB.length > 0 && Math.random() < 0.75) {
+        const randomNumber = Math.random();
+        console.log("randomNumber:", randomNumber);
+    
+        if (groupB.length > 0 && randomNumber < 0.75) {
             // 75% chance to add an element from B
             newFollower = groupB[Math.floor(Math.random() * groupB.length)];
-        } else {
-            // 25% chance to add an element from A but not in B
-            newFollower = groupA[Math.floor(Math.random() * groupA.length)];
+        } else if (randomNumber >= 0.75) {
+            // 25% chance to add an element from A but not in B and not already a follower
+            const potentialFollowers = groupA.filter(agent => !agentFollowers[selectedAgent].includes(agent));
+            if (potentialFollowers.length > 0) {
+                newFollower = potentialFollowers[Math.floor(Math.random() * potentialFollowers.length)];
+            }
         }
     
-        // Add the new follower to agentFollowers[selectedAgent]
+        // Add the new follower to agentFollowers[selectedAgent] if not already a follower
         if (newFollower) {
             console.log("newFollower:", newFollower);
             agentFollowers[selectedAgent].push(newFollower);
     
             // Highlight the new arc on the graph
-            //highlightNewArc(selectedAgent, newFollower);
+            highlightNewArc(selectedAgent, newFollower);
     
             // Log the updated agentFollowers for debugging
             console.log("Updated agentFollowers:", agentFollowers);
+            logToPage(`New arc established from ${newFollower} to ${selectedAgent}`);
+            
+        } else {
+            logToPage('No new follower added');
+            console.log("No new follower added");
         }
     }
+
+    
+ 
     
     // Helper function to highlight the new arc on the graph
     function highlightNewArc(fromAgent, toAgent) {
-        // Assuming you have a way to draw and highlight arcs in the network graph
-        console.log(`New arc established from ${fromAgent} to ${toAgent}`);
+        // Draw the network as usual
+        drawNetwork();
+    
+        // Now draw the highlight for the new arc
+        highlightArc(fromAgent, toAgent);
+    
+        console.log(`New arc established from ${toAgent} to ${fromAgent}`);
+    }
+    
+    function highlightArc(fromAgent, toAgent) {
+        const width = network.width;
+        const height = network.height;
+        const radius = 20;
+    
+        const agentPositions = agents.map((agent, i) => {
+            const angle = (2 * Math.PI * i) / agents.length;
+            const x = width / 2 + (width / 2 - 50) * Math.cos(angle);
+            const y = height / 2 + (height / 2 - 50) * Math.sin(angle);
+            return { x, y };
+        });
+    
+        const fromIndex = agents.indexOf(fromAgent);
+        const toIndex = agents.indexOf(toAgent);
+    
+        if (fromIndex === -1 || toIndex === -1) {
+            console.error("Invalid agents provided for highlighting arc.");
+            return;
+        }
+    
+        const { x: toX, y: toY } = agentPositions[fromIndex];
+        const { x: fromX, y: fromY } = agentPositions[toIndex];
+        const dx = fromX - toX;
+        const dy = fromY - toY;
+        const arrowLength = 10;
+        const arrowAngle = Math.atan2(dy, dx);
+
+
+        // Create gradient
+        const gradient = ctx.createLinearGradient(0, 0, width, height);
+        gradient.addColorStop("0", "magenta");
+        gradient.addColorStop("0.5", "green");
+        gradient.addColorStop("1.0", "yellow");
+    
+        // Draw the highlighted arc
+        ctx.beginPath();
+        //ctx.setLineDash([7, 5]);
+        ctx.moveTo(toX + radius * Math.cos(arrowAngle), toY + radius * Math.sin(arrowAngle));
+        ctx.lineTo(fromX - radius * Math.cos(arrowAngle), fromY - radius * Math.sin(arrowAngle));
+        ctx.lineWidth = 1; // Thicker line for highlight
+        ctx.strokeStyle = gradient; // Highlight color
+        ctx.stroke();
+    
+        // Draw an arrowhead pointing to the followee
+        ctx.beginPath();
+        ctx.moveTo(toX + radius * Math.cos(arrowAngle), toY + radius * Math.sin(arrowAngle));
+        ctx.lineTo(toX + (radius + arrowLength) * Math.cos(arrowAngle - Math.PI / 12), toY + (radius + arrowLength) * Math.sin(arrowAngle - Math.PI / 12));
+        ctx.moveTo(toX + radius * Math.cos(arrowAngle), toY + radius * Math.sin(arrowAngle));
+        ctx.lineTo(toX + (radius + arrowLength) * Math.cos(arrowAngle + Math.PI / 12), toY + (radius + arrowLength) * Math.sin(arrowAngle + Math.PI / 12));
+        ctx.stroke();
+        ctx.closePath();
     }
 
+    
+
+function runSimulation() {
+    const numberOfAnnouncements = document.getElementById('numberofAnnouncements').value;
+    const intervalOfAnnouncements = document.getElementById('intervalofAnnouncements').value;
+
+    if (!numberOfAnnouncements || !intervalOfAnnouncements) {
+        console.error("Please enter valid values for the number of announcements and the interval.");
+        return;
+    }
+
+    let announcementCount = 0;
+    let arcEstablishCount = 0;
+
+    const simulationInterval = setInterval(() => {
+        logToPage(`Announcement ${announcementCount}`);
+        randomAnnounce();
+        announcementCount++;
+    
+        if (announcementCount % intervalOfAnnouncements === 0) {
+          logToPage(`Establishing arc ${arcEstablishCount}`);
+          arcEstablish();
+          arcEstablishCount++;
+        }
+    
+        if (announcementCount >= numberOfAnnouncements && arcEstablishCount >= Math.ceil(numberOfAnnouncements / intervalOfAnnouncements)) {
+          clearInterval(simulationInterval);
+          logToPage('Simulation completed.');
+        }
+      }, 1000); // Adjust the delay as needed (currently set to 1 second)
+}
+    
 
 
-
-
-
+    
     function drawChambers(connectedChambers) {
         const width = network.width = window.innerWidth * 0.9;
         const height = network.height = window.innerHeight * 0.8;

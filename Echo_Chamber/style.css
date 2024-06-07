@@ -1,17 +1,20 @@
-/* Base Styles */
 body {
+    color: #fff;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background: #1c1e20;
-    background: radial-gradient(circle cover, #084c58 0%, #1c1e20 100%);
+    background: -moz-radial-gradient(center, circle cover, #4442588c 0%, #1c1e20 100%);
+    background: -webkit-gradient(radial, center center, 0px, center center, 100%, color-stop(0%, #4442588c), color-stop(100%, #1c1e20));
+    background: -webkit-radial-gradient(center, circle cover, #4442588c 0%, #1c1e20 100%);
+    background: -o-radial-gradient(center, circle cover, #4442588c 0%, #1c1e20 100%);
+    background: -ms-radial-gradient(center, circle cover, #4442588c 0%, #1c1e20 100%);
+    background: radial-gradient(center, circle cover, #4442588c 0%, #1c1e20 100%);
     background-color: #2b2b2b;
-    color: #fff;
     margin: 0;
     padding: 20px;
 }
 
-h1, h2, h3, h5 {
+h1, h5 {
     text-align: center;
-    color: #fff;
 }
 
 #controls {
@@ -20,12 +23,51 @@ h1, h2, h3, h5 {
     margin-bottom: 20px;
 }
 
-#controls input, #controls button {
+#controls input {
+    padding: 5px;
+    border-radius: 3px;
+    border: none;
+    margin-bottom: 10px;
+}
+
+button {
+    background-color: #084c58;
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 5px;
+    border: none;
     margin: 0 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #0b7285;
 }
 
 canvas {
     display: block;
     margin: 0 auto;
     border: 1px solid #fff;
+}
+
+.sim {
+    text-align: center;
+    margin-top: 20px;
+}
+
+
+
+.sim input {
+    padding: 5px;
+    border-radius: 3px;
+    border: none;
+    margin-bottom: 10px;
+}
+
+#logContainer {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    grid-gap: 10px;
+    margin-top: 20px;
 }
