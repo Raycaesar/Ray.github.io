@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unstable Network</title>
+    <link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+    <h1>Unstable Network Simulation</h1>
+    <h5>This program demonstrates the behavior of an unstable social network. For optimal chamber checking, it's advisable to have fewer than 15 agents.</h5>
+
+    <div id="controls">
+        <input type="number" id="agentSize" placeholder="Number of Agents" class="px-2 py-1 rounded-md">
+        <button id="setSizeBtn">Set Size</button>
+        <button id="distributeBtn">Random Distribution</button>
+        <button id="announcement">Random Announcement</button>
+        <button id="chambers">Check Echo Chambers</button>
+        <button id="arcEstablish">Establish Arc</button>
+    </div>
+
+    <canvas id="network"></canvas>
+
+    <div class="sim">
+        <h5>Select the number of announcements to make</h5>
+        <input type="number" id="numberofAnnouncements" placeholder="Number of Announcements" class="px-2 py-1 rounded-md">
+        <h5>Select the frequency to establish an arc (e.g., 4 means every 4 random announcements)</h5>
+        <input type="number" id="intervalofAnnouncements" placeholder="Interval to establish arc" class="px-2 py-1 rounded-md">
+        <button id="simulation">Run Simulation</button>
+        <h3>Log</h3>
+        <div id="logContainer"></div>
+    </div>
+
+    <script src="https://d3js.org/d3.v5.min.js"></script>
+    <script src="chamber.js"></script>
+</body>
+</html>
