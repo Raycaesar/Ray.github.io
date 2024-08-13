@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Model Generator</title>
+    <link rel="stylesheet" type="text/css" href="style_slide.css"> <!-- Stylesheet link -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+   
+</head>
+
+<body>
+    <!-- Agent Size Setup -->
+    <h2>Set the Size of Agents</h2>
+    <input type="number" id="agentSize" placeholder="Enter the size of Agents">
+    <button onclick="setAgentSize()">Set Size</button>
+    <h3 id="agentOutput"></h3>
+
+    <!-- Agent Follower Selection -->
+    <h2>Select Agent's Followers</h2>
+    <p>Select an agent:</p>
+    <select id="selectedAgent"></select>
+    <p>Select its followers:</p>
+    <select id="agentFollowers" multiple></select>
+    <button onclick="setAgentFollowers()">Set Followers</button>
+    <h3 id="followerOutput"></h3>
+    <div id="network">
+        <!-- We'll use this SVG to display our network -->
+        <svg id="networkCanvas" width="1200" height="600"></svg>
+    </div>
+    <button id="drawFollow" onclick="drawNetwork()">Draw Network</button>
+    <button onclick="downloadsocial()">Download Network</button>
+
+    <hr/>
+
+    <!-- Prop Size Setup -->
+    <h2>Set the Size of Prop</h2>
+    <input type="number" id="propSize" placeholder="Enter the size of Prop">
+    <button onclick="setPropSize()">Set Size</button>
+    <h3 id="propOutput"></h3>
+
+   <!-- Tutorial Section -->
+   <div class="tutorial">
+    <h3>How to write correct messages of belief:</h3>
+    <ul>
+        <li><strong>Propositional Variables:</strong> Use elements in <b>Prop</b>.</li>
+        <li><strong>Negation:</strong> Use the tilde symbol <span class="example">~</span> before the propositional variable or message. E.g., <span class="example">~p</span>.</li>
+        <li><strong>Conjunction:</strong> Use the ampersand symbol <span class="example">&</span> between two messages. E.g., <span class="example">(p&q)</span>.</li>
+        <li><strong>Disjunction:</strong> Use the plus symbol <span class="example">+</span> between two messages. E.g., <span class="example">(p+q)</span>.</li>
+        <li><strong>Implication:</strong> Use the greater than symbol <span class="example">></span> between two messages. E.g., <span class="example">(p>q)</span>.</li>
+        <li><strong>Brackets:</strong> Every message connected by a binary operator should be enclosed within a pair of brackets. E.g., <span class="example">(p&q)</span>, not <span class="example">p&q</span>.</li>
+    </ul>
+</div>
+    <!-- Belief Assignment to Agent -->
+    <h2>Select an Agent for Belief Assignment:</h2>
+    <select id="beliefAgent"></select>
+    <h3>Input the Belief Message:</h3>
+    <input type="text" id="beliefmessage" placeholder="Enter the belief message">
+    <button onclick="assignBelief()">Assign Belief</button>
+    <h3>Agent Beliefs:</h3>
+    <p id="beliefOutput"></p>
+
+    <hr/>
+
+    <div id="cy">
+<svg id="beliefCanvas" width="1800" height="800"></svg>
+</div>
+<button id="drawGraph">Draw Graph</button>
+<button onclick="downloadSVG()">Download SVG</button>
+
+<input type="text" id="beliefupdate" placeholder="Enter the announcement">
+<button onclick="handleUpdateModelClick()">Update Model</button>
+<p>Announcements are in form of [a:p], which means a announces p to its followers. After you update model, you may try to click Draw Graph again.</p>
+
+
+ <!-- Tutorial Section -->
+ <div class="tutorial">
+    <h3>How to Write Well-formed Formulas:</h3>
+    <ul>
+        <li><strong>Literal Belief formula:</strong> Baθ or ~Baθ where a is an element of <b>Agents</b> and θ is an element of <b>Prop</b>.</li>
+        <li><strong>Conjunction:</strong> Use the ampersand symbol <span class="example">&</span> between two formulas. E.g., <span class="example">(φ&ψ) where both φ and ψ are formulas</span>.</li>
+        <li><strong>Disjunction:</strong> Use the plus symbol <span class="example">+</span> between two formulas. E.g., <span class="example">(φ+ψ)</span>.</li>
+        <li><strong>Implication:</strong> Use the greater than symbol <span class="example">></span> between two formulas. E.g., <span class="example">(φ>ψ)</span>.</li>
+        <li><strong>Free Announcement:</strong> Use the symbol [a:θ] <span class="example"></span> before the formula. E.g., <span class="example">[a:θ]φ</span>.</li>
+        <li><strong>Brackets:</strong> Every formula connected by a binary operator should be enclosed within a pair of brackets. E.g., <span class="example">(φ+ψ)</span>, not <span class="example">φ+ψ</span>.</li>
+    </ul>
+</div>
+
+    <!-- Formula Entry and Denotation Computation -->
+    <h2>Enter Your Formula</h2>
+    <input type="text" id="formulaInput" placeholder="Check the satisfiability" maxlength="300" size="80">
+    <button onclick="satisfiability()">Check</button>
+    <h3>Result:</h3>
+    <p id="satisfaction"></p>
+
+ 
+    <div class="content">
+        <h2>Axiom System Fsal</h2>
+        <p>An <strong>axiom system</strong> is a set of foundational truths (axioms) used to derive further theorems through logical reasoning. In such a system:</p>
+        <ul>
+            <li>Axioms are basic, accepted truths.</li>
+            <li>Theorems are derived statements proven using axioms and inference rules.</li>
+            <li>Rules of Inference dictate the valid ways of deriving new theorems.</li>
+        </ul>
+        <div class="definition">
+          
+            <p>The following system \( \mathsf{Fsal} \) is sound and complete, meaning every theorem is valid and then satisfied by any model within this system, and only theorems are valid. </p>
+            <p>Our original model is defined with infinite propositional variables but here we only employ a finite number of variables. To test a formula by the satisfiability checker above, ensure it is well-formed, using  only the defined propositional variables in \( Prop \) and agents.</p>
+        </div>
+    </div>
+
+    <div class="definition-box">
+        <strong>Definition:</strong>
+        <br><br>
+        Let \( \mathsf{Fsal} \) be the formal system which is a set of all valid formulas of \( L_{FSAL} \). Say a formula is a <em>theorem</em> of \( \mathsf{Fsal} \) if it is a consequence of the following axioms and rules:
+        <br><br>
+        <div class="axioms">
+            Axioms:
+            <br>
+            [Taut] All substitution instances of propositional tautologies 
+            <br>
+            [K<sub>⊤</sub>] \( B_{i}\theta \) where \( \theta \) is an instance of propositional tautology.     
+            <br>
+            [K<sub>B</sub>] \( B_{a}(\theta \rightarrow \gamma) \rightarrow (B_{a}\theta \rightarrow B_{a}\gamma) \) 
+            <br>
+            [K<sub>[:]</sub>] \( [a:\theta](\phi \rightarrow \psi) \rightarrow ([a:\theta]\phi \rightarrow [a:\theta]\psi) \)
+            <br>
+            [[:]-Dual] \( \neg [a:\theta]\phi \leftrightarrow [a:\theta]\neg\phi \)
+            <br>
+            [Comm] \( [a:\gamma][b:\theta]\phi \leftrightarrow [b:\theta][a:\gamma]\phi \)
+            <br>
+            [UMon] \( B_{b}\chi\rightarrow[a:\theta]B_{b}\chi \) 
+            <br>
+            [SDMon] \( [a:\theta]B_{b}\chi\rightarrow B_{b}(\theta\rightarrow\chi) \)  
+            <br>
+            [RDMon] \( [a:\gamma]\neg B_{b}\gamma\rightarrow([a:\theta]B_{b}\chi\rightarrow B_{b}\chi) \)  
+            <br><br>
+            Rules:
+            <br>
+            [MP] From \( (\phi \rightarrow \psi), \phi \), infer \( \psi \)
+            <br>
+            [[:]-Nec] From \( \vdash\phi \), infer \( \vdash[a:\theta]\phi \)
+        </div>
+        <div class="verification">
+            <hr/>
+            <br>
+            you may test the following instances with any model you defined
+            <br>
+            <br>
+            [Taut] (Bap + ~Bap)   
+            <br>
+            [K<sub>⊤</sub>] Ba(p+~p)       
+            <br>
+            [K<sub>B</sub>] (Ba(p>q)>(Bap>Baq))    
+            <br>
+            [K<sub>[:]</sub>] [a:q](Bbq>Bcp) > ([a:q]Bbq>[a:q]Bcp))   
+            <br> 
+            [UMon] (Bbp>[a:q]Bbp)   
+            <br>
+            [SDMon] ([a:p]Bbq > Bb(p > q)) 
+           <br>
+           [RDMon] ([a:r]~Bbr > ([a:p]Bbq> Bbq))  
+
+
+        </div>
+
+       
+
+
+
+    </div>
+   
+    
+    <script src="https://d3js.org/d3.v5.min.js"></script>
+    <script src="parse.js" defer></script> 
+    <script src="drawGraph.js" defer></script>
+    
+</body>
+
+</html>
+    
+
+
+
+
