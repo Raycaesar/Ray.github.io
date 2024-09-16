@@ -3,7 +3,8 @@ const canvas = document.getElementById('canvas1');
 const ctx = canvas.getContext('2d');
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
-let switchOn = false; 
+let switchOn = false;
+let pauseOn = false;
 
 function toggleButton() {
     var button = document.getElementById("toggleButton");
@@ -18,6 +19,21 @@ function toggleButton() {
         button.classList.add("off");
     }
 }
+
+function pauseButton() { 
+    var button = document.getElementById("pauseButton");
+    pauseOn = !pauseOn; // Toggle switch state
+    if (pauseOn) {
+        button.innerHTML = "PAUSE";
+        button.classList.remove("move");
+        button.classList.add("pause");
+    } else {
+        button.innerHTML = "MOVE";
+        button.classList.remove("pause");
+        button.classList.add("move");
+    }
+}
+
 
 const gradient = ctx.createRadialGradient(canvas.width * 0.5, canvas.height * 0.5, 100, canvas.width * 0.5, canvas.height * 0.5, 600)
 gradient.addColorStop(0, "white");
@@ -104,28 +120,33 @@ class Particle {
     }
 
     update() {
-        if (this.isMouseOver && switchOn) {  /*this.isMouseOver &&*/
-            this.radius = 60;
-        } else {
-            this.radius = 30;
-        }
+        if (!pauseOn) {  // Only update position if not paused
+            if (this.isMouseOver && switchOn) {  
+                this.radius = 60;
+            } else {
+                this.radius = 30;
+            }
 
-        this.x += this.vx;
-        this.y += this.vy;
+            this.x += this.vx;
+            this.y += this.vy;
 
-        if (this.x < this.radius) {
-            this.x = this.radius;
-            this.vx *= -1;
-        } else if (this.x > this.effect.width - this.radius) {
-            this.x = this.effect.width - this.radius;
-            this.vx *= -1;
+            if (this.x < this.radius) {
+                this.x = this.radius;
+                this.vx *= -1;
+            } else if (this.x > this.effect.width - this.radius) {
+                this.x = this.effect.width - this.radius;
+                this.vx *= -1;
+            }
+            if (this.y < this.radius) {
+                this.y = this.radius;
+                this.vy *= -1;
+            } else if (this.y > this.effect.height - this.radius) {
+                this.y = this.effect.height - this.radius;
+                this.vy *= -1;
+            }
         }
-        if (this.y < this.radius) {
-            this.y = this.radius;
-            this.vy *= -1;
-        } else if (this.y > this.effect.height - this.radius) {
-            this.y = this.effect.height - this.radius;
-            this.vy *= -1;
+        else{
+            this.radius = 60; 
         }
     }
 }

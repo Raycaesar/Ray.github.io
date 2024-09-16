@@ -77,3 +77,23 @@ margin: 20px;
   #toggleButton.off {
     background-color: #80150d;
   }
+
+  #pauseButton {
+    background-color: #ccc;
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    cursor: pointer;
+  }
+  
+  #pauseButton.move {
+    background-color: #236e58;
+  }
+  
+  #pauseButton.pause {
+    background-color: #80150d;
+  }

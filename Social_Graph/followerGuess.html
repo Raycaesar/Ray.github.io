@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Belief Game</title>
+    <link rel="stylesheet" href="guess.css">
+</head>
+<body>
+    <div id="game-container">
+        <h1>Guess the Follower</h1>
+     
+        <input type="text" id="beliefupdate" placeholder="Enter the announcement">
+    <button onclick="handleUpdateModelClick()">Update Model</button>
+        <div>
+            <h3>Check the strongest beliefs of agents:</h3>
+            <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                <div style="width: 45%; border: 1px solid #ccc; padding: 10px;">
+                    <h4>Agent b's Strongest Belief:</h4>
+                    <p id="beliefB"></p>
+                </div>
+                <div style="width: 45%; border: 1px solid #ccc; padding: 10px;">
+                    <h4>Agent c's Strongest Belief:</h4>
+                    <p id="beliefC"></p>
+                </div>
+            </div>
+            <button onclick="checkStrongestBeliefs()">Reveal Strongest Beliefs</button>
+        </div>
+
+        <div>
+            <h3>Guess the follower:</h3>
+            <button onclick="guessFollower('b')">Agent b is the follower</button>
+            <button onclick="guessFollower('c')">Agent c is the follower</button>
+        </div>
+
+        <div id="result"></div>
+    </div>
+
+    <script src="guess.JS"></script>
+</body>
+</html>
