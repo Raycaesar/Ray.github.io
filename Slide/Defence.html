@@ -1,0 +1,440 @@
+
+
+<!doctype html>
+<html lang="en">
+
+	<head>
+		<meta charset="utf-8">
+
+		<title>reveal.js – The HTML Presentation Framework</title>
+
+		<meta name="description" content="A framework for easily creating beautiful presentations using HTML">
+		<meta name="author" content="Hakim El Hattab">
+
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+		<!--<link rel="stylesheet" type="text/css" href="http://tikzjax.com/v1/fonts.css"> 
+		<script src="http://tikzjax.com/v1/tikzjax.js"></script>
+		<script type="text/tikz">
+			\begin{tikzpicture}
+			  \draw (0,0) circle (1in);
+			\end{tikzpicture}
+		  </script>      
+
+		
+		
+		
+		-->
+
+		<link rel="stylesheet" href="dist/reset.css">
+		<link rel="stylesheet" href="dist/reveal.css">
+        <link rel="stylesheet" href="dist/universestyle.css"> <!--change style by tags-->
+		<link rel="stylesheet" href="dist/theme/league.css" id="theme"> <!--change style by themes-->
+		
+
+		<!-- Theme used for syntax highlighting of code -->
+		<link rel="stylesheet" href="plugin/highlight/monokai.css">
+	</head>
+
+	<body>
+
+		<div class="reveal">
+
+			<!-- Any section element inside of this container is displayed as a slide -->
+			<div class="slides">
+				<section frameBorder="0">
+					<h1>Social Announcement Logic</h1>
+					<h4>Dynamic Epistemic Logic in Social Networks </h4>
+                    
+					<p class="title">
+						<small> Rui Zhu
+							<br/>
+							<br/>
+							Supervised by
+							Dr. Jeremy Seligman</small>
+						<br/>
+						<br/>
+						
+						<small> Department of Philosophy, Humanities, UNIVERSITY OF AUCKALND</small>
+						<br/>
+						<img class="logo" style="background: rgba(255,255,255,0.5);" width="200" height="150" data-src="material\The University of Auckland.png" alt="Down arrow">
+					</p>
+				</section>
+
+
+				<section>
+					<section>
+					<h3>Motivations</h3>
+
+					<div class="container">
+						<ul class="main_li">
+							<li>Dynamic Epistemic Logic is capable of representing epistemic update, providing us with analyses of following relationships and the structure of social networks.</li>
+							<li><u>Key inquiries</u>:</li>
+							
+								<p>Can we establish a logical framework for reasoning about following relationships through belief updates?</p>
+							
+								<p class = "example"> Given Agt = {a, b, c, d, e} and followers of a = {b, c}, after agent a makes <em>a social announcement</em> p, 
+								
+								 belief of b and c are <b> updated </b> with p while the belief of d and e <b> remains</b> unchanged. </p>
+								    
+								</ul>	
+						
+
+					</div>
+				</section>
+					
+						<section data-id="9a06014caaed52eb8f5244b4e49686f9" data-background-interactive="true" data-preload="" data-background-iframe="C:\Users\zrui956\OneDrive - The University of Auckland\Desktop\My Program\Ray.github.io-main\Social_Graph\index1.html"></section>
+						<section data-id="9a06014caaed52eb8f5244b4e49686f9" data-background-interactive="true" data-preload="" data-background-iframe="C:\Users\zrui956\OneDrive - The University of Auckland\Desktop\My Program\Ray.github.io-main\Social_Graph\followerGuess.html "></section>
+						
+						
+				</section>
+
+                <section>
+			
+
+					<section>
+						<h3>Framework</h3>
+						<h6></h6> 
+						<p class="row"> <b>Language of APAL</b>
+						 $\mathsf{A}$ is a finite set of agents. $\mathsf{Prop}$ is the set of propositional variables.  A <u> message </u> is defined as follows
+						 <br>
+						
+						   \[ \theta := p~|~\neg \theta~|~(\theta\wedge \theta)\]
+						 
+						 And we define language $L_{SAL}$ by specifying   
+						 <br>
+					
+						 \[ \phi :=  B_{a} \theta~|~\neg\phi~|~(\phi\wedge\phi)~|~[a: \theta]\phi~|~\langle a! \theta\rangle\phi~|~\langle a \rangle\phi~|~\langle a! \rangle\phi \]  
+						  where $p\in \mathsf{Prop}$, $a \in A$ and for each $a$ there is a modality $B_{a}$ in $L_{SAL}$
+
+							</p>
+						<div class="container">
+						
+						<p class = "example">	
+							$B_{a} \theta$ means agent $a$ believes message $\theta$. $[a: \theta]\phi$ $(\langle a! \theta\rangle\phi)$ can be read as "After agent $a$ (sincerely) announces $\theta$ to its followers, $\phi$ is true." 
+							
+						</br>
+						</br>
+							The operator $\langle a\rangle$ is used to express the capacity of agent $a$ to make a social announcement.
+		
+						$\langle a\rangle\phi$ $(\langle a!\rangle\phi)$ can be read as "After $a$ (sincerely) makes an announcement to its followers, $\phi$ is true." 
+						</p>
+</div>
+										
+</section>
+						
+	<section data-id="9a06014caaed52eb8f5244b4e49686f9" data-background-interactive="true" data-preload="" data-background-iframe="C:\Users\zrui956\OneDrive - The University of Auckland\Desktop\My Program\Ray.github.io-main\denotation\denotation.html"></section>
+</section>
+
+<section>
+		<section>
+			<h3>Examples</h3>
+
+
+		<div class ="def">
+			<p class = "example">	
+			\[f(a) = \{b, c\},~~
+			f(b) = \{c\},~~
+			f(c) = \{a\}
+			\\
+			k(a) = \llbracket p\rrbracket,~~
+			k(b) =\llbracket q\rrbracket,~~
+			k(c) = \llbracket r\rrbracket
+			\]
+			</br>
+		 we test the following formulas:
+		\[
+		[b:q]([a:(p\wedge q)]B_{a}q \vee B_{c}p)~~~~unsatisfied
+\\
+\\
+[a:(r\rightarrow q)]([b:(q\rightarrow p)]B_{c}p \wedge [c:q](\neg B_{c}p \wedge B_{a}q))~~~~satisfied
+\\
+\\
+[a:(\neg r \vee \neg q)]([b:\neg \neg q]([c:\neg q]B_{a}\neg (q \vee \neg p)\wedge Bc(p\wedge \neg r))\wedge [a:r]B_{b}(\neg q\wedge r))
+\\satisfied
+		\]	
+			
+		</p>
+			</div>
+							
+		</section>
+	
+<section data-id="9a06014caaed52eb8f5244b4e49686f9" data-background-interactive="true" data-preload="" data-background-iframe="C:\Users\zrui956\OneDrive - The University of Auckland\Desktop\My Program\Ray.github.io-main\parse\parse.html"></section>	
+</section>
+
+				
+
+<section><section>
+					<h3>Arbitrary Announcement</h3>
+					
+
+                    <div class="container">
+						
+                    <div class="col-60">
+						<h3>Kuijer's Counterexample</h3>
+						<p> Currently we do not know if $\mathsf{APAL}$ has <em>finitary</em> axiomatization. The following rule does not preserve validity.</p>
+						From $ \langle \chi\rangle\langle q\rangle\phi\rightarrow\psi$, infer $ \langle \chi\rangle\Diamond\phi\rightarrow\psi$
+						<br>
+where $q\not\in Var(\psi)\cup Var(\phi)\cup Var(\chi)$.
+						<img class="r-frame" style="background: rgba(255,255,255,0.1);" width="450" height="300" data-src="material\kuijer.png" alt="Down arrow">
+						<br> $\vDash \langle \top\rangle\langle q\rangle(p \wedge \neg B_{b}p \wedge \widehat{B_{a}} B_{b}p)\rightarrow \langle \widehat{B_{b}} p\rangle \Diamond (p \wedge \neg B_{b}p \wedge \widehat{B_{a}} B_{b}p)$ 
+						<br>
+						<br>
+						$m, w_{1}\not\vDash \langle \top\rangle\Diamond(p \wedge \neg B_{b}p \wedge \widehat{B_{a}} B_{b}p)\rightarrow \langle \widehat{B_{b}} p\rangle \Diamond (p \wedge \neg B_{b}p \wedge \widehat{B_{a}} B_{b}p)$
+					
+					</div>
+
+                    <div class="col-40">
+						<h3>Noncompactness</h3>
+						<p> The logic of $L_{SAL}$ is <i>not compact</i>. Here are two counterexamples.</p>
+						$\{\langle a\rangle(B_{a}\bot \wedge \neg B_{b}\bot), \langle a\rangle B_{b}\bot \}\cup \{\neg B_{a}\theta ~~|~~ \theta~~is~~not~~an~~instance ~~of~~tautology~~\}$
+						<br>
+						<br>
+						$\{\langle a!\rangle B_{b}p \wedge \neg B_{b} p \}\cup\{\neg B_{a}\theta ~~|~~ \theta~~is~~not~~an~~instance~~of~~tautology~~\}$
+					
+					<br><br>
+					<h3>Main Results</h3>
+
+					By using <u>free message</u> model and moduolo satisfiability, we show the following rules preserve validity.
+					<br><br>
+					From $\langle a!p\rangle\phi \rightarrow \psi $, infer $ \langle a!\rangle\phi \rightarrow \psi$
+					<br><br>
+					From $[a:p]\phi \rightarrow \psi$, infer $\langle a\rangle\phi\rightarrow \psi$
+					<br><br>
+					where $p$ is a propositional variable that does not occur $\phi$ or $\psi$.
+					<br><br>
+					Thus, by using <u>non-greedy</u> set we have a finitary complete axiomatization $\mathsf{sal}$.
+                    </div>
+					
+				</section>
+
+					<section data-id="9a06014caaed52eb8f5244b4e49686f9" data-background-interactive="true" data-preload="" data-background-iframe="C:/Users/zrui956/OneDrive%20-%20The%20University%20of%20Auckland/Desktop/My%20Program/Ray.github.io-main/announce/announceable.html"></section>
+
+</section>
+
+
+	
+
+				<section><section >
+					
+					<h3>Tableau Calculus</h3>
+                    
+					<ul class="main_li">
+						<li>In Chapter four, we present a complete and <u>non-greedy compact</u> tableau system.</li>
+						<li>
+							This system allows us to easily construct proofs for theorems in $\mathsf{sal}$, such as the distribution of $\langle a!\rangle[a!]$ over conjunction.
+						</li>
+						<li>Also, it can generate models to satisfy any consistent non-greedy set of formulas.</li>
+					
+					</ul>
+				
+					<p class = "example">	
+				
+					 we test the following set of formulas:
+					\[
+				
+					\{ \langle a!\rangle B_{b}q \wedge \neg B_{b}q,
+					~~~~
+					[a:p]\neg B_{b}p\}
+					\\
+					\Rightarrow unsatisfiable.
+					\\
+					\{ \langle a!\rangle (B_{b}q \wedge \neg B_{c}r),
+					~~~~
+					\langle b!p\rangle (B_{c}p \wedge \neg B_{a}p),
+					~~~[a:r](\neg B_{b}r \wedge B_{c}r) \}
+					\\
+					\Rightarrow \{cFa, \neg aFb, \neg bFa, B_{b}p \}
+					\]	
+						
+					</p>
+				</section>
+					<section data-id="9a06014caaed52eb8f5244b4e49686f9" data-background-interactive="true" data-preload="" data-background-iframe="C:\Users\zrui956\OneDrive - The University of Auckland\Desktop\My Program\Ray.github.io-main\tree\tree.html"></section>
+ 	 
+				</section>
+
+
+	<section>
+		<section >
+					<h3>Epistemic Distribution</h3>
+					
+					<div class="container">
+					<div class="col-60">
+						<h3>Coherences</h3>
+						<p>We define five coherences for our original models.</p>
+						<ul class="bran_li">
+							<li><u>Global coherence</u>: All agents' beliefs are collectively consistent.</li>
+							<li><u>Local coherence</u>: No individual agent's beliefs become inconsistent following sincere announcements.</li>
+							<li><u>Weak coherence</u>:  Each agent's beliefs are internally consistent.</li>
+							<li><u>Cohesive coherence</u>:  Agents with inconsistent beliefs are separated.</li>
+							<li><u>Flowing coherence</u>:  No contradictory flow can be made.</li>
+						
+						</ul>
+						
+					$$\begin{tikzpicture}
+
+					\definecolor{bubbles}{rgb}{0.91, 1.0, 1.0}
+					\definecolor{capri}{rgb}{0.0, 0.75, 1.0}
+					\definecolor{celadon}{rgb}{0.67, 0.88, 0.69}
+					\definecolor{cottoncandy}{rgb}{1.0, 0.74, 0.85}
+					\definecolor{deepcerise}{rgb}{0.85, 0.2, 0.53}
+					\definecolor{chartreuse}{rgb}{0.87, 1.0, 0.0}
+					\definecolor{britishracinggreen}{rgb}{0.0, 0.26, 0.15}
+
+					\begin{scope} [fill opacity = .5]
+					
+					\draw[fill= bubbles] (-5,5) rectangle (8,-3);
+					\draw[fill=celadon, draw = black] (-1.5,1) circle (3);
+					\draw[fill=deepcerise, draw = black] (1.55,1) circle (2.87);
+					\draw[fill=cottoncandy, draw = black] (2.65,1) ellipse (5cm and 3.2cm); % Adjusted this line
+					\draw[fill=capri, draw = black] (0,1) circle (1);
+					
+					\node at (-4,4) {\color{chartreuse}\LARGE\textbf{SAL}};
+					\node at (-3,2.5) {\color{britishracinggreen}\LARGE\textbf{wc}};
+					\node at (5,2.5) {\color{britishracinggreen}\LARGE\textbf{fc}};
+					\node at (2.5, 2.5) {\color{britishracinggreen}\LARGE\textbf{cc}};
+					\node at (0,2.5) {\color{britishracinggreen}\LARGE\textbf{lc}};
+					\node at (0, 1) {\color{britishracinggreen}\LARGE\textbf{gc}};
+					\end{scope}
+					
+					
+					\end{tikzpicture}
+
+					$$
+					
+					
+				</div>
+
+				<div class="col-40">
+					<h3>Implications</h3>
+					<p> By implementing coherent models, the expressiveness of $L_{SAL}$ is enhanced. These models assist in reasoning about the structure of social networks. Some allow us to represent <i> "following relationships"</i>, but some logical properties might be lost and may not be characterizable.</p>
+				<h3>Main Results</h3>
+				<ul class="bran_li">
+					<li>Following relationship <em>expressible</em>: wc, cc, lc, gc.</li>
+					<li><em>Characterizable</em>: fc, wc.</li>
+					<li><em>Failure</em> of <i>free announcement necessitation</i>: Indirect axiomatizations are needed. An axiomatization without the necessitation rule is available with respect to wc.</li>
+					<li>Preversing <em>validity</em> by <i>sincere announcement necessitation</i>: cc, lc, gc.</li>
+					
+				</ul>
+
+	
+				</div>
+			</div>
+		</section>
+
+		<section data-id="9a06014caaed52eb8f5244b4e49686f9" data-background-interactive="true" data-preload="" data-background-iframe="C:\Users\zrui956\OneDrive - The University of Auckland\Desktop\My Program\Ray.github.io-main\Coherence\coherence.html"></section>
+
+	</section>
+	<section>
+		<section >
+					
+				<h3> Application</h3>
+				
+				<ul class="main_li">
+					
+					<li>
+						By applying a <em>cascading announcement</em> from social announcement logic, we can explore how sociological phenomena such as <i>peer pressure</i>, the <i>bandwagon effect</i>, and the rise of <i>polarization</i> within <i>echo chambers</i> come to exist.
+					</li>
+					
+					</ul>
+					<p class="example"> 
+						Given 20 agents with existing beliefs, we allow them to randomly make cascading announcements 200 times.
+						<br>
+						<br>
+						When an agent receives a belief that contradicts their current one, they will unfollow the speaker.
+						<br>
+						<br>
+						Additionally, agents can form following relationships 40 times, with agents in the same echo chamber being 3 times more likely to establish such relationships.
+					</p>
+					
+		</section>
+
+			<section data-id="9a06014caaed52eb8f5244b4e49686f9" data-background-interactive="true" data-preload="" data-background-iframe="C:\Users\zrui956\OneDrive - The University of Auckland\Desktop\My Program\Ray.github.io-main\Echo_Chamber\Chamber.html"></section>
+	</section>
+
+
+	<section>
+        <h2>Achievements</h2>
+		<div class="container">
+			
+        <ul>
+            <li>Establishment of the Framework of Social Announcement Logic</li>
+            <li>Proof of the Properties of Social Announcement Logic</li>
+            <li>Model Transformation Technique Dealing with Arbitrary Operators</li>
+            <li>The Development of A Tableau System</li>
+            <li>Practical Applications for Interdisciplinary Studies</li>
+        </ul>
+	
+		</div>
+    </section> 
+				
+
+				<section data-auto-animate data-background-iframe ="C:\Users\zrui956\OneDrive - The University of Auckland\Desktop\My Program\Teaching.github.io-main\Teaching.github.io-main\control\index1.html" frameBorder="0" >
+					
+					<h3>Thank you</h3>
+                 
+				</section>
+
+			
+
+
+				
+
+
+		
+
+
+
+
+
+
+
+
+		<script src="dist/reveal.js"></script>
+		<script src="plugin/zoom/zoom.js"></script>
+		<script src="plugin/notes/notes.js"></script>
+		<script src="plugin/search/search.js"></script>
+		<script src="plugin/markdown/markdown.js"></script>
+		<script src="plugin/highlight/highlight.js"></script>
+		<script src="plugin/math/math.js"></script>
+		<script src="https://i.upmath.me/latex.js"></script>
+		
+<script>
+  Reveal.initialize({
+	katex: {
+	  version: 'latest',
+	  delimiters: [
+		{left: '$$', right: '$$', display: true},
+		{left: '$', right: '$', display: false},
+		{left: '\\(', right: '\\)', display: false},
+		{left: '\\[', right: '\\]', display: true}
+	 ],
+	 ignoredTags: ['script', 'noscript', 'style', 'textarea', 'pre']
+   },
+   plugins: [ RevealMath.KaTeX ]
+  });
+</script>
+
+
+		<script>
+
+			// Also available as an ES module, see:
+			// https://revealjs.com/initialization/
+			Reveal.initialize({
+				controls: true,
+				progress: true,
+				center: true,
+				hash: true,
+
+				// Learn about plugins: https://revealjs.com/plugins/
+				plugins: [ RevealZoom, RevealNotes, RevealSearch, RevealMarkdown, RevealHighlight ]
+			});
+
+		</script>
+		
+
+	</body>
+</html>
