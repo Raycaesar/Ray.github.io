@@ -476,7 +476,7 @@ function runSimulation() {
           clearInterval(simulationInterval);
           logToPage('Simulation completed.');
         }
-      }, 1000); // Adjust the delay as needed (currently set to 1 second)
+      }, 100); // Adjust the delay as needed (currently set to 1 second)
 }
     
 
