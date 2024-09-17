@@ -14,7 +14,7 @@ const colors = ['#D67293', ' #73DEFA', '#5DB117', '#5A8CD7', '#CCCC00', '#9A5FD7
 // Set Agent Size and Update Dropdowns
 function setAgentSize() {
     const size = parseInt(document.getElementById("agentSize").value);
-    Agt = Array.from({length: size}, (_, i) => i < 4 ? ['a', 'b', 'c', 'd'][i] : `a_${i + 1}`);
+    Agt = Array.from({length: size}, (_, i) => i < 10 ? ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j'][i] : `a_${i + 1}`);
 
     Agt.forEach((agent, index) => {
         agentColors[agent] = colors[index % colors.length];
