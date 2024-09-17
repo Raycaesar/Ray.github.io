@@ -82,3 +82,50 @@ p{text-align: left;}
     border:none; 
     box-shadow:none;
     }
+    #characters {
+        display: flex;
+        justify-content: space-around;
+        margin: 20px 0;
+    }
+    .character {
+        text-align: center;
+    }
+    .character-img {
+        width: 120px;
+        height: 100px;
+        border-radius: 50%;
+    }
+    textarea {
+        width: 200px;
+        height: 50px;
+        background-color: transparent;
+        color: aqua;
+    }
+
+    button {
+        width: 150px;
+        height: 40px;
+        background-color: #4CAF50;
+        border: none;
+        color: white;
+        padding: 2px 2px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 13px;
+        margin-top: 3px;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+        background-color: #45a049;
+    }
+
+
+    svg {
+        z-index: -1;
+    }
+   
+      
