@@ -67,27 +67,80 @@
 
 				<section>
 					<section>
-					<h3>Motivations</h3>
-
-					<div class="container">
-						<ul class="main_li">
-							<li>Dynamic Epistemic Logic is capable of representing epistemic update, providing us with analyses of following relationships and the structure of social networks.</li>
-							<li><u>Key inquiries</u>:</li>
-							
-								<p>Can we establish a logical framework for reasoning about following relationships through belief updates?</p>
-							
-								<p class = "example"> Given Agt = {a, b, c, d, e} and followers of a = {b, c}, after agent a makes <em>a social announcement</em> p, 
-								
-								 belief of b and c are <b> updated </b> with p while the belief of d and e <b> remains</b> unchanged. </p>
-								    
-								</ul>	
-						
-
-					</div>
-				</section>
+						<h3>Motivations</h3>
 					
-						<section data-id="9a06014caaed52eb8f5244b4e49686f9" data-background-interactive="true" data-preload="" data-background-iframe="https://raycaesar.github.io/Ray.github.io/Social_Graph/index1.html"></section>
-						<section data-id="9a06014caaed52eb8f5244b4e49686f9" data-background-interactive="true" data-preload="" data-background-iframe="https://raycaesar.github.io/Ray.github.io/Social_Graph/followerGuess.html"></section>
+						<div class="container">
+							<ul class="main_li">
+								<li>Can we establish a logical framework for reasoning about following relationships through belief updates?</li>
+								<li><u>Example</u>:</li>
+							</ul>
+					
+							<!-- Character beliefs and pictures -->
+							
+						</div>
+
+						<div id="characters">
+							<div class="col-50">
+							<div class="character" id="aladdin">
+								<img src="aladdin.png" alt="Aladdin" class="character-img">
+								
+								<textarea readonly id="aladdin-belief">Aladdin: The Genie is blue.</textarea>
+								<button onclick="spreadBelief('aladdin')">Share Aladdin's Wisdom</button>
+							</div>
+							
+							<div class="character" id="bulma">
+								$\uparrow$
+							</br>
+								<img src="bulma.png" alt="Bulma" class="character-img"> 
+								<textarea readonly id="bulma-belief">Bulma: If the Genie is blue, he must have long eyelashes.</textarea>
+								<button onclick="spreadBelief('bulma')">Spread Bulma's Belief</button>
+							</div>
+							</div>
+
+							<div class="col-50">
+							<div class="character" id="chopper">
+								$\leftarrow$
+								<img src="chopper.png" alt="Chopper" class="character-img">
+								<textarea readonly id="chopper-belief">Chopper: If the Genie is blue, he has a round head.</textarea>
+								<button onclick="spreadBelief('chopper')">Hear Chopper's Thoughts</button>
+							</div>
+							$ \uparrow ？$
+						</br>
+							<div class="character" id="doraemon">
+								<img src="doraemon.png" alt="Doraemon" class="character-img">
+							
+								<textarea readonly id="doraemon-belief">If there's something blue with a round head... it has to be me!</textarea>
+							</div>
+						</div>
+						</div>
+				
+					
+						
+						
+						
+					</section>
+					
+					<script>
+						function spreadBelief(character) {
+							if (character === 'aladdin') {
+								document.getElementById('bulma-belief').innerHTML = 'Bulma: The Genie is blue, and he has long eyelashes!';
+								document.getElementById('chopper-belief').innerHTML = 'Chopper: The Genie is blue, and he has a round head!';
+								document.getElementById('bulma').getElementsByTagName('img')[0].src = 'bulma_happy.png';
+								document.getElementById('chopper').getElementsByTagName('img')[0].src = 'chopper_happy.png';
+							} else if (character === 'bulma') {
+								// No change happens here based on your description
+							} else if (character === 'chopper') {
+								document.getElementById('doraemon-belief').innerHTML = 'Doraemon: Wait... I AM the Genie!';
+								document.getElementById('doraemon').getElementsByTagName('img')[0].src = 'doraemon_shock.gif';
+							}
+						}
+					</script>
+					
+					
+					
+					
+						<section data-id="9a06014caaed52eb8f5244b4e49686f9" data-background-interactive="true" data-preload="" data-background-iframe="C:\Users\zrui956\OneDrive - The University of Auckland\Desktop\My Program\Ray.github.io-main\Social_Graph\index1.html"></section>
+						<section data-id="9a06014caaed52eb8f5244b4e49686f9" data-background-interactive="true" data-preload="" data-background-iframe="C:\Users\zrui956\OneDrive - The University of Auckland\Desktop\My Program\Ray.github.io-main\Social_Graph\followerGuess.html "></section>
 						
 						
 				</section>
@@ -97,72 +150,127 @@
 
 					<section>
 						<h3>Framework</h3>
-						<h6></h6> 
-						<p class="row"> <b>Language of APAL</b>
-						 $\mathsf{A}$ is a finite set of agents. $\mathsf{Prop}$ is the set of propositional variables.  A <u> message </u> is defined as follows
-						 <br>
 						
-						   \[ \theta := p~|~\neg \theta~|~(\theta\wedge \theta)\]
-						 
-						 And we define language $L_{SAL}$ by specifying   
-						 <br>
-					
-						 \[ \phi :=  B_{a} \theta~|~\neg\phi~|~(\phi\wedge\phi)~|~[a: \theta]\phi~|~\langle a! \theta\rangle\phi~|~\langle a \rangle\phi~|~\langle a! \rangle\phi \]  
-						  where $p\in \mathsf{Prop}$, $a \in A$ and for each $a$ there is a modality $B_{a}$ in $L_{SAL}$
-
-							</p>
 						<div class="container">
+						<ul>
+							<li  class = "example">	
+								Both beliefs and announcement are expressed at the <b>propositional</b> level.  
+							</li>
+
+						<li  class = "example">	
+							$B_{a} \theta$ means "agent $a$ believes message $\theta$." 
+						</li>
+
+						<li  class = "example">	
+							$[a: \theta]\phi$ $(\langle a! \theta\rangle\phi)$ can be read as "After agent $a$ (sincerely) announces $\theta$ to its followers, $\phi$ is true." 
+						</li>
+						<li class = "example">
+							The arbitrary operators $\langle a\rangle$ and $\langle a!\rangle\phi$ are used to express the capacity of agent $a$ to make a (sincerely) social announcement.
 						
-						<p class = "example">	
-							$B_{a} \theta$ means agent $a$ believes message $\theta$. $[a: \theta]\phi$ $(\langle a! \theta\rangle\phi)$ can be read as "After agent $a$ (sincerely) announces $\theta$ to its followers, $\phi$ is true." 
+						</li>
+
+						<li class = "example">
 							
-						</br>
-						</br>
-							The operator $\langle a\rangle$ is used to express the capacity of agent $a$ to make a social announcement.
-		
-						$\langle a\rangle\phi$ $(\langle a!\rangle\phi)$ can be read as "After $a$ (sincerely) makes an announcement to its followers, $\phi$ is true." 
-						</p>
+							Agents are <em>conservative</em>. They never abandon their existing beliefs.
+							</li>
+
+						
+					</ul>
 </div>
 										
 </section>
 						
-	<section data-id="9a06014caaed52eb8f5244b4e49686f9" data-background-interactive="true" data-preload="" data-background-iframe="https://raycaesar.github.io/Ray.github.io/denotation/denotation_slide.html"></section>
+	<section data-id="9a06014caaed52eb8f5244b4e49686f9" data-background-interactive="true" data-preload="" data-background-iframe="C:\Users\zrui956\OneDrive - The University of Auckland\Desktop\My Program\Ray.github.io-main\denotation\denotation.html"></section>
 </section>
 
 <section>
 		<section>
 			<h3>Examples</h3>
+<p class = "example"> A model $m = (f, k)$ is a tuple where $f$ represents a <b>social network</b> and function $k$ represent an <b> epistemic distribution </b>. </p>
 
 
-		<div class ="def">
-			<p class = "example">	
-			\[f(a) = \{b, c\},~~
-			f(b) = \{c\},~~
-			f(c) = \{a\}
-			\\
-			k(a) = \llbracket p\rrbracket,~~
-			k(b) =\llbracket q\rrbracket,~~
-			k(c) = \llbracket r\rrbracket
-			\]
-			</br>
-		 we test the following formulas:
-		\[
-		[b:q]([a:(p\wedge q)]B_{a}q \vee B_{c}p)~~~~unsatisfied
+
+<div class="container">
+						
+						
+	<div class="col">
+		
+		
+			<div class ="def">
+							
+$$	
+\begin{tikzpicture}[node distance=1.5cm]
+% Define nodes with white text
+\node(A)  [text = white] {\textbf{model}};
+\node(A1) [below of=A, text=orange] {$a$};
+\node(A2) [left of=A1, text=cyan] {$b$};
+\node(B1) [below of=A1, text=magenta] {$c$}; % Corrected from B1 to A1
+\node(B2) [left of=B1, text=green] {$d$};
+
+
+
+% Draw arrows
+\draw[->, white] (A1) .. controls +(up:19mm) and +(right:15mm) .. (A1);
+\draw[->, white] (A2) -- (A1);
+\draw[->, white] (B1) -- (A1);
+\draw[->, white] (B2) -- (A2);
+\draw[->, white] (B2) -- (B1);
+
+\end{tikzpicture}
 \\
 \\
-[a:(r\rightarrow q)]([b:(q\rightarrow p)]B_{c}p \wedge [c:q](\neg B_{c}p \wedge B_{a}q))~~~~satisfied
-\\
-\\
-[a:(\neg r \vee \neg q)]([b:\neg \neg q]([c:\neg q]B_{a}\neg (q \vee \neg p)\wedge Bc(p\wedge \neg r))\wedge [a:r]B_{b}(\neg q\wedge r))
-\\satisfied
-		\]	
+\begin{tikzpicture}[node distance=1.5cm ]
+\node(A4)        [text=white]                {$p,q,r$};
+\node(B2)      [below of= A4, text=white ]       {$ p,q$};
+\node(B1)      [left of= B2 , text=white]        {$ p,r$};
+\node(B3)      [right of=B2, text=white]        {$ q,r $};
+
+
+
+\node(D1)      [below of=B1, text=white]       {$p$};
+\node(D2)      [right of=D1, text=white]       {$q$};
+\node(D3)      [right of=D2, text=white]       {$r$};
+
+\node(E)      [below  of=D2, text=white] 
+{$\varnothing$};
+
+
+
+\draw[orange, line width=1pt] (B1) circle (21pt);
+
+\draw[cyan, line width=1pt] (B1) circle (18pt);
+\draw[cyan, line width=1pt] (D1) circle (18pt);
+
+
+\draw[magenta, line width=1pt] (D1) circle (15pt);
+\draw[magenta, line width=1pt] (E) circle (15pt);
+
+\draw[green, line width=1pt] (B3) circle (13pt);
+\draw[green, line width=1pt] (D2) circle (13pt);
+\draw[green, line width=1pt] (D3) circle (13pt);
+
+\end{tikzpicture}
+
+		
+			$$
+				</div>
 			
-		</p>
-			</div>
+	</div>
+								
+	<div class="col">
+		<b>test</b>
+		<div class="def">
+			
+			
+		</div>
+	  </div>
+	  
+	</div>	
+	
 							
 		</section>
 	
-<section data-id="9a06014caaed52eb8f5244b4e49686f9" data-background-interactive="true" data-preload="" data-background-iframe="https://raycaesar.github.io/Ray.github.io/parse/parse_slide.html"></section>	
+<section data-id="9a06014caaed52eb8f5244b4e49686f9" data-background-interactive="true" data-preload="" data-background-iframe="C:\Users\zrui956\OneDrive - The University of Auckland\Desktop\My Program\Ray.github.io-main\parse\parse.html"></section>	
 </section>
 
 				
@@ -252,7 +360,7 @@ where $q\not\in Var(\psi)\cup Var(\phi)\cup Var(\chi)$.
 						
 					</p>
 				</section>
-					<section data-id="9a06014caaed52eb8f5244b4e49686f9" data-background-interactive="true" data-preload="" data-background-iframe="https://raycaesar.github.io/Ray.github.io/tree/tree_slide.html"></section>
+					<section data-id="9a06014caaed52eb8f5244b4e49686f9" data-background-interactive="true" data-preload="" data-background-iframe="C:\Users\zrui956\OneDrive - The University of Auckland\Desktop\My Program\Ray.github.io-main\tree\tree.html"></section>
  	 
 				</section>
 
@@ -352,7 +460,7 @@ where $q\not\in Var(\psi)\cup Var(\phi)\cup Var(\chi)$.
 					
 		</section>
 
-			<section data-id="9a06014caaed52eb8f5244b4e49686f9" data-background-interactive="true" data-preload="" data-background-iframe="https://raycaesar.github.io/Ray.github.io/Echo_Chamber/Chamber_slide.html"></section>
+			<section data-id="9a06014caaed52eb8f5244b4e49686f9" data-background-interactive="true" data-preload="" data-background-iframe="C:\Users\zrui956\OneDrive - The University of Auckland\Desktop\My Program\Ray.github.io-main\Echo_Chamber\Chamber.html"></section>
 	</section>
 
 
