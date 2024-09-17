@@ -1,0 +1,22 @@
+
+
+[b:q]([a:(p&q)]Baq+Bcp)   unsatisfied
+(F+F)
+
+[a:(r>q)]([b:(q>p)]Bcp & [c:q](~Bcp&Baq))   satisfied
+(T & (~F&T))
+
+
+[a:(~r+~q)]([b:~~q]([c:~q]Ba~(q+~p)& Bc(p&~r))&[a:r]Bb(~q&r))  satisfied
+((T&T)&T)
+
+
+
+
+(<a!>Bbq & ~Bbq)
+[a:p]~Bbp
+
+
+<a!>(Bbq & ~Bcr)
+<b!p>(Bcp & ~Bap)
+[a:r](~Bbr & Bcr)
