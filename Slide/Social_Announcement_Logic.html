@@ -1,0 +1,1563 @@
+
+
+<!doctype html>
+<html lang="en">
+
+	<head>
+		<meta charset="utf-8">
+
+		<title>reveal.js – The HTML Presentation Framework</title>
+
+		<meta name="description" content="A framework for easily creating beautiful presentations using HTML">
+		<meta name="author" content="Hakim El Hattab">
+
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+		<!--<link rel="stylesheet" type="text/css" href="http://tikzjax.com/v1/fonts.css"> 
+		<script src="http://tikzjax.com/v1/tikzjax.js"></script>
+		<script type="text/tikz">
+			\begin{tikzpicture}
+			  \draw (0,0) circle (1in);
+			\end{tikzpicture}
+		  </script>      
+
+		
+		
+		
+		-->
+
+		<link rel="stylesheet" href="dist/reset.css">
+		<link rel="stylesheet" href="dist/reveal.css">
+        <link rel="stylesheet" href="dist/universestyle.css"> <!--change style by tags-->
+		<link rel="stylesheet" href="dist/theme/league.css" id="theme"> <!--change style by themes-->
+		
+
+		<!-- Theme used for syntax highlighting of code -->
+		<link rel="stylesheet" href="plugin/highlight/monokai.css">
+	</head>
+
+	<body>
+
+		<div class="reveal">
+
+			<!-- Any section element inside of this container is displayed as a slide -->
+			<div class="slides">
+				<section frameBorder="0">
+					<h1>Social Announcement Logic</h1>
+					<h4>Done, Doing, and To Do</h4>
+                    
+					<p class="title">
+						<small> Rui Zhu
+							<br/>
+							<br/>
+							Supervised by
+							Dr. Jeremy Seligman</small>
+						<br/>
+						<br/>
+						
+						<small> Department of Philosophy, Humanities, UNIVERSITY OF AUCKALND</small>
+						<br/>
+						<img class="logo" style="background: rgba(255,255,255,0.5);" width="200" height="150" data-src="material\The University of Auckland.png" alt="Down arrow">
+					</p>
+				</section>
+
+
+				<section>
+					<section>
+						<h3>Motivations</h3>
+					
+						<div class="container">
+							<ul class="main_li">
+								<li>Can we establish a logical framework for reasoning about the effects of communication constrained by network structures?
+								</li>
+								<li class="fragment"><u>Example</u></li>
+							</ul>
+					
+							<!-- Character beliefs and pictures -->
+							
+						</div>
+						<div class = "fragment">
+						<div id="characters">
+							<div class="col-50">
+							<div class="character" id="aladdin">
+								<img src="aladdin.png" alt="Aladdin" class="character-img">
+								
+								<textarea readonly id="aladdin-belief">Aladdin: The Genie is blue.</textarea>
+								<button onclick="spreadBelief('aladdin')">Share Aladdin's Secret</button>
+							</div>
+							
+							<div class="character" id="bulma">
+								🡹
+							</br>
+								<img src="bulma.png" alt="Bulma" class="character-img"> 
+								<textarea readonly id="bulma-belief">Bulma: If the Genie is blue, he must have long eyelashes.</textarea>
+								<button onclick="spreadBelief('bulma')">Spread Bulma's Belief</button>
+							</div>
+							</div>
+
+							<div class="col-50">
+							<div class="character" id="chopper">
+								🡸
+								<img src="chopper.png" alt="Chopper" class="character-img">
+								<textarea readonly id="chopper-belief">Chopper: If the Genie is blue, he has a round head.</textarea>
+								<button onclick="spreadBelief('chopper')">Hear Chopper's Thoughts</button>
+							</div>
+							
+						</br>
+						❓❓❓<div class="character" id="doraemon">
+								<img src="doraemon.png" alt="Doraemon" class="character-img">
+							
+								<textarea readonly id="doraemon-belief">If there's something blue with a round head... it has to be me!</textarea>
+							</div>
+						</div>
+						</div>
+						</div>
+				
+					
+						
+						
+						
+					</section>
+					
+						
+			
+				
+				<script>
+					function spreadBelief(character) {
+						if (character === 'aladdin') {
+							document.getElementById('bulma-belief').innerHTML = 'Bulma: The Genie is blue, and he has long eyelashes!';
+							document.getElementById('chopper-belief').innerHTML = 'Chopper: The Genie is blue, and he has a round head!';
+							document.getElementById('bulma').getElementsByTagName('img')[0].src = 'bulma_happy.png';
+							document.getElementById('chopper').getElementsByTagName('img')[0].src = 'chopper_happy.png';
+						} else if (character === 'bulma') {
+							// No change happens here based on your description
+						} else if (character === 'chopper') {
+							document.getElementById('doraemon-belief').innerHTML = 'Doraemon: Wait... I AM the Genie!';
+							document.getElementById('doraemon').getElementsByTagName('img')[0].src = 'doraemon_shock.gif';
+						}
+					}
+				</script>
+
+
+
+	<section data-id="9a06014caaed52eb8f5244b4e49686f9" data-background-interactive="true" data-preload="" data-background-iframe="C:\Users\zrui956\OneDrive - The University of Auckland\Desktop\My Program\Ray.github.io-main\Social_Graph\index1.html"></section>
+						</section>
+
+						<section>
+
+	<h3>Literature Review</h3>
+	
+	<div class="container">
+
+		
+		<ul>
+			<p class = "maintext"> Different forms of communication can be modeled using the action frameworks of Dynamic Epistemic Logic.
+			</p> 
+
+		<li  class = "maintext">	
+			$B_{a} \theta$ means "agent $a$ believes the statement $\theta$." 
+		</li>
+
+		<li  class = "maintext">	
+			$\langle X\rangle\phi$ expresses "the statement $\phi$ holds after the action $X$ occurs."
+		</li>
+
+	</ul>
+
+		<!-- Character beliefs and pictures -->
+	</br>
+</br>
+</br>
+	</div>
+	
+	<div id="characters">
+		<div class="col-50">
+			<h4> <em>	 Public Announcement Logic </em></h4>
+			Plaza (1989)
+		</br>
+			Gerbrandy and Groeneveld (1997)
+		</br>
+			van Ditmarsch, van Der Hoek, and Kooi (2007)
+		
+</div>
+
+	<div class="col-40">
+		<h4><em> Logics of Social Networks </em></h4>
+		Seligman, Liu, and Girard (2013)
+	</br>
+	Christoff (2016)
+</br>
+Xiong (2017)
+	</div>
+	</div>
+
+
+	
+	
+	
+</section>
+
+<section>
+<section>
+	<h3>Protocols</h3>
+	
+	<div class="container">
+		
+	<ul>
+		<p  class = "maintext">	
+			$[a: \theta](B_{b}\gamma \wedge \neg B_{c}\gamma)$ is read as "After agent $a$ announces $\theta$ to its followers, agent $b$ believes $\gamma$, while agent $c$ does not."
+		</p>
+		<li  class = "example fragment" >	
+			Both beliefs (e.g., $\gamma$) and announcements (e.g., $\theta$) are represented at the <b>propositional</b> level.
+		</li>
+
+	<li class = "example fragment">
+
+		Agents are <em>conservative</em>; they never discard their current beliefs.
+</li>
+
+		<li class = "example fragment">
+
+			For example, nodes circled in <b class="white">white</b> indicate the <em>denotation</em> of proposition $p$, while nodes circled in <b class="orange">orange</b> constitute an agent's belief state.
+		</li>
+
+		
+
+			
+			
+</ul>
+
+	</div>
+
+<div id="characters">
+	
+	<div class="col-c50 fragment">
+
+							
+$$	
+
+
+\begin{tikzpicture}[node distance=1.5cm ]
+\node(A4)        [text=white]                {$p,q,r$};
+\node(B2)      [below of= A4, text=white ]       {$ p,q$};
+\node(B1)      [left of= B2 , text=white]        {$ p,r$};
+\node(B3)      [right of=B2, text=white]        {$ q,r $};
+
+
+
+\node(D1)      [below of=B1, text=white]       {$p$};
+\node(D2)      [right of=D1, text=white]       {$q$};
+\node(D3)      [right of=D2, text=white]       {$r$};
+
+\node(E)      [below  of=D2, text=white] 
+{$\varnothing$};
+
+
+
+
+\draw[white, line width=1pt] (A4) circle (18pt);
+\draw[white, line width=1pt] (B2) circle (18pt);
+\draw[white, line width=1pt] (B1) circle (18pt);
+\draw[white, line width=1pt] (D1) circle (18pt);
+
+
+\draw[orange, line width=1pt] (D1) circle (15pt);
+\draw[orange, line width=1pt] (B1) circle (15pt);
+\draw[orange, line width=1pt] (B2) circle (15pt);
+
+
+
+
+\end{tikzpicture}
+
+		
+			$$
+				
+			
+	</div>
+								
+	<div class="col-c50 fragment">
+		
+		$$	
+		
+
+\begin{tikzpicture}[node distance=1.5cm ]
+\node(A4)        [text=white]                {$p,q,r$};
+\node(B2)      [below of= A4, text=white ]       {$ p,q$};
+\node(B1)      [left of= B2 , text=white]        {$ p,r$};
+\node(B3)      [right of=B2, text=white]        {$ q,r $};
+
+
+
+\node(D1)      [below of=B1, text=white]       {$p$};
+\node(D2)      [right of=D1, text=white]       {$q$};
+\node(D3)      [right of=D2, text=white]       {$r$};
+
+\node(E)      [below  of=D2, text=white] 
+{$\varnothing$};
+
+
+
+\draw[white, line width=1pt] (A4) circle (18pt);
+\draw[white, line width=1pt] (B2) circle (18pt);
+\draw[white, line width=1pt] (B1) circle (18pt);
+\draw[white, line width=1pt] (D1) circle (18pt);
+
+
+
+\draw[orange, line width=1pt] (B1) circle (15pt);
+
+\end{tikzpicture}
+
+		
+			$$
+		
+			
+			
+		</div>
+	  </div>
+	  
+	
+					
+</section>
+	
+<section data-id="9a06014caaed52eb8f5244b4e49686f9" data-background-interactive="true" data-preload="" data-background-iframe="C:\Users\zrui956\OneDrive - The University of Auckland\Desktop\My Program\Ray.github.io-main\denotation\denotation.html"></section>
+</section>
+</section>
+
+
+
+
+
+
+	
+
+
+<section>
+	<h3>Semantics</h3>
+<p class = "maintext"> A model $m = (f, k)$ is a tuple where $f$ represents a <b>social network</b> and function $k$ represents an <b> epistemic distribution</b>. </p>
+
+
+
+<div class="container">
+				
+				
+<div class="col">
+
+
+	<div class ="def">
+					
+$$	
+\begin{tikzpicture}[node distance=1.5cm]
+% Define nodes with white text
+\node(A)  [text = white] {\textbf{model} $m_1$};
+\node(A1) [below of=A, text=orange] {$a$};
+\node(A2) [left of=A1, text=cyan] {$b$};
+\node(B1) [below of=A1, text=magenta] {$c$}; % Corrected from B1 to A1
+\node(B2) [left of=B1, text=green] {$d$};
+
+
+
+% Draw arrows
+\draw[->, white] (A1) .. controls +(up:19mm) and +(right:15mm) .. (A1);
+\draw[->, white] (A2) -- (A1);
+\draw[->, white] (B1) -- (A1);
+\draw[->, white] (B2) -- (B1);
+
+\end{tikzpicture}
+\\
+\\
+\begin{tikzpicture}[node distance=1.5cm ]
+\node(A4)        [text=white]                {$p,q,r$};
+\node(B2)      [below of= A4, text=white ]       {$ p,q$};
+\node(B1)      [left of= B2 , text=white]        {$ p,r$};
+\node(B3)      [right of=B2, text=white]        {$ q,r $};
+
+
+
+\node(D1)      [below of=B1, text=white]       {$p$};
+\node(D2)      [right of=D1, text=white]       {$q$};
+\node(D3)      [right of=D2, text=white]       {$r$};
+
+\node(E)      [below  of=D2, text=white] 
+{$\varnothing$};
+
+
+\draw[orange, line width=1pt] (A4) circle (21pt);
+\draw[orange, line width=1pt] (B1) circle (21pt);
+
+\draw[cyan, line width=1pt] (B1) circle (18pt);
+\draw[cyan, line width=1pt] (D1) circle (18pt);
+
+
+\draw[magenta, line width=1pt] (D1) circle (15pt);
+\draw[magenta, line width=1pt] (E) circle (15pt);
+
+\draw[green, line width=1pt] (B3) circle (13pt);
+\draw[green, line width=1pt] (D2) circle (13pt);
+\draw[green, line width=1pt] (D3) circle (13pt);
+
+\end{tikzpicture}
+
+
+	$$
+		</div>
+	
+</div>
+						
+<div class="col">
+<div class="def">
+	<ul class="smtext">
+		<li class="fragment">
+		  $\color{orange}{a}$ believes $p$ and $r$, $B_{a}(p \wedge r)$, but does not believe $q$, $\neg B_{a}q$.
+		</li>
+		
+		<li class="fragment">
+		  $\color{cyan}{b}$ believes $p$, $B_{b}p$, but does not believe $r$, $\neg B_{b}r$.
+		</li>
+		
+		<li class="fragment">
+		  $\color{magenta}{c}$ believes $\neg q$, $B_{c}\neg q$, but does not believe $p$, $\neg B_{c}p$.
+		</li>
+		
+		<li class="fragment">
+		  $\color{lightgreen}{d}$ does not believe $r$, $\neg B_{d}r$, but believes either $q$ or $r$, $B_{d}(q \vee r)$.
+		</li>
+		
+		<li class="fragment">
+		  After $\color{orange}{a}$ announces $r$, the updated model $[a:r]m_{1}$ satisfies $B_{b}r \wedge B_{c}p \wedge \neg B_{d}r$.
+	
+
+	  $$\begin{tikzpicture}[node distance=1.5cm ]
+	  \node(A4)        [text=white]                {$p,q,r$};
+	  \node(B2)      [below of= A4, text=white ]       {$ p,q$};
+	  \node(B1)      [left of= B2 , text=white]        {$ p,r$};
+	  \node(B3)      [right of=B2, text=white]        {$ q,r $};
+	  
+	  
+	  
+	  \node(D1)      [below of=B1, text=white]       {$p$};
+	  \node(D2)      [right of=D1, text=white]       {$q$};
+	  \node(D3)      [right of=D2, text=white]       {$r$};
+	  
+	  \node(E)      [below  of=D2, text=white] 
+	  {$\varnothing$};
+	  
+	  
+	  \draw[orange, line width=1pt] (A4) circle (21pt);
+	  \draw[orange, line width=1pt] (B1) circle (21pt);
+	  
+	  \draw[cyan, line width=1pt] (B1) circle (18pt);
+	  
+	  
+	  
+	  \draw[green, line width=1pt] (B3) circle (13pt);
+	  \draw[green, line width=1pt] (D2) circle (13pt);
+	  \draw[green, line width=1pt] (D3) circle (13pt);
+	  
+	  \end{tikzpicture}
+	  
+			  
+				  $$
+				</li>
+			</ul>
+</div>
+</div>
+
+</div>					
+</section>
+
+
+
+
+		
+
+<section>
+<section>
+<h3>Axiomatization</h3>
+
+<p class="maintext"> The formal system $\mathsf{Fsal}$ is sound and strongly complete.</p>
+<div class = "system">
+
+<b>Axioms</b>  [Taut]~All substitution instances of propositional tautologies
+</br>
+	[K$_{\top}$]   $B_{i}\theta$ where $\theta$ is an instance of propositional tautology.
+</br>
+	[K{$_B$}]   $B_{a}(\theta \rightarrow \gamma) \rightarrow (B_{a}\theta \rightarrow B_{a}\gamma)$
+</br>
+	[K$_{[:]}$] $[a:\theta](\phi \rightarrow \psi) \rightarrow ([a:\theta]\phi \rightarrow [a:\theta]\psi)$
+</br>
+	[$[:]$-Dual] $\neg [a:\theta]\phi \leftrightarrow [a:\theta]\neg\phi$
+</br>
+	[UMon]    $B_{b}\chi\rightarrow[a:\theta]B_{b}\chi$
+</br> 
+	[SDMon]   $[a:\theta]B_{b}\chi\rightarrow B_{b}(\theta\rightarrow\chi)$
+</br> 
+	[RDMon]    $[a:\gamma]\neg B_{b}\gamma\rightarrow([a:\theta]B_{b}\chi\rightarrow B_{b}\chi)$
+</br>
+<b>Rules</b>
+	[MP]  From $(\phi \rightarrow \psi), \phi $, infer $ \psi$
+</br>
+	[$[:]$-Nec]  From $\vdash\phi$, infer $\vdash[a:\theta]\phi$
+</div>
+</br>
+	<ul class="smtext"> 
+		<li class = "fragment "> <em>Sincere</em> social announcement, $\langle a!\theta \rangle$, which requires $\theta$ be $a$'s belief.</li>
+		<li class = "fragment"> [SRed]   $\langle a!\theta\rangle\phi\leftrightarrow (B_{a}\theta \wedge [a:\theta]\phi)$ </li>
+		<li class = "fragment"> For logic of sincere social announcement, refer to Xiong et al. (2017).</li>
+	</ul>
+
+</br>
+</section>
+<section data-id="9a06014caaed52eb8f5244b4e49686f9" data-background-interactive="true" data-preload="" data-background-iframe="C:\Users\zrui956\OneDrive - The University of Auckland\Desktop\My Program\Ray.github.io-main\parse\parse.html"></section>	
+
+</section>
+
+<section>
+	<h3> Free Announcement v.s. Sincere Announcement </h3>
+
+
+	
+		<div id="container1"> 
+			<div id="left" class="dark"> 
+				<img src="backend.jpg" width="400"> 
+				<p>The belief space, stored in the cloud, is accessed server-side to determine the network structure.</p> 
+			</div>
+			 <div id="center"> 
+				<img id="centerImage" src="Social_Network.png" width="1000">
+				
+			</div>
+			 <div id="right" class="dark"> 
+				<img src="frontend.jpg" width="400"> 
+				<p>Contacts stored on users' PCs are accessed client-side to simulate how beliefs propagate.</p>
+			 </div> 
+		</div> 
+	
+	
+</section>
+	
+		
+<script>
+    const left = document.getElementById('left');
+    const right = document.getElementById('right');
+	const centerImage = document.getElementById('centerImage');
+
+	document.addEventListener('click', (e) => {
+        const clickX = e.clientX;
+        const windowWidth = window.innerWidth;
+
+        if (clickX < windowWidth / 2) {
+            // Clicked on left side
+            left.className = 'bright';
+            right.className = 'dark';
+			centerImage.src = 'matrix.webp'; // Restore the original image when right is clicked
+            
+        } else {
+            // Clicked on right side
+            left.className = 'dark';
+            right.className = 'bright';
+            
+			centerImage.src = 'network.png'; 
+			 // Change the image when left is clicked
+        }
+    });
+</script>
+
+
+
+
+
+					
+
+
+<section>
+<section>
+	<h3>Arbitrary Announcement</h3>
+	
+
+	<div class="maintext">
+
+<p> 
+  The formula for an <em>arbitrary</em> social announcement, denoted by $\langle a \rangle\phi$ or $\langle a!\rangle \phi$, signifies that agent $a$ is capable of making a (sincere) social announcement such that $\phi$ holds.
+</p>
+
+<div class ="smtext fragment">	
+	$\langle a\rangle\phi$: "After $a$ makes an announcement to its followers, $\phi$ is true."
+	<br>
+	$\langle a!\rangle\phi$: "After $a$ sincerely makes an announcement to its followers, $\phi$ is true."
+	
+	</div>
+	<br>
+	<div class="smtext fragment kl">
+		<h5>Noncompactness</h5>
+		<p> The logic of $L_{SAL}$ is <i>not compact</i>. Here are two counterexamples.</p>
+		$\{\langle a\rangle(B_{a}\bot \wedge \neg B_{b}\bot), \langle a\rangle B_{b}\bot \}\cup \{\neg B_{a}\theta ~~|~~ \theta~~is~~not~~an~~instance ~~of~~tautology~~\}$
+	</br>
+		$\{\langle a!\rangle B_{b}p \wedge \neg B_{b} p \}\cup\{\neg B_{a}\theta ~~|~~ \theta~~is~~not~~an~~instance~~of~~tautology~~\}$
+	
+	
+
+	</div>
+	
+</section>
+
+<section>
+	<h3>Framework</h3>
+	<h6></h6> 
+	<p class="row"> <b>Language of APAL</b>
+	 $\mathsf{A}$ is a finite set of agents. $\mathsf{Prop}$ is the set of propositional variables.  A <u> message </u> is defined as follows
+	 <br>
+	
+	   \[ \theta := p~|~\neg \theta~|~(\theta\wedge \theta)\]
+	 
+	 And we define language $L_{SAL}$ by specifying   
+	 <br>
+
+	 \[ \phi :=  B_{a} \theta~|~\neg\phi~|~(\phi\wedge\phi)~|~[a: \theta]\phi~|~\langle a! \theta\rangle\phi~|~\langle a \rangle\phi~|~\langle a! \rangle\phi \]  
+	  where $p\in \mathsf{Prop}$, $a \in A$ and for each $a$ there is a modality $B_{a}$ in $L_{SAL}$
+
+		</p>
+	<div class="container">
+	
+	
+<div class="col">
+<div><b>Denotation</b>
+
+<div class ="def">
+\[V = 2^{\mathsf{Prop}}
+\\
+\llbracket p \rrbracket = \{x \in V ~|~ p \in x \}
+\\
+\llbracket \neg \theta \rrbracket = V \backslash \llbracket \theta \rrbracket 
+\\
+\llbracket (\theta_1 \wedge \theta_2) \rrbracket = \llbracket \theta_1\rrbracket \cap \llbracket\theta_2 \rrbracket\]
+</div>
+</div>
+</div>
+		
+<div class="col">
+<b>Model</b>								
+<div class ="def">	
+
+<br>
+$~~~~~~~~(f, k)\vDash  [a:\theta] \phi \Leftrightarrow [a:\theta](f, k)\vDash   \phi$ 
+<br>
+in which $[a:\theta](f, k) = (f, [a:\theta]k)$
+<br>
+where $[a:\theta]k(b) = 
+\begin{cases}
+k(b)\cap \llbracket \theta \rrbracket~~~~ {\rm if}~b\in f(a), 
+\\
+k(b)~~~~~~{\rm otherwise}
+\end{cases}$
+<br>
+$~~~~~~~~(f, k)\vDash  \langle a!\theta\rangle \phi  \Leftrightarrow [a:\theta](f, k)\vDash \phi~\&~k(a)\subseteq \llbracket \theta\rrbracket$
+<br>
+$~~~~~~~~(f, k)\vDash \langle a\rangle\phi  \Leftrightarrow \exists\theta [a :\theta](f, k) \vDash \phi$
+<br>
+$~~~~~~~~(f, k)\vDash \langle a!\rangle\phi \Leftrightarrow \exists\theta (k(a) \subseteq \llbracket \theta\rrbracket~\&~[a :\theta](f, k) \vDash \phi)$
+
+		
+</div>
+</div>
+</div>									
+</section>
+</section>
+
+
+<section>
+	<h3>Kuijer's Counterexample</h3>
+	
+
+
+<p  class="smtext">
+  Arbitrary announcements, denoted by $\Diamond$, have been studied in $\mathsf{APAL}$. Currently we do not know if $\mathsf{APAL}$ has <em>finitary</em> axiomatization due to Kuijer's Counterexample. The following rule does not preserve validity:
+</p>
+	<div class="smtext fragment kl">
+		
+		From $ \langle \chi\rangle\langle q\rangle\phi\rightarrow\psi$, infer $ \langle \chi\rangle\Diamond\phi\rightarrow\psi$
+where $q\not\in Var(\psi)\cup Var(\phi)\cup Var(\chi)$.
+	
+<iframe data-src="https://vezwork.github.io/modallogic/?model=;ApS1a,2b,1b,4a,;AS2a,1b,3a,2b,;ArS3a,2a,3b,;ApS1a,4a,4b,5b,;AS4b,5b,5a,6a,;AS5a,6a,6b,?formula=" data-preload width="1000" height="380"></iframe>
+$\vDash \langle \top\rangle\langle q\rangle(p \wedge \neg B_{b}p \wedge \widehat{B_{a}} B_{b}p)\rightarrow \langle \widehat{B_{b}} p\rangle \Diamond (p \wedge \neg B_{b}p \wedge \widehat{B_{a}} B_{b}p)$
+<br>
+$m, w_{1}\not\vDash \langle \top\rangle\Diamond(p \wedge \neg B_{b}p \wedge \widehat{B_{a}} B_{b}p)\rightarrow \langle \widehat{B_{b}} p\rangle \Diamond (p \wedge \neg B_{b}p \wedge \widehat{B_{a}} B_{b}p)$
+
+	</div>
+	<br>
+
+	
+	
+</section>
+
+				
+
+<section><section>
+					<h3>Main Results</h3>
+					
+
+                    <div class="maintext fragment">
+						
+                
+
+              
+
+					In Chapter 3, we use <u>free message</u> model technique to show the following rules preserve validity.
+					<br>
+					<div class="smtext kl">
+					From $\langle a!p\rangle\phi \rightarrow \psi $, infer $ \langle a!\rangle\phi \rightarrow \psi$
+					<br>
+					From $[a:p]\phi \rightarrow \psi$, infer $\langle a\rangle\phi\rightarrow \psi$
+					<br>
+					where $p$ is a propositional variable that does not occur $\phi$ or $\psi$.
+					</div>
+                    </div>
+					<div class="container fragment">
+				<div class="col">
+					 $$\begin{tikzpicture}[node distance=1.2cm]
+
+					\title{Before Announcement}
+					\node(A1)               [text=white]                        {$p,q,r$};
+					\node(A2)      [right of= A1, text=white]                    {$p,q,s$};
+					\node(A4)       [right of=A2, text=white]                   {$p, r,s $};
+					\node(A3)       [right of=A4, text=white]                   {$q, r,s ...$};
+					
+					
+					\node(B2)      [below of= A1, text=white]       {$ p,r$};
+					\node(B1)      [left of= B2, text=white]        {$ p,q$};
+					\node(B3)      [right of=B2, text=white]        {$ p,s $};
+					\node(B4)      [right of= B3, text=white]       {$ q,r$};
+					\node(B5)      [right of= B4, text=white]        {$ q,s$};
+					\node(B6)      [right of=B5, text=white]        {$ r,s ... $};
+					
+					
+					\node(D1)      [below of=B1, text=white]       {$p$};
+					\node(D2)      [right of=D1, text=white]       {$q$};
+					\node(D3)      [right of=D2, text=white]       {$r$};
+					\node(D4)      [right of=D3, text=white]        {$s ...$};
+					
+					
+					
+					\node(E)      [below  of=D2, text=white]     {$\varnothing$};
+					
+					
+					
+					
+					\draw[orange, line width=1pt] (B1) circle (12pt);
+					\draw[orange, line width=1pt] (B2) circle (12pt);
+					\draw[orange, line width=1pt] (D1) circle (12pt);
+					\draw[orange, line width=1pt] (D3) circle (12pt);
+					\draw[cyan, line width=1pt, dotted] (A1) circle (10pt);
+					\draw[cyan, line width=1pt, dotted] (B4) circle (10pt);
+					\draw[cyan, line width=1pt, dotted] (D3) circle (10pt);
+					\draw[magenta, line width=1pt, dashed] (A1) circle (14pt);
+					\draw[magenta, line width=1pt, dashed] (D2) circle (14pt);
+					\draw[magenta, line width=1pt, dashed] (E) circle (14pt);
+					
+					\end{tikzpicture}$$
+				</div> 
+					
+					<div class="col">
+
+						$$\begin{tikzpicture}[node distance=1.2cm]
+
+\title{After announcement}
+\node(A1)                  [text=white]                     {$p,q,r$};
+\node(A2)      [right of= A1, text=white]                    {$p,q,s$};
+\node(A4)       [right of=A2, text=white]                   {$p, r,s $};
+\node(A3)       [right of=A4, text=white]                   {$q, r,s ...$};
+
+
+\node(B2)      [below of= A1, text=white]       {$ p,r$};
+\node(B1)      [left of= B2, text=white]        {$ p,q$};
+\node(B3)      [right of=B2, text=white]        {$ p,s $};
+\node(B4)      [right of= B3, text=white]       {$ q,r$};
+\node(B5)      [right of= B4, text=white]        {$ q,s$};
+\node(B6)      [right of=B5, text=white]        {$ r,s ... $};
+
+
+\node(D1)      [below of=B1, text=white]       {$p$};
+\node(D2)      [right of=D1, text=white]       {$q$};
+\node(D3)      [right of=D2, text=white]       {$r$};
+\node(D4)      [right of=D3, text=white]        {$s ...$};
+
+
+
+\node(E)      [below  of=D2, text=white]     {$\varnothing$};
+
+
+
+
+\draw[orange, line width=1pt] (B4) circle (12pt);
+\draw[orange, line width=1pt] (B5) circle (12pt);
+\draw[orange, line width=1pt] (D2) circle (12pt);
+\draw[orange, line width=1pt] (D4) circle (12pt);
+\draw[cyan, line width=1pt, dotted] (A3) circle (10pt);
+\draw[cyan, line width=1pt, dotted] (B6) circle (10pt);
+\draw[cyan, line width=1pt, dotted] (D4) circle (10pt);
+\draw[magenta, line width=1pt, dashed] (A3) circle (14pt);
+\draw[magenta, line width=1pt, dashed] (D3) circle (14pt);
+\draw[magenta, line width=1pt, dashed] (E) circle (14pt);
+
+\end{tikzpicture}$$
+					</div>	
+				</div>
+				<div class="maintext fragment">
+						
+                
+					A set of formulas is <u>greedy</u> if it contains a <em>cofinite</em> set of atomic messages.
+					We have a finitary complete axiomatization $\mathsf{sal}$: Any <u>non-greedy</u> consistent set is satisfiable.
+                    </div>
+				</section>
+
+					<section data-id="9a06014caaed52eb8f5244b4e49686f9" data-background-interactive="true" data-preload="" data-background-iframe="C:/Users/zrui956/OneDrive%20-%20The%20University%20of%20Auckland/Desktop/My%20Program/Ray.github.io-main/announce/announceable.html"></section>
+
+</section>
+
+
+<section>
+	<h3>Finitary Axiomatization</h3>
+	
+	<p class="maintext"> The formal system $\mathsf{sal}$ is $\mathsf{Fsal}$ plus the following:</p>
+<div class = "system">
+
+<b>Axioms</b> 
+</br>
+[SRed]   $\langle a!\theta\rangle\phi\leftrightarrow (B_{a}\theta \wedge [a:\theta]\phi)$ </li>		
+</br>
+[$K^{S}_A$] $[a!](\phi \rightarrow \psi) \rightarrow ([a!]\phi \rightarrow [a!]\psi)$
+<br>
+[$K^{F}_{A}$] $[a](\phi \rightarrow \psi) \rightarrow ([a]\phi \rightarrow [a]\psi)$
+<br>
+[$A^{S}$I]  $\langle a!\theta\rangle\phi \rightarrow \langle a!\rangle\phi$
+<br>
+[$A^{F}$I]  $[a:\theta]\phi \rightarrow \langle a\rangle\phi$
+<br>
+<b>Rules</b>
+<br>
+[$[a]$-Nec] From $ \phi$, infer $ [a]\phi$
+<br>
+[$[a!]$-Nec] From $\phi$, infer $ [a!]\phi$
+<br>
+[$A^{S}$E]  From $\langle a!p\rangle\phi \rightarrow \psi $, infer $ \langle a!\rangle\phi \rightarrow \psi$
+<br>
+[$A^{F}$E] From $[a:p]\phi \rightarrow \psi$, infer $\langle a\rangle\phi\rightarrow \psi$
+<br>
+where $p$ is a propositional variable that does not occur $\phi$ or $\psi$.
+<br>
+</div>
+	
+
+
+<p class = "fragment  maintext">	<em>$\mathsf{sal}$</em> is a sound and weakly complete <em>finitary</em>  axiomatization. </p>
+	
+</section>
+
+
+				<section><section >
+					
+					<h3>Tableau Calculus</h3>
+                    
+					<p class="maintext">
+						In Chapter 4, we present a complete and <u>non-greedy compact</u> tableau system.	
+					</p>
+
+					<p class = "smtext fragment">	
+				
+						we test the following set of formulas:
+					   \[
+				   
+					   \{ \langle a!\rangle B_{b}q \wedge \neg B_{b}q,
+					   ~~~~
+					   [a:p]\neg B_{b}p\}
+					   \\
+					   \Rightarrow unsatisfiable.
+					   \\
+					   \{ \langle a!\rangle (B_{b}q \wedge \neg B_{c}r),
+					   ~~~~
+					   \langle b!p\rangle (B_{c}p \wedge \neg B_{a}p),
+					   ~~~[a:r](\neg B_{b}r \wedge B_{c}r) \}
+					   \\
+					   \Rightarrow \{cFa, \neg aFb, \neg bFa, B_{b}p \}
+					   \]	
+						   
+					   </p>
+
+				</section>
+					<section data-id="9a06014caaed52eb8f5244b4e49686f9" data-background-interactive="true" data-preload="" data-background-iframe="C:\Users\zrui956\OneDrive - The University of Auckland\Desktop\My Program\Ray.github.io-main\tree\tree.html"></section>
+ 	 
+				</section>
+
+
+
+		<section>
+			<section >
+						<h3>Epistemic Distribution</h3>
+						
+						<div class="container">
+						<div class="col-60">
+							<h3 class="kl">Coherences</h3>
+							<p>We define five coherences for our original models.</p>
+							<ul class="bran_li">
+								<li ><u>Global coherence</u>: All agents' beliefs are collectively consistent.</li>
+								<li><u>Local coherence</u>: No individual agent's beliefs become inconsistent following sincere announcements.</li>
+								<li><u>Weak coherence</u>:  Each agent's beliefs are internally consistent.</li>
+								<li><u>Cohesive coherence</u>:  Agents with inconsistent beliefs are separated.</li>
+								<li><u>Flowing coherence</u>:  No contradictory flow can be made.</li>
+							
+							</ul>
+							
+					
+						
+						
+					</div>
+	
+					<div class="col-40">
+						<h4>Results</h4>
+					<ul class="bran_li">
+						<li class = "fragment">Following relationship <em>expressible</em>: wc, cc, lc, gc.</li>
+						<li class = "fragment"><em>Definable</em>: fc, wc.</li>
+						<li class = "fragment"><em>Failure</em> of <i>free announcement necessitation</i>: Indirect axiomatizations are needed.</li>
+						<li class = "fragment">Preversing <em>validity</em> by <i>sincere announcement necessitation</i>: cc, lc, gc.</li>
+						
+					</ul>
+	
+		
+					</div>
+				
+				</div>
+				$$\begin{tikzpicture}
+	
+				\definecolor{bubbles}{rgb}{0.91, 1.0, 1.0}
+				\definecolor{capri}{rgb}{0.0, 0.75, 1.0}
+				\definecolor{celadon}{rgb}{0.67, 0.88, 0.69}
+				\definecolor{cottoncandy}{rgb}{1.0, 0.74, 0.85}
+				\definecolor{deepcerise}{rgb}{0.85, 0.2, 0.53}
+				\definecolor{chartreuse}{rgb}{0.87, 1.0, 0.0}
+				\definecolor{britishracinggreen}{rgb}{0.0, 0.26, 0.15}
+	
+				\begin{scope} [fill opacity = .5]
+				
+				\draw[fill= bubbles] (-5,5) rectangle (8,-3);
+				\draw[fill=celadon, draw = black] (-1.5,1) circle (3);
+				\draw[fill=deepcerise, draw = black] (1.55,1) circle (2.87);
+				\draw[fill=cottoncandy, draw = black] (2.65,1) ellipse (5cm and 3.2cm); % Adjusted this line
+				\draw[fill=capri, draw = black] (0,1) circle (1);
+				
+				\node at (-4,4) {\color{chartreuse}\LARGE\textbf{SAL}};
+				\node at (-3,2.5) {\color{britishracinggreen}\LARGE\textbf{wc}};
+				\node at (5,2.5) {\color{britishracinggreen}\LARGE\textbf{fc}};
+				\node at (2.5, 2.5) {\color{britishracinggreen}\LARGE\textbf{cc}};
+				\node at (0,2.5) {\color{britishracinggreen}\LARGE\textbf{lc}};
+				\node at (0, 1) {\color{britishracinggreen}\LARGE\textbf{gc}};
+				\end{scope}
+				
+				
+				\end{tikzpicture}
+	
+				$$
+			</section>
+	
+			<section data-id="9a06014caaed52eb8f5244b4e49686f9" data-background-interactive="true" data-preload="" data-background-iframe="C:\Users\zrui956\OneDrive - The University of Auckland\Desktop\My Program\Ray.github.io-main\Coherence\coherence.html"></section>
+	
+		</section>
+		<section>
+			<section >
+						
+					<h3> Variants</h3>
+					<p > 
+						In Chapter 5, we explore some potential variants of social announcement logic.
+					</p>
+					<ul class="maintext">
+						<li class="fragment">
+							<em>Partial Diffusion</em>: Only some of the speaker's followers receive and update their beliefs with the announcement.
+						  </li>
+								
+						  <li class="fragment">
+							<em>Cascading Broadcast</em>: Everyone automatically broadcasts the message they receive unless it contradicts their existing beliefs.
+						  </li>
+						  
+						  
+						  <li class="fragment">
+							<em>Unfollowing</em>: Agents unfollow those who share messages that conflict with their current beliefs.
+						  </li>	
+						
+						</ul>
+						
+						
+			</section>
+	
+				<section data-id="9a06014caaed52eb8f5244b4e49686f9" data-background-interactive="true" data-preload="" data-background-iframe="C:\Users\zrui956\OneDrive - The University of Auckland\Desktop\My Program\Ray.github.io-main\Echo_Chamber\Chamber.html"></section>
+		</section>
+
+		<section>
+			<section >
+						
+					<h3> Relational Semantics</h3>
+					<div class="container">
+<div class="tri-20 fragment">
+$$\begin{tikzpicture}[node distance=1.1cm]
+% Define nodes with white text
+\node(A)  [text = white] {$f$};
+\node(A1) [below of=A, text=orange] {$a$};
+\node(A2) [left of=A1, text=green] {$d$};
+\node(B1) [below of=A1, text=cyan ] {$b$}; % Corrected from B1 to A1
+\node(B2) [left of=B1, text=magenta] {$c$};
+
+
+
+% Draw arrows
+\draw[->, white] (A1) .. controls +(up:19mm) and +(right:15mm) .. (A1);
+\draw[->, white] (B1) .. controls +(down:19mm) and +(right:15mm) .. (B1);
+\draw[->, white] (B1) -- (A1);
+\draw[->, white] (B2) -- (B1);
+
+\end{tikzpicture}
+\\
+\begin{tikzpicture}[node distance=1.1cm]
+
+\title{Arbitrary Announcement}
+\node(A4)             [white]              {$p,q,r$};
+\node(B2)      [below of= A4, white]       {$ p,q$};
+\node(B1)      [left of= B2, white]        {$ p,r$};
+\node(B3)      [right of=B2, white]        {$ q,r $};
+
+
+
+\node(D1)      [below of=B1, white]       {$p$};
+\node(D2)      [right of=D1, white]       {$q$};
+\node(D3)      [right of=D2, white]       {$r$};
+
+\node(E)      [below  of=D2, white] 
+{$\varnothing$};
+
+\node(F)      [below of=E, white] 
+{$k~~~~(w)$ };
+
+
+
+
+\draw[orange, line width=1pt] (B1) circle (16pt);
+
+\draw[cyan, line width=1pt, dotted] (B1) circle (14pt);
+\draw[cyan, line width=1pt, dotted] (D1) circle (14pt);
+
+
+\draw[magenta, line width=1pt, dashed] (D1) circle (12pt);
+
+\draw[green, line width=1pt, dashdotdotted] (B3) circle (12pt);
+\draw[green, line width=1pt, dashdotdotted] (D2) circle (12pt);
+\draw[green, line width=1pt, dashdotdotted] (D3) circle (12pt);
+\end{tikzpicture} $$
+
+</div>
+
+
+						<div class="tri-20 fragment">
+					$$\begin{tikzpicture}[node distance=1cm]
+
+\title{Arbitrary Announcement}
+\node(A4)            [white]               {$p,q,r$};
+\node(B2)      [below of= A4, white]       {$ p,q$};
+\node(B1)      [left of= B2, white]        {$ p,r$};
+\node(B3)      [right of=B2, white]        {$ q,r $};
+
+
+\node(D1)      [below of=B1, white]       {$p$};
+\node(D2)      [right of=D1, white]       {$q$};
+\node(D3)      [right of=D2, white]       {$r$};
+
+\node(E)      [below  of=D2, white] 
+{$\varnothing$};
+
+\node(F)      [below of=E, white] 
+{$[a:r]k~~~~(w_1)$ };
+
+
+\draw[orange, line width=1pt] (B1) circle (16pt);
+
+\draw[cyan, line width=1pt, dotted] (B1) circle (14pt);
+
+
+\draw[magenta, line width=1pt, dashed] (D1) circle (12pt);
+
+\draw[green, line width=1pt, dashdotdotted] (B3) circle (12pt);
+\draw[green, line width=1pt, dashdotdotted] (D2) circle (12pt);
+\draw[green, line width=1pt, dashdotdotted] (D3) circle (12pt);
+\end{tikzpicture}
+						\\
+					
+\begin{tikzpicture}[node distance=1cm]
+
+\title{Arbitrary Announcement}
+\node(A4)              [white]             {$p,q,r$};
+\node(B2)      [below of= A4, white]       {$ p,q$};
+\node(B1)      [left of= B2, white]        {$ p,r$};
+\node(B3)      [right of=B2, white]        {$ q,r $};
+
+
+
+\node(D1)      [below of=B1, white]       {$p$};
+\node(D2)      [right of=D1, white]       {$q$};
+\node(D3)      [right of=D2, white]       {$r$};
+
+\node(E)      [below  of=D2, white] 
+{$\varnothing$};
+
+\node(F)      [below of=E, white] 
+{$[a:\neg r]k~~~~(w_2)$};
+
+
+\draw[cyan, line width=1pt, dotted] (D1) circle (14pt);
+
+
+\draw[magenta, line width=1pt, dashed] (D1) circle (12pt);
+
+\draw[green, line width=1pt, dashdotdotted] (B3) circle (12pt);
+\draw[green, line width=1pt, dashdotdotted] (D2) circle (12pt);
+\draw[green, line width=1pt, dashdotdotted] (D3) circle (12pt);
+
+\end{tikzpicture}$$
+</div>
+
+
+<div class= "tri-20 fragment">
+	 $$
+\begin{tikzpicture}[node distance=1cm]
+
+\title{Arbitrary Announcement}
+\node(A4)            [white]               {$p,q,r$};
+\node(B2)      [below of= A4, white]       {$ p,q$};
+\node(B1)      [left of= B2, white]        {$ p,r$};
+\node(B3)      [right of=B2, white]        {$ q,r $};
+
+
+
+\node(D1)      [below of=B1, white]       {$p$};
+\node(D2)      [right of=D1, white]       {$q$};
+\node(D3)      [right of=D2, white]       {$r$};
+
+\node(E)      [below  of=D2, white] 
+{$\varnothing$};
+
+\node(F)      [below of=E, white] 
+{$[a:\bot]k~~~~(w_3)$ };
+
+
+\draw[magenta, line width=1pt, dashed] (D1) circle (12pt);
+
+\draw[green, line width=1pt, dashdotdotted] (B3) circle (12pt);
+\draw[green, line width=1pt, dashdotdotted] (D2) circle (12pt);
+\draw[green, line width=1pt, dashdotdotted] (D3) circle (12pt);
+
+\end{tikzpicture}
+\\
+
+\begin{tikzpicture}[node distance=1cm]
+
+\title{Arbitrary Announcement}
+\node(A4)            [white]               {$p,q,r$};
+\node(B2)      [below of= A4, white]       {$ p,q$};
+\node(B1)      [left of= B2, white]        {$ p,r$};
+\node(B3)      [right of=B2, white]        {$ q,r $};
+
+
+
+\node(D1)      [below of=B1, white]       {$p$};
+\node(D2)      [right of=D1, white]       {$q$};
+\node(D3)      [right of=D2, white]       {$r$};
+
+\node(E)      [below  of=D2, white] 
+{$\varnothing$};
+
+\node(F)      [below of=E, white] 
+{$[b:r]k~~~~(w_4)$ };
+
+
+\draw[orange, line width=1pt] (B1) circle (16pt);
+
+\draw[cyan, line width=1pt, dotted] (B1) circle (14pt);
+
+
+\draw[green, line width=1pt, dashdotdotted] (B3) circle (12pt);
+\draw[green, line width=1pt, dashdotdotted] (D2) circle (12pt);
+\draw[green, line width=1pt, dashdotdotted] (D3) circle (12pt);
+
+\end{tikzpicture}
+$$
+						</div>
+
+
+<div class="tri-20 fragment">
+	$$
+\begin{tikzpicture}[node distance=1cm]
+
+\title{Arbitrary Announcement}
+\node(A4)        [white]                  {$p,q,r$};
+\node(B2)      [below of= A4, white]       {$ p,q$};
+\node(B1)      [left of= B2, white]        {$ p,r$};
+\node(B3)      [right of=B2, white]        {$ q,r $};
+
+
+
+\node(D1)      [below of=B1, white]       {$p$};
+\node(D2)      [right of=D1, white]       {$q$};
+\node(D3)      [right of=D2, white]       {$r$};
+
+\node(E)      [below  of=D2, white] 
+{$\varnothing$};
+
+\node(F)      [below of=E, white] 
+{$[b:\neg r]k~~~~(w_5)$ };
+
+
+\draw[orange, line width=1pt] (B1) circle (16pt);
+
+\draw[cyan, line width=1pt, dotted] (D1) circle (14pt);
+
+
+\draw[magenta, line width=1pt, dashed] (D1) circle (12pt);
+
+\draw[green, line width=1pt, dashdotdotted] (B3) circle (12pt);
+\draw[green, line width=1pt, dashdotdotted] (D2) circle (12pt);
+\draw[green, line width=1pt, dashdotdotted] (D3) circle (12pt);
+
+\end{tikzpicture}
+\\
+\\
+\begin{tikzpicture}[node distance=1cm]
+
+\title{Arbitrary Announcement}
+\node(A4)             [white]              {$p,q,r$};
+\node(B2)      [below of= A4, white]       {$ p,q$};
+\node(B1)      [left of= B2, white]        {$ p,r$};
+\node(B3)      [right of=B2, white]        {$ q,r $};
+
+
+\node(D1)      [below of=B1, white]       {$p$};
+\node(D2)      [right of=D1, white]       {$q$};
+\node(D3)      [right of=D2, white]       {$r$};
+
+\node(E)      [below  of=D2, white] 
+{$\varnothing$};
+
+\node(F)      [below of=E, white] 
+{$[b:\bot]k~~~~(w_6)$ };
+
+
+\draw[orange, line width=1pt] (B1) circle (16pt);
+
+
+\draw[green, line width=1pt, dashdotdotted] (B3) circle (12pt);
+\draw[green, line width=1pt, dashdotdotted] (D2) circle (12pt);
+\draw[green, line width=1pt, dashdotdotted] (D3) circle (12pt);
+
+\end{tikzpicture}$$
+
+</div>
+
+<div class="tri-20 fragment">
+	$$\begin{tikzpicture}[node distance=1.5cm]
+
+\title{Arbitrary Announcement}
+\node(A4)            [white]               {$p,q,r$};
+\node(B2)      [below of= A4, white]       {$ p,q$};
+\node(B1)      [left of= B2, white]        {$ p,r$};
+\node(B3)      [right of=B2, white]        {$ q,r $};
+
+
+\node(D1)      [below of=B1, white]       {$p$};
+\node(D2)      [right of=D1, white]       {$q$};
+\node(D3)      [right of=D2, white]       {$r$};
+
+\node(E)      [below  of=D2, white] 
+{$\varnothing$};
+
+\node(F)      [below of=E, white] 
+{$k_{s}~~~~(w_s)$ };
+
+
+
+
+\draw[green, line width=1pt, dashdotdotted] (B3) circle (12pt);
+\draw[green, line width=1pt, dashdotdotted] (D2) circle (12pt);
+\draw[green, line width=1pt, dashdotdotted] (D3) circle (12pt);
+\end{tikzpicture}
+
+\begin{tikzpicture}[node distance=1.5cm]
+
+\title{After announcement}
+\node(A4)            [white]               {$w$};
+
+\node(B1)      [below left of= A4, white]        {$w_{1}$};
+
+\node(B4)      [right of=B1, white]        {$w_{5}$};
+
+
+\node(B2)      [ below of= B1, white]        {$w_{2}$};
+
+
+
+\node(B3)      [right of=B2, white]        {$w_{4}$};
+
+
+
+
+\node(D1)      [left of=B2, white]       {$w_{3}$};
+
+\node(D3)      [right of=B3, white]       {$w_{6}$};
+
+
+
+\node(E)      [below  of=D2, white]     {$w_{s}$};
+
+\node(F)      [below  of=E, white]     {$m'$};
+
+
+\draw  [->][cyan, line width=1pt, dotted] (B1) -- (D3);
+
+\draw  [->][cyan, line width=1pt, dotted] (A4) -- (B3);
+
+\draw  [->][cyan, line width=1pt, dotted] (A4) -- (B4);
+
+\draw  [->, cyan, line width=1pt, bend left =30, dotted] (A4) to (D3);
+
+\draw  [->][cyan, line width=1pt, dotted] (B3) -- (D3);
+
+\draw  [->][cyan, line width=1pt, dotted] (B4) -- (D3);
+
+\draw  [->][cyan, line width=1pt, dotted] (B2) -- (E);
+
+\draw  [->][cyan, line width=1pt, dotted] (D1) -- (E);
+
+\draw  [->][cyan, line width=1pt, dotted] (B1) -- (B3);
+
+\draw  [->][orange, line width=1pt] (B4) -- (D1);
+
+\draw  [->][orange, line width=1pt] (A4) -- (B1);
+
+\draw  [->][orange, line width=1pt] (A4) -- (B2);
+
+\draw [->, orange, line width=1pt, bend right =30] (A4) to (D1);
+
+
+\draw  [->][orange, line width=1pt] (B1) -- (D1);
+
+\draw  [->][orange, line width=1pt] (B2) -- (D1);
+
+\draw  [->][orange, line width=1pt] (B3) -- (E);
+
+\draw  [->][orange, line width=1pt] (D3) -- (E);
+
+\draw  [->][orange, line width=1pt] (B4) -- (B2);
+\end{tikzpicture}$$
+</div>
+					</div>
+						
+						
+			</section>
+	
+				<section data-id="9a06014caaed52eb8f5244b4e49686f9" data-background-interactive="true" data-preload="" data-background-iframe="C:\Users\zrui956\OneDrive - The University of Auckland\Desktop\My Program\Ray.github.io-main\Echo_Chamber\Chamber.html"></section>
+		</section>
+		<section>
+			<h2>Achievements</h2>
+			<div class="container">
+				
+			<ul>
+				<li class="fragment">Establishment of the Framework of Social Announcement Logic</li>
+				<li class="fragment">Proof of the Properties of Social Announcement Logic</li>
+				<li class="fragment">Model Transformation Technique Dealing with Arbitrary Operators</li>
+				<li class="fragment">The Development of A Tableau System</li>
+				<li class="fragment">Variants Exploration for Interdisciplinary Studies</li>
+			</ul>
+		
+			</div>
+		</section> 
+			
+		
+		<section>
+			<h3>Future Directions</h3>
+			<div class="container">
+				
+			<ul class="fragment">
+				<li>Axiomatization of Sincere Arbitrary Social Announcement Logic</li>
+				<li>Extension and Variants Investigation</li>
+				<li>Finite Model Property and Decidability of  Arbitrary Social Announcement Logic</li>
+				<li class="fragment"><u>Relation to Public Announcement Logic </u></li>
+				<li class="fragment"><u> Reduction of Group Announcement</u></li>
+			</ul>
+			
+			</div>
+		</section> 
+		<section>
+		<section>
+			<h3>Progress in Public Announcement Logic</h3>
+			 <div class="smtext fragment"> 
+				<p>The <u>free message</u> model technique can also be used in Public Announcement Logic (PAL).</p> 
+				<p class="fragment">Boolean Arbitrary Public Announcement Logic (BAPAL) is non-compact.</p>
+
+				<p class="fragment"> $\{\Diamond B_{a}(\neg B_{a} p \wedge \widehat{B_{b}}p)\wedge \Diamond\widehat{B_{a}} B_{b}\neg p\}\cup \bigcup_{i>0} \{B_{a}\neg p_{i}\}$</p> 
+				
+				<iframe  class="fragment" data-src="https://vezwork.github.io/modallogic/?model=;ApS1a,2b,2a,3a,1b,;AS2a,1b,3a,1a,2b,;AS3a,2a,1a,3b,?formula=" data-preload width="1000" height="320"></iframe>
+
+				 <p class="fragment">Arbitrary Public Announcement Logic (APAL) has a <em>finitary</em> axiomatization.</p> 
+
+				 <p class=" fragment">From $ \langle \chi\rangle\langle \widehat{B_{c}} p \wedge \neg p\rangle\phi\rightarrow\psi$, infer $ \langle \chi\rangle\Diamond\phi\rightarrow\psi$ where both $p$ and $c$ are free.</p> 
+				
+				</div> 
+				
+		</section> 
+	
+		<section data-auto-animate data-background-iframe ="https://vezwork.github.io/modallogic/?model=;ApS1a,2b,1b,4a,;AS2a,1b,3a,2b,;ArS3a,2a,3b,;ApS1a,4a,4b,5b,;AS4b,5b,5a,6a,;AS5a,6a,6b,?formula=" frameBorder="0" >
+	</section> 
+</section> 
+
+		<section> 
+			<h3>Complete Sequence</h3> 
+			<div class="smtext fragment"> 
+				<p>$\langle G! \rangle \phi \leftrightarrow \bigvee_{\vec{a!} \in S(G)} \langle \vec{a!} \rangle \phi$ where $S(G)$ represents all permutations of $G$.</p> 
+				<p>To perfectly reduce a Group Announcement, the goal is to find the shortest sequence that includes all permutations.</p> 
+				<p class="fragment">$ \langle a! \rangle \langle b! \rangle \langle a! \rangle \phi \leftrightarrow \langle a! \rangle \langle b! \rangle \phi \vee \langle b! \rangle \langle a! \rangle \phi $</p> 
+				<p class="fragment">For $|G| = 4$, the shortest sequence length is $12$: $\langle a! \rangle \langle b! \rangle \langle c! \rangle \langle d! \rangle \langle a! \rangle \langle b! \rangle \langle c! \rangle \langle a! \rangle \langle d! \rangle \langle b! \rangle \langle a! \rangle \langle c! \rangle$</p>
+				 <p class="fragment">This remains an unsolved problem and is often associated with the well-known <u>"Haruhi Problem"</u>.</p> 
+				</div>
+			
+				 <div class="container fragment">
+					<table class="smtext col-30">
+						<tr>
+							<th>Size</th>
+							<th>Length</th>
+
+						</tr>
+						<tr>
+							<td >n = 3</td>
+							<td > 7</td>
+						   
+						</tr>
+						<tr>
+							<td>n = 4</td>
+							<td>12</td>
+						 
+						</tr>
+						<tr>
+							<td>n = 5</td>
+							<td>19</td>
+						  
+						</tr>
+						<tr>
+							<td>n = 6</td>
+							<td>28</td>
+						 
+						</tr>
+						<tr>
+							<td>n = 7</td>
+							<td>39</td>
+						  
+						</tr>
+					</table>
+			
+			<div class="col fragment">
+				<img src="group.gif">
+			</div>
+				</div>
+			</section>
+		</section> 
+
+		<section>
+			<h2>Reference</h2>
+			<div class="container">
+				
+			<ul class="example">
+				<li>Plaza, Jan (1989). “Logics of public announcements”</li>
+				<li>Gerbrandy, Jelle and Willem Groeneveld (1997). “Reasoning about Information Change”</li>
+				<li>van Ditmarsch, Hans, Wiebe van Der Hoek, and Barteld Kooi (2007). "Dynamic epis-
+					temic logic"</li>
+			   
+				<li>Seligman, Jeremy, Fenrong Liu, and Patrick Girard (2013). “Facebook and the epistemic logic of friendship”</li>
+				<li>Kuijer, Bouke (2015). "Unsoundness of R$_{\Box}$"</li>
+				<li>Christoff, Zoé (2016). “Dynamic logics of networks: information flow and the spread of opin-
+					ion”</li>
+					
+					<li>Xiong, Zuojun (2017). “On the logic of multicast messaging and balance in social
+						networks”</li>
+					<li>Xiong, Zuojun et al. (2017). “Towards a logic of tweeting”</li>
+				</ul>
+			</ul>
+		
+			</div>
+		</section> 
+	
+	
+				
+	
+				
+
+				<section data-auto-animate data-background-iframe ="C:\Users\zrui956\OneDrive - The University of Auckland\Desktop\My Program\Teaching.github.io-main\Teaching.github.io-main\control\index1.html" frameBorder="0" >
+					
+					<h3>Thank you</h3>
+                 
+				</section>
+
+			
+
+
+				
+
+
+		
+
+
+
+
+
+
+
+
+		<script src="dist/reveal.js"></script>
+		<script src="plugin/zoom/zoom.js"></script>
+		<script src="plugin/notes/notes.js"></script>
+		<script src="plugin/search/search.js"></script>
+		<script src="plugin/markdown/markdown.js"></script>
+		<script src="plugin/highlight/highlight.js"></script>
+		<script src="plugin/math/math.js"></script>
+		<script src="https://i.upmath.me/latex.js"></script>
+		
+<script>
+  Reveal.initialize({
+	katex: {
+	  version: 'latest',
+	  delimiters: [
+		{left: '$$', right: '$$', display: true},
+		{left: '$', right: '$', display: false},
+		{left: '\\(', right: '\\)', display: false},
+		{left: '\\[', right: '\\]', display: true}
+	 ],
+	 ignoredTags: ['script', 'noscript', 'style', 'textarea', 'pre']
+   },
+   plugins: [ RevealMath.KaTeX ]
+  });
+</script>
+
+
+		<script>
+
+			// Also available as an ES module, see:
+			// https://revealjs.com/initialization/
+			Reveal.initialize({
+				controls: true,
+				progress: true,
+				center: true,
+				hash: true,
+
+				// Learn about plugins: https://revealjs.com/plugins/
+				plugins: [ RevealZoom, RevealNotes, RevealSearch, RevealMarkdown, RevealHighlight ]
+			});
+
+		</script>
+		
+
+	</body>
+</html>
