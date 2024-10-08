@@ -1,22 +1,55 @@
 
+Satisfication
 
-[b:q]([a:(p&q)]Baq+Bcp)   unsatisfied
+f(a) = {b, c}
+f(b) = {c}
+f(c) = {a}
+
+a believes p
+b believes q 
+c believes r 
+
+
+(~Ba(p>q)&~Bbr)+(Bc~~r+Bb~(r>q))  Satisfied
+(~F&~F)+(T+F)
+
+(Ba~(p>q)&(Bb(r>~q)+Bc(p+~r))) unsatisfied
+(F&(F+F))
+
+[a:~q](Bc(q&r)+~Bb(p&~p))  unsatisfied
 (F+F)
 
-[a:(r>q)]([b:(q>p)]Bcp & [c:q](~Bcp&Baq))   satisfied
-(T & (~F&T))
-
-
-[a:(~r+~q)]([b:~~q]([c:~q]Ba~(q+~p)& Bc(p&~r))&[a:r]Bb(~q&r))  satisfied
-((T&T)&T)
+[c:(q>r)](Bar+[a:~q](Bb(q>~q)&[b:q]Bc(p&~p))) satisfied
+(F + (T & T))
 
 
 
+Kuijer's counterexample
+~K{b}~p
 
+~[~K{b}~p]~  Box~ (p&~K{b}p& ~K{a}~K{b}p)  w2 and w5 are indistinguishable
+
+(p|~K{a}~r)
+
+~[(p|~K{a}~r)]~(p&~K{b}p& ~K{a}~K{b}p)
+
+
+Arbitrary:
+[a:(r&~w)]((Bb(q&r)&~Bcq) & [c:~p]Baq)
+
+Tableau:
 (<a!>Bbq & ~Bbq)
 [a:p]~Bbp
 
+closed
 
-<a!>(Bbq & ~Bcr)
-<b!p>(Bcp & ~Bap)
-[a:r](~Bbr & Bcr)
+<a!>(Bbq&~Bc​r)
+<b!p>(Bcp&~Ba​p)
+[a:r](~Bbr&Bcr)
+open
+cFa,¬aFb,¬bFa,Bb​p
+
+
+APAL
+(p|~K{a}~r)
+(~s&~K{c}~s)
