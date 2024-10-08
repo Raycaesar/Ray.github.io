@@ -117,27 +117,6 @@ p{text-align: left;}
         color: aqua;
     }
 
-    button {
-        width: 150px;
-        height: 40px;
-        background-color: #4CAF50;
-        border: none;
-        color: white;
-        padding: 2px 2px;
-        text-align: center;
-        text-decoration: none;
-        display: inline-block;
-        font-size: 13px;
-        margin-top: 3px;
-        border-radius: 5px;
-        cursor: pointer;
-        transition: background-color 0.3s ease;
-    }
-
-    button:hover {
-        background-color: #45a049;
-    }
-
 
     svg {
         z-index: -1;
@@ -202,18 +181,12 @@ p{text-align: left;}
     #center {
         flex: 3;
         opacity: 0.9; /* Always bright */
-        font-size: 20px;
-        text-align: center;
     }
 
     #container1 {
         display: flex;
         width: 100%;
         height: 100%;
-        font-family: Arial, Helvetica, sans-serif;
-        font-size: 16pt;
-    }
-
-    iframe{
-        padding: 10pt;
+        font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+        font-size: 20pt;
     }
