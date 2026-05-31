@@ -8,23 +8,21 @@
 
   <style>
     :root {
-      --paper: #111827;
-      --panel: rgba(30, 41, 59, 0.78);
-      --panel-solid: #1e293b;
-      --panel-soft: rgba(15, 23, 42, 0.58);
-      --ink: #f8fafc;
-      --muted: #cbd5e1;
-      --line: rgba(226, 232, 240, 0.18);
-      --accent: #f6c76f;
-      --accent-strong: #ffe29a;
-      --accent-soft: rgba(246, 199, 111, 0.14);
-      --blue: #93c5fd;
-      --violet: #c4b5fd;
-      --rose: #fda4af;
-      --green: #86efac;
-      --gold: #f6c76f;
-      --shadow: 0 24px 80px rgba(0, 0, 0, 0.28);
-      --radius: 22px;
+      --paper: #0b1020;
+      --panel: rgba(17, 24, 39, 0.86);
+      --panel-solid: #111827;
+      --panel-soft: rgba(15, 23, 42, 0.72);
+      --ink: #eef2ff;
+      --muted: #a8b3c7;
+      --line: rgba(203, 213, 225, 0.18);
+      --accent: #d6b46a;
+      --accent-strong: #f2cf7e;
+      --accent-soft: rgba(214, 180, 106, 0.14);
+      --blue: #8ecae6;
+      --green: #78d3ae;
+      --gold: #d6b46a;
+      --shadow: 0 22px 60px rgba(0, 0, 0, 0.34);
+      --radius: 18px;
       --max: 1080px;
     }
 
@@ -34,10 +32,9 @@
     body {
       margin: 0;
       background:
-        radial-gradient(circle at 12% 8%, rgba(246, 199, 111, 0.22), transparent 30rem),
-        radial-gradient(circle at 92% 0%, rgba(147, 197, 253, 0.16), transparent 34rem),
-        radial-gradient(circle at 78% 42%, rgba(196, 181, 253, 0.10), transparent 28rem),
-        linear-gradient(180deg, #111827 0%, #182235 48%, #101827 100%);
+        radial-gradient(circle at top left, rgba(214, 180, 106, 0.16), transparent 32rem),
+        radial-gradient(circle at top right, rgba(142, 202, 230, 0.10), transparent 30rem),
+        linear-gradient(180deg, #070b16 0%, var(--paper) 55%, #080d19 100%);
       color: var(--ink);
       font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, "Noto Sans", "Noto Sans SC", "Microsoft YaHei", sans-serif;
       line-height: 1.72;
@@ -52,7 +49,7 @@
       top: 0;
       z-index: 10;
       backdrop-filter: blur(12px);
-      background: rgba(17, 24, 39, 0.82);
+      background: rgba(8, 13, 25, 0.82);
       border-bottom: 1px solid var(--line);
     }
 
@@ -155,51 +152,6 @@
     }
 
     .hero-card { padding: 2.25rem; }
-
-    .hero-card {
-      position: relative;
-      overflow: hidden;
-    }
-
-    .hero-card::after {
-      content: "◇ □ ◇";
-      position: absolute;
-      right: 1.5rem;
-      top: 1.1rem;
-      color: rgba(246, 199, 111, 0.18);
-      font-family: Georgia, "Times New Roman", serif;
-      font-size: 1.4rem;
-      letter-spacing: 0.45rem;
-      pointer-events: none;
-    }
-
-    .section-icon {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      width: 2.05rem;
-      height: 2.05rem;
-      margin-right: 0.45rem;
-      border-radius: 0.75rem;
-      background: linear-gradient(135deg, rgba(246,199,111,0.24), rgba(147,197,253,0.13));
-      border: 1px solid rgba(226, 232, 240, 0.16);
-      font-family: ui-sans-serif, system-ui, sans-serif;
-      font-size: 1.05rem;
-      vertical-align: -0.2rem;
-    }
-
-    .card-emoji {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      width: 2.15rem;
-      height: 2.15rem;
-      margin: 0 0 0.6rem;
-      border-radius: 0.85rem;
-      background: rgba(255, 255, 255, 0.07);
-      border: 1px solid rgba(226, 232, 240, 0.15);
-      font-size: 1.15rem;
-    }
 
     .eyebrow {
       display: inline-flex;
@@ -342,34 +294,10 @@
     .topic,
     .project,
     .resource-card {
-      position: relative;
-      overflow: hidden;
-      padding: 1.08rem;
+      padding: 1rem;
       border: 1px solid var(--line);
-      border-radius: 18px;
-      background: linear-gradient(180deg, rgba(30, 41, 59, 0.72), rgba(15, 23, 42, 0.58));
-      transition: transform 180ms ease, border-color 180ms ease, background 180ms ease, box-shadow 180ms ease;
-    }
-
-    .topic:hover,
-    .project:hover,
-    .resource-card:hover,
-    details:hover {
-      transform: translateY(-3px);
-      border-color: rgba(246, 199, 111, 0.42);
-      box-shadow: 0 18px 42px rgba(0, 0, 0, 0.22);
-    }
-
-    .topic::after,
-    .project::after {
-      content: "";
-      position: absolute;
-      inset: auto -20% -45% auto;
-      width: 11rem;
-      height: 11rem;
-      border-radius: 50%;
-      background: radial-gradient(circle, rgba(147, 197, 253, 0.10), transparent 68%);
-      pointer-events: none;
+      border-radius: 14px;
+      background: var(--panel-soft);
     }
 
     .topic h3,
@@ -502,10 +430,9 @@
 
     details {
       border: 1px solid var(--line);
-      border-radius: 16px;
-      background: linear-gradient(180deg, rgba(30, 41, 59, 0.66), rgba(15, 23, 42, 0.54));
+      border-radius: 14px;
+      background: var(--panel-soft);
       padding: 0.95rem 1rem;
-      transition: transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
     }
 
     details[open] {
@@ -586,7 +513,7 @@
           <a href="#teaching"><span class="i18n en">Teaching</span><span class="i18n zh">教学</span></a>
           <a href="#projects"><span class="i18n en">Digital Work</span><span class="i18n zh">数字项目</span></a>
           <a href="#interests"><span class="i18n en">Interests</span><span class="i18n zh">兴趣</span></a>
-          <a href="tools_directory.html"><span class="i18n en">Tools</span><span class="i18n zh">工具</span></a>
+          <a href="#cv"><span class="i18n en">CV</span><span class="i18n zh">简历</span></a>
           <a href="#contact"><span class="i18n en">Contact</span><span class="i18n zh">联系</span></a>
         </div>
         <div class="language-tabs" aria-label="Language switcher">
@@ -616,9 +543,8 @@
 
             <a class="button" href="https://www.facebook.com/raylovenorthfish" target="_blank" rel="noopener">Facebook</a>
 
-            <a class="button" href="https://slides-6xr.pages.dev/" target="_blank" rel="noopener">🎞️ Interactive slides</a>
-            <a class="button" href="tools_directory.html">🧰 Logic tools</a>
-            <a class="button" href="https://cn-logicians-eml.pages.dev/" target="_blank" rel="noopener">📜 Chinese logicians project</a>
+            <a class="button" href="https://slides-6xr.pages.dev/" target="_blank" rel="noopener">Interactive slides</a>
+            <a class="button" href="https://cn-logicians-eml.pages.dev/" target="_blank" rel="noopener">Chinese logicians project</a>
           
           </div>
         </div>
@@ -638,9 +564,8 @@
             <a class="button primary" href="mailto:zrui956@aucklanduni.ac.nz">邮箱</a>
             <a class="button" href="https://github.com/Raycaesar" target="_blank" rel="noopener">GitHub</a>
             <a class="button" href="https://www.facebook.com/raylovenorthfish" target="_blank" rel="noopener">Facebook</a>
-            <a class="button" href="https://slides-6xr.pages.dev/" target="_blank" rel="noopener">🎞️ 交互式课件</a>
-            <a class="button" href="tools_directory.html">🧰 逻辑工具</a>
-            <a class="button" href="https://cn-logicians-eml.pages.dev/" target="_blank" rel="noopener">📜 中国逻辑学家项目</a>
+            <a class="button" href="https://slides-6xr.pages.dev/" target="_blank" rel="noopener">交互式课件</a>
+            <a class="button" href="https://cn-logicians-eml.pages.dev/" target="_blank" rel="noopener">中国逻辑学家项目</a>
             
           </div>
         </div>
@@ -668,7 +593,7 @@
 
     <section id="research">
       <div class="i18n-block en">
-        <div class="section-head"><h2><span class="section-icon">🧭</span>Research</h2><span class="section-note">Contributions and current directions</span></div>
+        <div class="section-head"><h2>Research</h2><span class="section-note">Contributions and current directions</span></div>
         <div class="grid">
           <div class="topic">
             <h3>Social Announcement Logic and arbitrary announcements</h3>
@@ -710,7 +635,7 @@
       </div>
 
       <div class="i18n-block zh">
-        <div class="section-head"><h2><span class="section-icon">🧭</span>研究方向</h2><span class="section-note">主要贡献与当前计划</span></div>
+        <div class="section-head"><h2>研究方向</h2><span class="section-note">主要贡献与当前计划</span></div>
         <div class="grid">
           <div class="topic">
             <h3>社交宣告逻辑与任意宣告</h3>
@@ -754,7 +679,7 @@
 
     <section id="publications">
       <div class="i18n-block en">
-        <div class="section-head"><h2><span class="section-icon">📚</span>Selected Publications</h2><span class="section-note">Representative work, with brief context</span></div>
+        <div class="section-head"><h2>Selected Publications</h2><span class="section-note">Representative work, with brief context</span></div>
         <ul class="list">
           <li class="entry"><div class="date">2026</div><div><p class="entry-title">A Finitary Axiomatization of Arbitrary Social Announcement Logic</p><p class="entry-meta">In V. Goranko, C. Shi, and W. Wang (eds.), <em>Logic, Rationality, and Interaction: LORI 2025</em>, Lecture Notes in Computer Science, vol. 16010. Springer. <a href="https://doi.org/10.1007/978-981-95-2481-5_14" target="_blank" rel="noopener">doi:10.1007/978-981-95-2481-5_14</a></p><p class="entry-desc">This paper presents the core finitary system for arbitrary sincere announcements in social networks. Its main contribution is the model-transformation method that makes the discharge rule for arbitrary announcements sound without relying on an infinitary proof system.</p></div></li>
           <li class="entry">
@@ -795,7 +720,7 @@
         </ul>
       </div>
       <div class="i18n-block zh">
-        <div class="section-head"><h2><span class="section-icon">📚</span>代表性论著</h2><span class="section-note">代表性成果及简要说明</span></div>
+        <div class="section-head"><h2>代表性论著</h2><span class="section-note">代表性成果及简要说明</span></div>
         <ul class="list">
           <li class="entry"><div class="date">2026</div><div><p class="entry-title">A Finitary Axiomatization of Arbitrary Social Announcement Logic</p><p class="entry-meta">载 V. Goranko, C. Shi, W. Wang 编，<em>Logic, Rationality, and Interaction: LORI 2025</em>，Lecture Notes in Computer Science，第16010卷，Springer。<a href="https://doi.org/10.1007/978-981-95-2481-5_14" target="_blank" rel="noopener">doi:10.1007/978-981-95-2481-5_14</a></p><p class="entry-desc">这篇论文给出了社交网络中任意真诚宣告的核心有穷证明系统。主要贡献是模型变换方法：它使任意宣告的 discharge rule 得到可靠性证明，而不需要诉诸无穷规则系统。</p></div></li>
           <li class="entry">
@@ -838,7 +763,7 @@
 
     <section id="talks">
       <div class="i18n-block en">
-        <div class="section-head"><h2><span class="section-icon">🎤</span>Selected Recent Talks</h2><span class="section-note">2024–2026, with themes</span></div>
+        <div class="section-head"><h2>Selected Recent Talks</h2><span class="section-note">2024–2026, with themes</span></div>
         <ul class="list">
           <li class="entry"><div class="date">Apr 2026</div><div><p class="entry-title">Shen Yuting and Early Modal Logic</p><p class="entry-meta">Tenth Asian Workshop on Philosophical Logic, Southwest University, Chongqing.</p><p class="entry-desc">Presented the historical thesis that Shen Yuting was the first to derive axiom 5 from axioms 4 and B in Lewis's System B, and explained why this matters for the later S4/S5 hierarchy.</p></div></li>
           <li class="entry"><div class="date">Dec 2025</div><div><p class="entry-title">Arbitrary Social Announcement Logic</p><p class="entry-meta">Universal Logic Prize Contest, National University of Saint Anthony the Abbot, Cusco, Peru.</p><p class="entry-desc">Explained the finitary axiomatization of arbitrary social announcements and the model transformation technique behind the proof.</p></div></li>
@@ -850,7 +775,7 @@
         </ul>
       </div>
       <div class="i18n-block zh">
-        <div class="section-head"><h2><span class="section-icon">🎤</span>近期学术报告</h2><span class="section-note">2024–2026，附主题说明</span></div>
+        <div class="section-head"><h2>近期学术报告</h2><span class="section-note">2024–2026，附主题说明</span></div>
         <ul class="list">
           <li class="entry"><div class="date">2026年4月</div><div><p class="entry-title">Shen Yuting and Early Modal Logic</p><p class="entry-meta">第十届亚洲哲学逻辑工作会议，西南大学，重庆。</p><p class="entry-desc">报告沈有鼎最早在 Lewis 系统 B 中从公理 4 与公理 B 推出公理 5 的历史与逻辑意义，并说明这一结果为何关系到后来 S4/S5 层级的稳定化。</p></div></li>
           <li class="entry"><div class="date">2025年12月</div><div><p class="entry-title">Arbitrary Social Announcement Logic</p><p class="entry-meta">Universal Logic Prize Contest，秘鲁库斯科。</p><p class="entry-desc">介绍任意社交宣告逻辑的有穷公理化，尤其是可靠性证明的模型变换方法。</p></div></li>
@@ -865,7 +790,7 @@
 
     <section id="teaching">
       <div class="i18n-block en">
-        <div class="section-head"><h2><span class="section-icon">🧑‍🏫</span>Teaching</h2><span class="section-note">Logic, philosophy, mathematics, and programming</span></div>
+        <div class="section-head"><h2>Teaching</h2><span class="section-note">Logic, philosophy, mathematics, and programming</span></div>
         <div class="two-col">
           <div>
             <h3 class="mini-heading">University teaching</h3>
@@ -886,7 +811,7 @@
         </div>
       </div>
       <div class="i18n-block zh">
-        <div class="section-head"><h2><span class="section-icon">🧑‍🏫</span>教学</h2><span class="section-note">逻辑、哲学、数学与编程</span></div>
+        <div class="section-head"><h2>教学</h2><span class="section-note">逻辑、哲学、数学与编程</span></div>
         <div class="two-col">
           <div>
             <h3 class="mini-heading">大学教学</h3>
@@ -910,28 +835,28 @@
 
     <section id="projects">
       <div class="i18n-block en">
-        <div class="section-head"><h2><span class="section-icon">🛠️</span>Digital Work</h2><span class="section-note">Teaching, public scholarship, and experiments</span></div>
+        <div class="section-head"><h2>Digital Work</h2><span class="section-note">Teaching, public scholarship, and experiments</span></div>
         <div class="grid">
-          <div class="project"><span class="card-emoji">🎞️</span><h3><a href="https://slides-6xr.pages.dev/" target="_blank" rel="noopener">Interactive slides</a></h3><p>A collection of reveal.js presentations for logic, mathematics, and programming. These slides are designed to make abstract ideas such as belief update, tableaux, model transformation, and proof search easier to see and discuss in class.</p><div class="tags"><span class="tag">reveal.js</span><span class="tag">visual explanation</span><span class="tag green">logic education</span></div></div>
-          <div class="project"><span class="card-emoji">📜</span><h3><a href="https://cn-logicians-eml.pages.dev/" target="_blank" rel="noopener">Chinese Logicians and Early Modal Logic</a></h3><p>A public-facing project on Chinese logicians' contributions to early modal logic, including Shen Yuting and related figures. It is intended both as historical scholarship and as a resource for readers outside the Chinese academic context.</p><div class="tags"><span class="tag">History of logic</span><span class="tag">Early modal logic</span><span class="tag gold">Public scholarship</span></div></div>
-          <div class="project"><span class="card-emoji">💻</span><h3><a href="https://github.com/Raycaesar" target="_blank" rel="noopener">GitHub projects and experiments</a></h3><p>Code, teaching examples, and experimental materials related to logic, programming instruction, and web-based academic communication. I prefer small, transparent tools that students can inspect and modify.</p><div class="tags"><span class="tag">HTML/CSS/JS</span><span class="tag">Python</span><span class="tag">LaTeX</span></div></div>
-          <div class="project"><span class="card-emoji">🧰</span><h3><a href="tools_directory.html">Computational logic for teaching</a></h3><p>A navigation page for small logic tools and classroom programs: formula parsers, CNF conversion, tableaux, K-map and Quine–McCluskey style minimization, social-network demos, and other executable examples that connect formal syntax with code.</p><div class="tags"><span class="tag">tools directory</span><span class="tag">CNF</span><span class="tag">Quine–McCluskey</span></div></div>
+          <div class="project"><h3><a href="https://slides-6xr.pages.dev/" target="_blank" rel="noopener">Interactive slides and programs</a></h3><p>Teaching slides and small web programs for logic, mathematics, programming, and classroom demonstrations. I use these tools to make abstract notions such as belief update, model transformation, tableaux, and proof search visually accessible.</p><div class="tags"><span class="tag">reveal.js</span><span class="tag">JavaScript</span><span class="tag green">Logic education</span></div></div>
+          <div class="project"><h3><a href="https://cn-logicians-eml.pages.dev/" target="_blank" rel="noopener">Chinese Logicians and Early Modal Logic</a></h3><p>A public-facing project on Chinese logicians' contributions to early modal logic, including Shen Yuting and related figures. It is intended both as historical scholarship and as a resource for readers outside the Chinese academic context.</p><div class="tags"><span class="tag">History of logic</span><span class="tag">Early modal logic</span><span class="tag gold">Public scholarship</span></div></div>
+          <div class="project"><h3><a href="https://github.com/Raycaesar" target="_blank" rel="noopener">GitHub projects and experiments</a></h3><p>Code, teaching examples, and experimental materials related to logic, programming instruction, and web-based academic communication. I prefer small, transparent tools that students can inspect and modify.</p><div class="tags"><span class="tag">HTML/CSS/JS</span><span class="tag">Python</span><span class="tag">LaTeX</span></div></div>
+          <div class="project"><h3>Computational logic for teaching</h3><p>I am interested in teaching logic through concrete computational tasks: building parsers, converting formulas to CNF, using the Quine–McCluskey algorithm for minimization, and designing small checkers that connect formal syntax with executable code.</p><div class="tags"><span class="tag">Parsers</span><span class="tag">CNF</span><span class="tag">Quine–McCluskey</span></div></div>
         </div>
       </div>
       <div class="i18n-block zh">
-        <div class="section-head"><h2><span class="section-icon">🛠️</span>数字项目</h2><span class="section-note">教学、公共学术与实验</span></div>
+        <div class="section-head"><h2>数字项目</h2><span class="section-note">教学、公共学术与实验</span></div>
         <div class="grid">
-          <div class="project"><span class="card-emoji">🎞️</span><h3><a href="https://slides-6xr.pages.dev/" target="_blank" rel="noopener">交互式课件</a></h3><p>这是我用 reveal.js 制作的逻辑、数学与编程课件导航页。它们主要用于把信念更新、模型变换、表列系统和证明搜索等抽象概念变成更容易展示和讨论的课堂材料。</p><div class="tags"><span class="tag">reveal.js</span><span class="tag">可视化讲解</span><span class="tag green">逻辑教学</span></div></div>
-          <div class="project"><span class="card-emoji">📜</span><h3><a href="https://cn-logicians-eml.pages.dev/" target="_blank" rel="noopener">中国逻辑学家与早期模态逻辑</a></h3><p>这是一个面向公众的学术项目，介绍中国逻辑学家在早期模态逻辑中的贡献，尤其是沈有鼎及相关人物。它既服务于逻辑史研究，也帮助国外读者理解中文学术材料。</p><div class="tags"><span class="tag">逻辑史</span><span class="tag">早期模态逻辑</span><span class="tag gold">公共学术</span></div></div>
-          <div class="project"><span class="card-emoji">💻</span><h3><a href="https://github.com/Raycaesar" target="_blank" rel="noopener">GitHub 项目与实验</a></h3><p>包括逻辑、编程教学和网页化学术传播相关的代码、示例和实验材料。我偏好小型、透明、学生可以阅读和改造的工具。</p><div class="tags"><span class="tag">HTML/CSS/JS</span><span class="tag">Python</span><span class="tag">LaTeX</span></div></div>
-          <div class="project"><span class="card-emoji">🧰</span><h3><a href="tools_directory.html">面向教学的计算逻辑</a></h3><p>这是小型逻辑工具和课堂程序的导航页，包括公式解析器、CNF 转换、表列式生成器、卡诺图与 Quine–McCluskey 最简化、社交网络演示，以及把形式语法和可执行代码连接起来的示例。</p><div class="tags"><span class="tag">工具导航</span><span class="tag">CNF</span><span class="tag">Quine–McCluskey</span></div></div>
+          <div class="project"><h3><a href="https://slides-6xr.pages.dev/" target="_blank" rel="noopener">交互式课件与小程序</a></h3><p>面向逻辑、数学、编程和课堂演示的交互式幻灯片与网页小程序。我用这些工具把信念更新、模型变换、表列系统和证明搜索等抽象概念可视化。</p><div class="tags"><span class="tag">reveal.js</span><span class="tag">JavaScript</span><span class="tag green">逻辑教学</span></div></div>
+          <div class="project"><h3><a href="https://cn-logicians-eml.pages.dev/" target="_blank" rel="noopener">中国逻辑学家与早期模态逻辑</a></h3><p>这是一个面向公众的学术项目，介绍中国逻辑学家在早期模态逻辑中的贡献，尤其是沈有鼎及相关人物。它既服务于逻辑史研究，也帮助国外读者理解中文学术材料。</p><div class="tags"><span class="tag">逻辑史</span><span class="tag">早期模态逻辑</span><span class="tag gold">公共学术</span></div></div>
+          <div class="project"><h3><a href="https://github.com/Raycaesar" target="_blank" rel="noopener">GitHub 项目与实验</a></h3><p>包括逻辑、编程教学和网页化学术传播相关的代码、示例和实验材料。我偏好小型、透明、学生可以阅读和改造的工具。</p><div class="tags"><span class="tag">HTML/CSS/JS</span><span class="tag">Python</span><span class="tag">LaTeX</span></div></div>
+          <div class="project"><h3>面向教学的计算逻辑</h3><p>我希望把逻辑教学落实到具体的计算任务中，例如公式解析器、CNF 转换器、Quine–McCluskey 最简表达式算法，以及把形式语法和可执行代码连接起来的小型检查器。</p><div class="tags"><span class="tag">解析器</span><span class="tag">CNF</span><span class="tag">Quine–McCluskey</span></div></div>
         </div>
       </div>
     </section>
 
     <section id="interests">
       <div class="i18n-block en">
-        <div class="section-head"><h2><span class="section-icon">🏃</span>Interests and Making</h2><span class="section-note">Beyond academia</span></div>
+        <div class="section-head"><h2>Interests and Making</h2><span class="section-note">Beyond academia</span></div>
         <div class="details-grid">
           <details open><summary>Long-distance running</summary><p>I am a full-marathon finisher with a personal best of 3:17 at the Christchurch Marathon 2018, and I have also served as a pacer for several running events. Running has shaped my life.</p></details>
           <details>
@@ -955,7 +880,7 @@
         </div>
       </div>
       <div class="i18n-block zh">
-        <div class="section-head"><h2><span class="section-icon">🏃</span>个人兴趣与业余活动</h2><span class="section-note">学术之外</span></div>
+        <div class="section-head"><h2>个人兴趣与业余活动</h2><span class="section-note">学术之外</span></div>
         <div class="details-grid">
           <details open><summary>长跑</summary><p>我多次完成全程马拉松，个人最好成绩是 2018 年 Christchurch Marathon 的 3小时17分，也多次在跑步赛事中担任配速员。长跑是我生命中无法摆脱的习惯。</p></details>
           <details>
@@ -985,21 +910,19 @@
 
     <section id="contact">
       <div class="i18n-block en">
-        <div class="section-head"><h2><span class="section-icon">✉️</span>Contact</h2><span class="section-note">Academic correspondence</span></div>
+        <div class="section-head"><h2>Contact</h2><span class="section-note">Academic correspondence</span></div>
         <p>Email: <a href="mailto:zrui956@aucklanduni.ac.nz">zrui956@aucklanduni.ac.nz</a></p>
         <p>GitHub: <a href="https://github.com/Raycaesar" target="_blank" rel="noopener">github.com/Raycaesar</a></p>
-        <p>Interactive slides: <a href="https://slides-6xr.pages.dev/" target="_blank" rel="noopener">slides-6xr.pages.dev</a></p>
-        <p>Logic tools directory: <a href="tools_directory.html">toolkits</a></p>
+        <p>Interactive teaching materials: <a href="https://slides-6xr.pages.dev/" target="_blank" rel="noopener">slides-6xr.pages.dev</a></p>
         <p>Chinese logicians project: <a href="https://cn-logicians-eml.pages.dev/" target="_blank" rel="noopener">cn-logicians-eml.pages.dev</a></p>
          <div><p><span class="section-note">CV is available on request</span></p></div>
       </div>
 
       <div class="i18n-block zh">
-        <div class="section-head"><h2><span class="section-icon">✉️</span>联系方式</h2><span class="section-note">学术联系</span></div>
+        <div class="section-head"><h2>联系方式</h2><span class="section-note">学术联系</span></div>
         <p>邮箱：<a href="mailto:zrui956@aucklanduni.ac.nz">zrui956@aucklanduni.ac.nz</a></p>
         <p>GitHub：<a href="https://github.com/Raycaesar" target="_blank" rel="noopener">github.com/Raycaesar</a></p>
-        <p>交互式课件：<a href="https://slides-6xr.pages.dev/" target="_blank" rel="noopener">slides</a></p>
-        <p>逻辑工具：<a href="tools_directory.html">toolkits</a></p>
+        <p>交互式教学材料：<a href="https://slides-6xr.pages.dev/" target="_blank" rel="noopener">slides-6xr.pages.dev</a></p>
         <p>中国逻辑学家项目：<a href="https://cn-logicians-eml.pages.dev/" target="_blank" rel="noopener">cn-logicians-eml.pages.dev</a></p>
          <div ><span class="section-note"><p>如需简历可来信索取</p></span></div>
       </div>

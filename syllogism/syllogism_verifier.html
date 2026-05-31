@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>亚里士多德三段论的算术语义验证器</title>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;600&family=Noto+Serif+SC:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0f1117;
+  --surface: #1a1d27;
+  --surface2: #22263a;
+  --border: #2e3350;
+  --accent: #c8a96e;
+  --accent2: #7eb8c9;
+  --valid: #4caf82;
+  --invalid: #e06c75;
+  --text: #dde1f0;
+  --muted: #7a82a6;
+  --mono: 'JetBrains Mono', monospace;
+  --serif: 'EB Garamond', 'Noto Serif SC', serif;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--serif);
+  font-size: 15px;
+  line-height: 1.65;
+  min-height: 100vh;
+}
+
+/* ── Header ── */
+header {
+  border-bottom: 1px solid var(--border);
+  padding: 2.5rem 3rem 2rem;
+  background: linear-gradient(135deg, #0f1117 0%, #171b2e 100%);
+}
+header h1 {
+  font-size: 1.75rem;
+  font-weight: 600;
+  color: var(--accent);
+  letter-spacing: .02em;
+  margin-bottom: .35rem;
+}
+header h1 em {
+  font-style: italic;
+  color: var(--text);
+  font-size: 1rem;
+  display: block;
+  margin-top: .2rem;
+  font-weight: 400;
+  letter-spacing: .05em;
+  color: var(--muted);
+}
+header p {
+  max-width: 780px;
+  color: var(--muted);
+  font-size: .9rem;
+  line-height: 1.7;
+  margin-top: .6rem;
+}
+.legend {
+  display: flex;
+  gap: 1.5rem;
+  margin-top: 1rem;
+  flex-wrap: wrap;
+  font-size: .82rem;
+  color: var(--muted);
+}
+.legend span { display: flex; align-items: center; gap: .4rem; }
+.dot { width: 8px; height: 8px; border-radius: 50%; }
+.dot-v { background: var(--valid); }
+.dot-i { background: var(--invalid); }
+
+.mode-toggle {
+  display: flex;
+  gap: .6rem;
+  margin-top: 1rem;
+  flex-wrap: wrap;
+}
+.mode-btn {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  color: var(--muted);
+  font-family: var(--serif);
+  font-size: .82rem;
+  padding: .35rem .85rem;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.mode-btn.active {
+  color: var(--accent);
+  border-color: var(--accent);
+  background: rgba(200,169,110,.12);
+}
+
+/* ── Tabs ── */
+.tabs {
+  display: flex;
+  border-bottom: 1px solid var(--border);
+  padding: 0 3rem;
+  background: var(--surface);
+  gap: .2rem;
+}
+.tab-btn {
+  background: none;
+  border: none;
+  color: var(--muted);
+  font-family: var(--serif);
+  font-size: .92rem;
+  padding: .85rem 1.4rem;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: all .2s;
+  white-space: nowrap;
+}
+.tab-btn:hover { color: var(--text); }
+.tab-btn.active {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+}
+.tab-meta {
+  font-size: .7rem;
+  color: var(--muted);
+  display: block;
+  margin-top: .1rem;
+}
+
+/* ── Main ── */
+main { padding: 2rem 3rem; max-width: 1300px; margin: 0 auto; }
+
+.figure-panel { display: none; }
+.figure-panel.active { display: block; }
+
+/* ── Figure desc ── */
+.fig-desc {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--accent);
+  border-radius: 4px;
+  padding: .9rem 1.4rem;
+  margin-bottom: 1.4rem;
+  font-size: .87rem;
+  color: var(--muted);
+  display: flex;
+  gap: 2rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.fig-desc strong { color: var(--accent); font-size: 1rem; margin-right: .5rem; }
+.fig-form {
+  font-family: var(--mono);
+  font-size: .8rem;
+  color: var(--accent2);
+  background: var(--surface2);
+  padding: .2rem .6rem;
+  border-radius: 3px;
+}
+.stats {
+  margin-left: auto;
+  font-size: .82rem;
+  display: flex;
+  gap: 1rem;
+}
+.stat-v { color: var(--valid); }
+.stat-i { color: var(--invalid); }
+
+/* ── Table ── */
+.tbl-wrap {
+  overflow-x: auto;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: .85rem;
+}
+thead th {
+  background: var(--surface2);
+  padding: .6rem 1rem;
+  text-align: left;
+  font-weight: 600;
+  color: var(--muted);
+  font-family: var(--serif);
+  font-size: .78rem;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+tbody tr { border-bottom: 1px solid var(--border); transition: background .12s; }
+tbody tr:last-child { border-bottom: none; }
+tbody tr:hover { background: rgba(255,255,255,.025); }
+tbody tr.row-valid { background: rgba(76,175,130,.06); }
+tbody tr.row-valid:hover { background: rgba(76,175,130,.1); }
+
+td {
+  padding: .55rem 1rem;
+  vertical-align: top;
+}
+.td-num { color: var(--muted); font-size: .75rem; font-family: var(--mono); width: 40px; }
+.td-name {
+  font-style: italic;
+  color: var(--accent);
+  font-size: .88rem;
+  white-space: nowrap;
+}
+.td-name.no-name { color: var(--muted); font-style: normal; font-size: .75rem; }
+.td-type {
+  font-family: var(--mono);
+  font-size: .82rem;
+  color: var(--accent2);
+  letter-spacing: .1em;
+}
+.td-prop { font-size: .82rem; color: var(--text); line-height: 1.5; }
+.td-prop .subj { color: var(--accent2); }
+.td-prop .pred { color: var(--accent); }
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: .15rem .55rem;
+  border-radius: 3px;
+  font-size: .74rem;
+  font-weight: 600;
+  letter-spacing: .04em;
+}
+.badge-v { background: rgba(76,175,130,.18); color: var(--valid); }
+.badge-i { background: rgba(224,108,117,.18); color: var(--invalid); }
+
+.btn-ex {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  color: var(--accent2);
+  font-family: var(--serif);
+  font-size: .78rem;
+  padding: .28rem .7rem;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: all .15s;
+  white-space: nowrap;
+}
+.btn-ex:hover {
+  background: var(--surface);
+  border-color: var(--accent2);
+}
+
+/* ── Counterexample row ── */
+.ex-row { display: none; }
+.ex-row.open { display: table-row; }
+.ex-cell {
+  padding: 0;
+  background: #12151f !important;
+  border-bottom: 1px solid var(--border);
+}
+.ex-box {
+  padding: 1.2rem 2rem 1.4rem 2.5rem;
+  border-left: 3px solid var(--invalid);
+  margin: .5rem 1rem;
+  border-radius: 0 4px 4px 0;
+}
+.ex-box h4 {
+  font-size: .82rem;
+  color: var(--invalid);
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  margin-bottom: .8rem;
+}
+.ex-values {
+  display: flex;
+  gap: 1.5rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+.ex-val {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: .4rem .9rem;
+  font-family: var(--mono);
+  font-size: .85rem;
+}
+.ex-val .vname { color: var(--muted); font-size: .72rem; display: block; }
+.ex-val .vnum { color: var(--accent); font-size: 1.1rem; }
+.ex-val .vfact { color: var(--muted); font-size: .72rem; }
+
+.ex-steps { display: flex; flex-direction: column; gap: .45rem; }
+.ex-step {
+  display: grid;
+  grid-template-columns: 90px 1fr auto;
+  gap: .6rem;
+  align-items: start;
+  font-size: .82rem;
+  padding: .35rem .7rem;
+  border-radius: 3px;
+  background: var(--surface2);
+}
+.ex-step.step-ok { border-left: 2px solid var(--valid); }
+.ex-step.step-fail { border-left: 2px solid var(--invalid); }
+.step-label {
+  color: var(--muted);
+  font-size: .74rem;
+  font-weight: 600;
+  letter-spacing: .04em;
+  padding-top: .05rem;
+}
+.step-text { color: var(--text); line-height: 1.5; }
+.step-arith { font-family: var(--mono); font-size: .78rem; color: var(--accent2); }
+.step-result { font-family: var(--mono); font-size: .82rem; white-space: nowrap; }
+.step-result.ok { color: var(--valid); }
+.step-result.fail { color: var(--invalid); }
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  header { padding: 1.5rem; }
+  main { padding: 1rem; }
+  .tabs { padding: 0 1rem; }
+  .ex-step { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>
+    亚里士多德三段论的算术语义验证器
+    <em>Arithmetizations of Syllogistic à la Leibniz · Sotirov 1999</em>
+  </h1>
+  <p id="semantics-desc"></p>
+
+<div class="mode-toggle">
+  <button class="mode-btn active" data-mode="intensional">内涵模型 Leibnizian</button>
+  <button class="mode-btn" data-mode="extensional">外延模型 Scholastic</button>
+</div>
+  <div class="legend">
+    <span><span class="dot dot-v"></span>有效推演（前提真则结论必真）</span>
+    <span><span class="dot dot-i"></span>无效推演（存在使前提真而结论假的赋值）</span>
+    <span style="font-family:var(--mono);font-size:.78rem;color:var(--accent2);">S=小项 · M=中项 · P=大项</span>
+  </div>
+</header>
+
+<div class="tabs" id="tabs">
+  <button class="tab-btn active" data-fig="1">
+    第一格<span class="tab-meta">M—P · S—M</span>
+  </button>
+  <button class="tab-btn" data-fig="2">
+    第二格<span class="tab-meta">P—M · S—M</span>
+  </button>
+  <button class="tab-btn" data-fig="3">
+    第三格<span class="tab-meta">M—P · M—S</span>
+  </button>
+  <button class="tab-btn" data-fig="4">
+    第四格<span class="tab-meta">P—M · M—S</span>
+  </button>
+</div>
+
+<main id="main">
+  <div id="panel-1" class="figure-panel active"></div>
+  <div id="panel-2" class="figure-panel"></div>
+  <div id="panel-3" class="figure-panel"></div>
+  <div id="panel-4" class="figure-panel"></div>
+</main>
+
+<script>
+// ── Number Theory ──────────────────────────────────────────
+function gcd(a, b) {
+  a = Math.abs(a); b = Math.abs(b);
+  while (b) { [a, b] = [b, a % b]; }
+  return a;
+}
+
+
+function lcm(a, b) {
+  return Math.abs(a * b) / gcd(a, b);
+}
+
+// Leibnizian finite universe for counterexample search.
+// U = 2 × 3 × 5 × 7 = 210.  Terms are proper divisors of U.
+const UNIVERSE_PRIMES = [2, 3, 5, 7];
+const UNIVERSE = UNIVERSE_PRIMES.reduce((a, b) => a * b, 1);
+
+function properDivisorsOfUniverse() {
+  const values = [];
+  const n = UNIVERSE_PRIMES.length;
+  for (let mask = 1; mask < (1 << n) - 1; mask++) {
+    let v = 1;
+    for (let i = 0; i < n; i++) {
+      if (mask & (1 << i)) v *= UNIVERSE_PRIMES[i];
+    }
+    values.push(v);
+  }
+  return values.sort((a, b) => a - b);
+}
+
+const TERM_VALUES = properDivisorsOfUniverse();
+let currentMode = 'intensional';
+
+function factorize(n) {
+  const f = {};
+  for (let p = 2; p * p <= n; p++) {
+    while (n % p === 0) { f[p] = (f[p] || 0) + 1; n /= p; }
+  }
+  if (n > 1) f[n] = (f[n] || 0) + 1;
+  return Object.entries(f).map(([p,e]) => e > 1 ? `${p}^${e}` : p).join('×') || n.toString();
+}
+
+function isSquareFree(n) {
+  // 检查 n 是否能被任何素数的平方整除
+  for (let p = 2; p * p <= n; p++) {
+    if (n % (p * p) === 0) return false;
+  }
+  return true;
+}
+
+// ── Proposition Truth Conditions ───────────────────────────
+// Extensional reading: SAP = s|p, SEP = gcd=1, SIP = gcd>1, SOP = s∤p
+function propTrue(type, subj, pred) {
+  if (currentMode === 'intensional') {
+    // Leibnizian intensional reading:
+    // SAP = pred | subj; SEP = lcm(subj,pred)=U;
+    // SIP = lcm(subj,pred)<U; SOP = pred ∤ subj.
+    switch (type) {
+      case 'A': return subj % pred === 0;
+      case 'E': return lcm(subj, pred) === UNIVERSE;
+      case 'I': return lcm(subj, pred) < UNIVERSE;
+      case 'O': return subj % pred !== 0;
+    }
+  } else {
+    // Scholastic/extensional reading:
+    // SAP = subj | pred; SEP = gcd=1; SIP = gcd>1; SOP = subj ∤ pred.
+    switch (type) {
+      case 'A': return pred % subj === 0;
+      case 'E': return gcd(subj, pred) === 1;
+      case 'I': return gcd(subj, pred) > 1;
+      case 'O': return pred % subj !== 0;
+    }
+  }
+}
+
+function propArith(type, subj, pred, sName, pName) {
+  const g = gcd(subj, pred);
+  const L = lcm(subj, pred);
+
+  if (currentMode === 'intensional') {
+    switch (type) {
+      case 'A': {
+        const ok = subj % pred === 0;
+        return {
+          expr: `${subj} ÷ ${pred} = ${ok ? subj / pred : (subj / pred).toFixed(2)}`,
+          ok,
+          cond: `${pred}|${subj}`
+        };
+      }
+      case 'E':
+        return {
+          expr: `lcm(${subj}, ${pred}) = ${L}; U = ${UNIVERSE}`,
+          ok: L === UNIVERSE,
+          cond: `lcm = U`
+        };
+      case 'I':
+        return {
+          expr: `lcm(${subj}, ${pred}) = ${L}; U = ${UNIVERSE}`,
+          ok: L < UNIVERSE,
+          cond: `lcm < U`
+        };
+      case 'O': {
+        const fail = subj % pred === 0;
+        return {
+          expr: `${subj} ÷ ${pred} = ${fail ? subj / pred : (subj / pred).toFixed(2)}`,
+          ok: !fail,
+          cond: `${pred}∤${subj}`
+        };
+      }
+    }
+  }
+
+  switch (type) {
+    case 'A': {
+      const ok = pred % subj === 0;
+      return {
+        expr: `${pred} ÷ ${subj} = ${ok ? pred / subj : (pred / subj).toFixed(2)}`,
+        ok,
+        cond: `${subj}|${pred}`
+      };
+    }
+    case 'E':
+      return { expr: `gcd(${subj}, ${pred}) = ${g}`, ok: g === 1, cond: `gcd = 1` };
+    case 'I':
+      return { expr: `gcd(${subj}, ${pred}) = ${g}`, ok: g > 1, cond: `gcd > 1` };
+    case 'O': {
+      const fail = pred % subj === 0;
+      return {
+        expr: `${pred} ÷ ${subj} = ${fail ? pred / subj : (pred / subj).toFixed(2)}`,
+        ok: !fail,
+        cond: `${subj}∤${pred}`
+      };
+    }
+  }
+}
+
+// ── Figure Evaluation ──────────────────────────────────────
+// Returns {majSubj, majPred, minSubj, minPred, conSubj, conPred}
+// and evaluates truth of major, minor, conclusion
+function evalMood(fig, maj, min, con, s, m, p) {
+  let ms, mp, ns, np;
+  if (fig === 1) { ms=m; mp=p; ns=s; np=m; }
+  else if (fig === 2) { ms=p; mp=m; ns=s; np=m; }
+  else if (fig === 3) { ms=m; mp=p; ns=m; np=s; }
+  else                { ms=p; mp=m; ns=m; np=s; }
+  const cs=s, cp=p;
+  return {
+    majSubj:ms, majPred:mp, minSubj:ns, minPred:np, conSubj:cs, conPred:cp,
+    majTrue: propTrue(maj, ms, mp),
+    minTrue: propTrue(min, ns, np),
+    conTrue: propTrue(con, cs, cp)
+  };
+}
+
+// ── Counterexample Search ──────────────────────────────────
+function findCex(fig, maj, min, con) {
+  for (const s of TERM_VALUES) {
+    for (const m of TERM_VALUES) {
+      for (const p of TERM_VALUES) {
+        const r = evalMood(fig, maj, min, con, s, m, p);
+        if (r.majTrue && r.minTrue && !r.conTrue) return {s, m, p, ...r};
+      }
+    }
+  }
+  return null;
+}
+/* 如果特征数必须不同则用这个，但它会让第四格AAO有效。
+function findCex(fig, maj, min, con) {
+  const R = 150; // 扩大搜索范围，因为排除了很多不合规的数字
+  for (let s = 2; s <= R; s++) {
+    if (!isSquareFree(s)) continue; // 约束1：必须是无平方因子数
+    
+    for (let m = 2; m <= R; m++) {
+      if (!isSquareFree(m)) continue; // 约束1：必须是无平方因子数
+      if (s === m) continue;          // 约束2：项必须互不相同
+      
+      for (let p = 2; p <= R; p++) {
+        if (!isSquareFree(p)) continue; // 约束1：必须是无平方因子数
+        if (p === s || p === m) continue; // 约束2：项必须互不相同
+        
+        const r = evalMood(fig, maj, min, con, s, m, p);
+        if (r.majTrue && r.minTrue && !r.conTrue) return {s, m, p, ...r};
+      }
+    }
+  }
+  return null;
+}
+*/
+// ── Valid Moods ────────────────────────────────────────────
+const VALID = {
+  1: { 
+    AAA:'Barbara', EAE:'Celarent', AII:'Darii', EIO:'Ferio',
+    AAI:'Barbari (弱式)', EAO:'Celaront (弱式)' 
+  },
+  2: { 
+    EAE:'Cesare', AEE:'Camestres', EIO:'Festino', AOO:'Baroco',
+    EAO:'Cesaro (弱式)', AEO:'Camestros (弱式)' 
+  },
+  3: { 
+    AAI:'Darapti', IAI:'Disamis', AII:'Datisi', EAO:'Felapton', OAO:'Bocardo', EIO:'Ferison' 
+  },
+  4: { 
+    AAI:'Bramantip', AEE:'Camenes', IAI:'Dimaris', EAO:'Fesapo', EIO:'Fresison',
+    AEO:'Calemos (弱式)' 
+  }
+};
+
+// ── Proposition Descriptions ───────────────────────────────
+const PROP_TEXT = {
+  A: ['所有', '是'],
+  E: ['没有', '是'],
+  I: ['某些', '是'],
+  O: ['某些', '不是']
+};
+
+function propDesc(type, subj, pred) {
+  const [q, cop] = PROP_TEXT[type];
+  return `${q} <span class="subj">${subj}</span> ${cop} <span class="pred">${pred}</span>`;
+}
+
+const FIG_TERMS = {
+  //        [majSubjName, majPredName, minSubjName, minPredName]
+  1: ['M', 'P', 'S', 'M'],
+  2: ['P', 'M', 'S', 'M'],
+  3: ['M', 'P', 'M', 'S'],
+  4: ['P', 'M', 'M', 'S']
+};
+
+const FIG_DESC = {
+  1: { name: '第一格', form: '大前提 M—P  ·  小前提 S—M  ·  结论 S—P',
+       note: '中项M为大前提之主词、小前提之谓词' },
+  2: { name: '第二格', form: '大前提 P—M  ·  小前提 S—M  ·  结论 S—P',
+       note: '中项M为两前提之谓词' },
+  3: { name: '第三格', form: '大前提 M—P  ·  小前提 M—S  ·  结论 S—P',
+       note: '中项M为两前提之主词' },
+  4: { name: '第四格', form: '大前提 P—M  ·  小前提 M—S  ·  结论 S—P',
+       note: '中项M为大前提之谓词、小前提之主词' }
+};
+
+// ── Build HTML for one figure panel ───────────────────────
+function buildPanel(fig) {
+  const types = ['A','E','I','O'];
+  const fd = FIG_DESC[fig];
+  const vmap = VALID[fig];
+  const [msjN, mprN, nsjN, nprN] = FIG_TERMS[fig];
+
+  let validCount = 0, invalidCount = 0;
+  const rows = [];
+
+  let idx = 1;
+  for (const maj of types)
+    for (const min of types)
+      for (const con of types) {
+        const key = maj+min+con;
+        const name = vmap[key] || null;
+        const isValid = !!name;
+        if (isValid) validCount++; else invalidCount++;
+        rows.push({ idx: idx++, maj, min, con, key, name, isValid });
+      }
+
+  // Precompute counterexamples for invalid rows
+  const cexMap = {};
+  for (const r of rows) {
+    if (!r.isValid) {
+      cexMap[r.key] = findCex(fig, r.maj, r.min, r.con);
+    }
+  }
+
+  let html = `
+    <div class="fig-desc">
+      <div><strong>${fd.name}</strong> <span class="fig-form">${fd.form}</span></div>
+      <div style="font-size:.8rem;color:var(--muted)">${fd.note}</div>
+      <div class="stats">
+        <span class="stat-v">✓ 有效 ${validCount}</span>
+        <span class="stat-i">✗ 无效 ${invalidCount}</span>
+      </div>
+    </div>
+    <div class="tbl-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>式名</th>
+          <th>格式</th>
+          <th>大前提</th>
+          <th>小前提</th>
+          <th>结论</th>
+          <th>判定</th>
+          <th>操作</th>
+        </tr>
+      </thead>
+      <tbody id="tbody-${fig}">`;
+
+  for (const r of rows) {
+    const cex = r.isValid ? null : cexMap[r.key];
+    const rowId = `r${fig}-${r.key}`;
+    const exId = `ex${fig}-${r.key}`;
+
+    html += `
+      <tr class="${r.isValid ? 'row-valid' : ''}" id="${rowId}">
+        <td class="td-num">${r.idx}</td>
+        <td class="td-name ${r.name ? '' : 'no-name'}">${r.name || '—'}</td>
+        <td class="td-type">${r.key}</td>
+        <td class="td-prop">${propDesc(r.maj, msjN, mprN)}</td>
+        <td class="td-prop">${propDesc(r.min, nsjN, nprN)}</td>
+        <td class="td-prop">${propDesc(r.con, 'S', 'P')}</td>
+        <td><span class="badge ${r.isValid ? 'badge-v' : 'badge-i'}">${r.isValid ? '有效' : '无效'}</span></td>
+        <td>
+          ${r.isValid
+            ? `<span style="font-size:.75rem;color:var(--muted);font-style:italic">三段论有效式</span>`
+            : cex
+              ? `<button class="btn-ex" onclick="toggleEx('${exId}',${fig},'${r.maj}','${r.min}','${r.con}',${cex.s},${cex.m},${cex.p})">生成反例</button>`
+              : `<span style="font-size:.75rem;color:var(--muted)">搜索范围内未找到</span>`
+          }
+        </td>
+      </tr>
+      <tr class="ex-row" id="${exId}">
+        <td class="ex-cell" colspan="8"></td>
+      </tr>`;
+  }
+
+  html += `</tbody></table></div>`;
+  return html;
+}
+
+// ── Render counterexample detail ───────────────────────────
+function renderCex(fig, maj, min, con, s, m, p) {
+  const [msjN, mprN, nsjN, nprN] = FIG_TERMS[fig];
+  let ms, mp, ns, np;
+  if (fig===1){ms=m;mp=p;ns=s;np=m;}
+  else if(fig===2){ms=p;mp=m;ns=s;np=m;}
+  else if(fig===3){ms=m;mp=p;ns=m;np=s;}
+  else{ms=p;mp=m;ns=m;np=s;}
+
+  const propNames = {A:'全称肯定(A)',E:'全称否定(E)',I:'特称肯定(I)',O:'特称否定(O)'};
+  const condNames = {
+    A:`${ms}|${mp}（${ms}整除${mp}）`,
+    E:`gcd(${ms},${mp})=1`,
+    I:`gcd(${ms},${mp})>1`,
+    O:`${ms}∤${mp}（${ms}不整除${mp}）`
+  };
+
+  function stepHTML(label, propType, subj, pred, subjN, predN) {
+    const r = propArith(propType, subj, pred, subjN, predN);
+    const txt = propDesc(propType, subjN, predN).replace(/<[^>]+>/g,'');
+    return `
+      <div class="ex-step ${r.ok ? 'step-ok' : 'step-fail'}">
+        <div class="step-label">${label}<br>${propNames[propType]}</div>
+        <div class="step-text">
+          "${txt}"
+          <div class="step-arith">条件：${r.cond} &nbsp;→&nbsp; ${r.expr}</div>
+        </div>
+        <div class="step-result ${r.ok ? 'ok' : 'fail'}">${r.ok ? '✓ 真' : '✗ 假'}</div>
+      </div>`;
+  }
+
+  const majA = stepHTML('大前提', maj, ms, mp, msjN, mprN);
+  const minA = stepHTML('小前提', min, ns, np, nsjN, nprN);
+  const conA = stepHTML('结论', con, s, p, 'S', 'P');
+
+  return `
+    <div class="ex-box">
+      <h4>反例赋值 — 前提为真，结论为假</h4>
+      <div class="ex-values">
+        <div class="ex-val">
+          <span class="vname">小项 S</span>
+          <span class="vnum">${s}</span>
+          <span class="vfact">= ${factorize(s)}</span>
+        </div>
+        <div class="ex-val">
+          <span class="vname">中项 M</span>
+          <span class="vnum">${m}</span>
+          <span class="vfact">= ${factorize(m)}</span>
+        </div>
+        <div class="ex-val">
+          <span class="vname">大项 P</span>
+          <span class="vnum">${p}</span>
+          <span class="vfact">= ${factorize(p)}</span>
+        </div>
+        ${currentMode === 'intensional' ? `
+  <div class="ex-val" style="border-color:rgba(126,184,201,.3)">
+    <span class="vname">Universe U</span>
+    <span class="vnum" style="color:var(--accent2)">${UNIVERSE}</span>
+  </div>
+  <div class="ex-val" style="border-color:rgba(126,184,201,.3)">
+    <span class="vname">lcm(S,M)</span>
+    <span class="vnum" style="color:var(--accent2)">${lcm(s,m)}</span>
+  </div>
+  <div class="ex-val" style="border-color:rgba(126,184,201,.3)">
+    <span class="vname">lcm(M,P)</span>
+    <span class="vnum" style="color:var(--accent2)">${lcm(m,p)}</span>
+  </div>
+  <div class="ex-val" style="border-color:rgba(126,184,201,.3)">
+    <span class="vname">lcm(S,P)</span>
+    <span class="vnum" style="color:var(--accent2)">${lcm(s,p)}</span>
+  </div>
+` : `
+  <div class="ex-val" style="border-color:rgba(126,184,201,.3)">
+    <span class="vname">gcd(S,M)</span>
+    <span class="vnum" style="color:var(--accent2)">${gcd(s,m)}</span>
+  </div>
+  <div class="ex-val" style="border-color:rgba(126,184,201,.3)">
+    <span class="vname">gcd(M,P)</span>
+    <span class="vnum" style="color:var(--accent2)">${gcd(m,p)}</span>
+  </div>
+  <div class="ex-val" style="border-color:rgba(126,184,201,.3)">
+    <span class="vname">gcd(S,P)</span>
+    <span class="vnum" style="color:var(--accent2)">${gcd(s,p)}</span>
+  </div>
+`}
+      </div>
+      <div class="ex-steps">
+        ${majA}
+        ${minA}
+        ${conA}
+      </div>
+      <div style="margin-top:.8rem;font-size:.77rem;color:var(--muted);font-style:italic">
+        ∵ 大前提与小前提均为真，而结论为假 ∴ 该推演形式无效（完全性证明之反例）
+      </div>
+    </div>`;
+}
+
+// ── Toggle counterexample row ──────────────────────────────
+const openRows = {};
+function toggleEx(exId, fig, maj, min, con, s, m, p) {
+  const row = document.getElementById(exId);
+  const cell = row.querySelector('.ex-cell');
+  if (openRows[exId]) {
+    row.classList.remove('open');
+    openRows[exId] = false;
+  } else {
+    cell.innerHTML = renderCex(fig, maj, min, con, s, m, p);
+    row.classList.add('open');
+    openRows[exId] = true;
+  }
+}
+
+// ── Tab switching ──────────────────────────────────────────
+document.getElementById('tabs').addEventListener('click', e => {
+  const btn = e.target.closest('.tab-btn');
+  if (!btn) return;
+  const fig = btn.dataset.fig;
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.figure-panel').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById(`panel-${fig}`).classList.add('active');
+});
+
+// ── Init ───────────────────────────────────────────────────
+function updateSemanticDescription() {
+  const desc = document.getElementById('semantics-desc');
+  if (currentMode === 'intensional') {
+    desc.innerHTML = `
+      该表格展示四个格共 256 种三段论推演形式的算术语义判定。当前采用<b>Leibnizian 内涵模型</b>：
+      固定宇宙数 <em>U</em>=${UNIVERSE}。全称肯定（A）= 谓项整除主项（<em>p</em>|<em>s</em>），
+      全称否定（E）= lcm(<em>s</em>,<em>p</em>)=<em>U</em>，
+      特称肯定（I）= lcm(<em>s</em>,<em>p</em>)&lt;<em>U</em>，
+      特称否定（O）= <em>p</em> 不整除 <em>s</em>。
+      对无效推演，系统自动搜索一个小型反例，点击“生成反例”查看完整算术验证过程。
+    `;
+  } else {
+    desc.innerHTML = `
+      该表格展示四个格共 256 种三段论推演形式的算术语义判定。当前采用<b>Scholastic / 外延模型</b>：
+      全称肯定（A）= 主项整除谓项（<em>s</em>|<em>p</em>），
+      全称否定（E）= gcd(<em>s</em>,<em>p</em>)=1，
+      特称肯定（I）= gcd(<em>s</em>,<em>p</em>)&gt;1，
+      特称否定（O）= <em>s</em> 不整除 <em>p</em>。
+      对无效推演，系统自动搜索一个小型反例，点击“生成反例”查看完整算术验证过程。
+    `;
+  }
+}
+
+function renderAllPanels() {
+  for (const k of Object.keys(openRows)) delete openRows[k];
+  updateSemanticDescription();
+
+  for (let fig = 1; fig <= 4; fig++) {
+    const panel = document.getElementById(`panel-${fig}`);
+    panel.innerHTML = `<div style="padding:2rem;color:var(--muted);text-align:center">
+      <span style="font-family:var(--mono)">正在计算反例...</span></div>`;
+  }
+
+  let f = 1;
+  function buildNext() {
+    if (f > 4) return;
+    document.getElementById(`panel-${f}`).innerHTML = buildPanel(f);
+    f++;
+    setTimeout(buildNext, 10);
+  }
+  setTimeout(buildNext, 30);
+}
+
+document.querySelectorAll('.mode-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    currentMode = btn.dataset.mode;
+    document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    renderAllPanels();
+  });
+});
+
+(function init() {
+  renderAllPanels();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>逻辑小程序导航 | Logic Tools & Mini-Apps</title>
+  <meta name="description" content="A directory of interactive logic tools and mini-apps by Rui Zhu / Ray: social announcement logic, tableaux, model generators, K-maps, syllogistic arithmetic semantics, and logic teaching experiments." />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+  <style>
+    body { font-family: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, "Noto Sans SC", "Microsoft YaHei", sans-serif; }
+    .card-hover { transition: transform .28s cubic-bezier(.4,0,.2,1), box-shadow .28s ease, border-color .28s ease; }
+    .card-hover:hover { transform: translateY(-8px); box-shadow: 0 24px 44px -20px rgb(0 0 0 / .65); border-color: rgb(113 113 122); }
+    .glass { background: linear-gradient(180deg, rgba(39,39,42,.92), rgba(24,24,27,.96)); backdrop-filter: blur(10px); }
+    .soft-grid {
+      background-image:
+        radial-gradient(circle at 20% 10%, rgba(59,130,246,.16), transparent 28rem),
+        radial-gradient(circle at 85% 18%, rgba(168,85,247,.14), transparent 30rem),
+        radial-gradient(circle at 45% 95%, rgba(245,158,11,.10), transparent 28rem);
+    }
+    html[lang="zh-CN"] .lang-en { display: none !important; }
+    html[lang="en"] .lang-zh { display: none !important; }
+  </style>
+</head>
+
+<body class="bg-zinc-950 text-zinc-100 soft-grid min-h-screen">
+  <nav class="bg-black/90 border-b border-zinc-800 py-5 sticky top-0 z-50 backdrop-blur">
+    <div class="max-w-6xl mx-auto px-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div class="flex items-center gap-3">
+        <div class="w-11 h-11 rounded-2xl bg-gradient-to-br from-blue-500 via-violet-500 to-rose-500 flex items-center justify-center shadow-lg shadow-blue-950/40">
+          <i class="fa-solid fa-network-wired text-xl text-white"></i>
+        </div>
+        <div>
+          <h1 class="text-2xl md:text-3xl font-bold tracking-tight">
+            <span class="lang-zh">逻辑小程序</span>
+            <span class="lang-en">Logic Mini-Apps</span>  
+          </br><p class="text-xs text-zinc-500 -mt-1">Ray Zhu / 祝瑞</p>
+          </h1>
+
+        
+        </div>
+      </div>
+
+      <div class="flex flex-wrap items-center gap-4 text-sm">
+        <a href="https://raycaesar.github.io/Ray.github.io/" class="text-zinc-400 hover:text-white flex items-center gap-2 transition-colors">
+          <i class="fa-solid fa-house"></i>
+          <span class="lang-zh">个人主页</span>
+          <span class="lang-en">Homepage</span>
+        </a>
+        <a href="https://slides-6xr.pages.dev/" class="text-zinc-400 hover:text-white flex items-center gap-2 transition-colors">
+          <i class="fa-solid fa-presentation-screen"></i>
+          <span class="lang-zh">幻灯片</span>
+          <span class="lang-en">Slides</span>
+        </a>
+        <a href="https://github.com/Raycaesar/Ray.github.io" target="_blank" rel="noopener" class="text-zinc-400 hover:text-white flex items-center gap-2 transition-colors">
+          <i class="fa-brands fa-github"></i>
+          <span>GitHub</span>
+        </a>
+        <button onclick="toggleLanguage()" class="text-zinc-400 hover:text-white flex items-center gap-2 transition-colors border-l border-zinc-700 pl-4">
+          <span class="text-xl lang-zh">🇳🇿</span><span class="lang-zh font-medium">EN</span>
+          <span class="text-xl lang-en">🇨🇳</span><span class="lang-en font-medium">中文</span>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <header class="max-w-6xl mx-auto px-6 py-16 md:py-20 text-center">
+    <div class="inline-flex items-center gap-2 text-sm text-blue-300 bg-blue-500/10 border border-blue-500/20 px-4 py-2 rounded-full mb-7">
+      <i class="fa-solid fa-sparkles"></i>
+      <span class="lang-zh">交互式逻辑教学与研究工具</span>
+      <span class="lang-en">Interactive tools for logic teaching and research</span>
+    </div>
+
+    <h2 class="text-5xl md:text-7xl font-black tracking-tighter mb-6">
+      <span class="lang-zh">逻辑小程序导航页</span>
+      <span class="lang-en">Logic Tools Directory</span>
+    </h2>
+
+    <p class="text-xl md:text-2xl text-zinc-400 mb-10 max-w-3xl mx-auto leading-relaxed">
+      <span class="lang-zh">这里收集了一组用于逻辑教学、社交宣告逻辑实验、表列式演算、布尔化简和三段论算术语义验证的网页小程序。</span>
+      <span class="lang-en">A collection of small web tools for logic teaching, Social Announcement Logic, tableaux, Boolean minimization, and arithmetic semantics for syllogisms.</span>
+    </p>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-4xl mx-auto text-left">
+      <a href="https://raycaesar.github.io/Ray.github.io/" class="glass border border-zinc-800 rounded-3xl p-5 card-hover group">
+        <div class="flex items-center gap-4">
+          <div class="w-13 h-13 text-4xl">🏠</div>
+          <div>
+            <div class="font-bold text-lg group-hover:text-blue-300 transition-colors">
+              <span class="lang-zh">个人主页</span><span class="lang-en">Personal Homepage</span>
+            </div>
+            <p class="text-zinc-500 text-sm">
+              <span class="lang-zh">研究、论文、报告与联系方式</span>
+              <span class="lang-en">Research, publications, talks, and contact</span>
+            </p>
+          </div>
+        </div>
+      </a>
+      <a href="https://slides-6xr.pages.dev/" class="glass border border-zinc-800 rounded-3xl p-5 card-hover group">
+        <div class="flex items-center gap-4">
+          <div class="w-13 h-13 text-4xl">🎞️</div>
+          <div>
+            <div class="font-bold text-lg group-hover:text-violet-300 transition-colors">
+              <span class="lang-zh">幻灯片导航</span><span class="lang-en">Slides Collection</span>
+            </div>
+            <p class="text-zinc-500 text-sm">
+              <span class="lang-zh">Reveal.js 逻辑课程与报告</span>
+              <span class="lang-en">Reveal.js talks and teaching slides</span>
+            </p>
+          </div>
+        </div>
+      </a>
+      <a href="https://github.com/Raycaesar/Ray.github.io" target="_blank" rel="noopener" class="glass border border-zinc-800 rounded-3xl p-5 card-hover group">
+        <div class="flex items-center gap-4">
+          <div class="w-13 h-13 text-4xl">🧰</div>
+          <div>
+            <div class="font-bold text-lg group-hover:text-amber-300 transition-colors">
+              <span class="lang-zh">源码仓库</span><span class="lang-en">Source Repository</span>
+            </div>
+            <p class="text-zinc-500 text-sm">
+              <span class="lang-zh">纯静态网页，可直接查看源码</span>
+              <span class="lang-en">Static pages with readable source code</span>
+            </p>
+          </div>
+        </div>
+      </a>
+    </div>
+
+    <div class="flex flex-wrap justify-center gap-6 text-zinc-500 mt-10">
+      <div class="flex items-center gap-2"><i class="fa-solid fa-circle-check text-emerald-500"></i><span class="lang-zh">纯静态 · 秒开</span><span class="lang-en">Pure static · fast</span></div>
+      <div class="flex items-center gap-2"><i class="fa-solid fa-circle-check text-emerald-500"></i><span class="lang-zh">无需登录</span><span class="lang-en">No login required</span></div>
+      <div class="flex items-center gap-2"><i class="fa-solid fa-circle-check text-emerald-500"></i><span class="lang-zh">适合课堂演示</span><span class="lang-en">Good for classroom demos</span></div>
+    </div>
+  </header>
+
+  <main class="max-w-6xl mx-auto px-6 pb-20">
+    <section class="mb-16">
+      <div class="flex items-end justify-between gap-4 mb-8">
+        <div>
+          <h3 class="text-3xl md:text-4xl font-bold tracking-tight flex items-center gap-3">
+            <span>🕸️</span>
+            <span class="lang-zh">社交宣告逻辑核心工具</span>
+            <span class="lang-en">Core Tools for Social Announcement Logic</span>
+          </h3>
+          <p class="text-zinc-500 mt-2">
+            <span class="lang-zh">用于理解模型、宣告、表列式和可宣告性。</span>
+            <span class="lang-en">Tools for models, announcements, tableaux, and announceability.</span>
+          </p>
+        </div>
+        <span class="hidden md:inline-flex text-sm text-zinc-500 bg-zinc-900 border border-zinc-800 px-4 py-2 rounded-full">
+          <span class="lang-zh">5 个工具</span><span class="lang-en">5 tools</span>
+        </span>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <article class="bg-zinc-900 rounded-3xl overflow-hidden border border-zinc-800 card-hover flex flex-col">
+          <div class="h-44 bg-gradient-to-br from-blue-600 to-violet-600 flex items-center justify-center text-6xl">🔎</div>
+          <div class="p-7 flex flex-col flex-grow">
+            <h4 class="text-2xl font-semibold mb-2"><span class="lang-zh">Denotation</span><span class="lang-en">Denotation</span></h4>
+            <p class="text-zinc-400 mb-6 flex-grow">
+              <span class="lang-zh">用于观察命题、消息和信念状态的外延，帮助学生把语义定义和具体模型联系起来。</span>
+              <span class="lang-en">Inspect denotations of propositions, messages, and belief states, connecting semantic clauses with concrete models.</span>
+            </p>
+            <a href="denotation/denotation.html" class="block text-center bg-white text-black font-semibold py-4 rounded-2xl hover:bg-blue-500 hover:text-white transition-colors"><span class="lang-zh">打开工具 →</span><span class="lang-en">Open Tool →</span></a>
+          </div>
+        </article>
+
+        <article class="bg-zinc-900 rounded-3xl overflow-hidden border border-zinc-800 card-hover flex flex-col">
+          <div class="h-44 bg-gradient-to-br from-emerald-600 to-cyan-600 flex items-center justify-center text-6xl">🧩</div>
+          <div class="p-7 flex flex-col flex-grow">
+            <h4 class="text-2xl font-semibold mb-2"><span class="lang-zh">Model Generator</span><span class="lang-en">Model Generator</span></h4>
+            <p class="text-zinc-400 mb-6 flex-grow">
+              <span class="lang-zh">生成和检查社交宣告逻辑模型，包括主体、信念状态和关注关系，适合语义入门演示。</span>
+              <span class="lang-en">Generate and inspect SAL models with agents, belief states, and following relations for semantic demonstrations.</span>
+            </p>
+            <a href="parse/parse.html" class="block text-center bg-white text-black font-semibold py-4 rounded-2xl hover:bg-emerald-500 hover:text-white transition-colors"><span class="lang-zh">打开工具 →</span><span class="lang-en">Open Tool →</span></a>
+          </div>
+        </article>
+
+        <article class="bg-zinc-900 rounded-3xl overflow-hidden border border-zinc-800 card-hover flex flex-col">
+          <div class="h-44 bg-gradient-to-br from-rose-600 to-orange-600 flex items-center justify-center text-6xl">🌳</div>
+          <div class="p-7 flex flex-col flex-grow">
+            <h4 class="text-2xl font-semibold mb-2"><span class="lang-zh">Tableau Generator</span><span class="lang-en">Tableau Generator</span></h4>
+            <p class="text-zinc-400 mb-6 flex-grow">
+              <span class="lang-zh">用表列式展开公式，展示证明搜索、分支闭合和反模型构造的基本思想。</span>
+              <span class="lang-en">Expand formulas by tableaux and illustrate proof search, branch closure, and countermodel construction.</span>
+            </p>
+            <a href="tree/tree.html" class="block text-center bg-white text-black font-semibold py-4 rounded-2xl hover:bg-rose-500 hover:text-white transition-colors"><span class="lang-zh">打开工具 →</span><span class="lang-en">Open Tool →</span></a>
+          </div>
+        </article>
+
+        <article class="bg-zinc-900 rounded-3xl overflow-hidden border border-zinc-800 card-hover flex flex-col">
+          <div class="h-44 bg-gradient-to-br from-teal-600 to-blue-600 flex items-center justify-center text-6xl">🎄</div>
+          <div class="p-7 flex flex-col flex-grow">
+            <h4 class="text-2xl font-semibold mb-2"><span class="lang-zh">Christmas Tableau</span><span class="lang-en">Christmas Tableau</span></h4>
+            <p class="text-zinc-400 mb-6 flex-grow">
+              <span class="lang-zh">一个更轻松的表列式演算版本，用季节性界面降低学生第一次接触证明树时的紧张感。</span>
+              <span class="lang-en">A playful seasonal version of the tableau tool, designed to make proof trees less intimidating for beginners.</span>
+            </p>
+            <a href="Pinetree/tree.html" class="block text-center bg-white text-black font-semibold py-4 rounded-2xl hover:bg-teal-500 hover:text-white transition-colors"><span class="lang-zh">打开工具 →</span><span class="lang-en">Open Tool →</span></a>
+          </div>
+        </article>
+
+        <article class="bg-zinc-900 rounded-3xl overflow-hidden border border-zinc-800 card-hover flex flex-col">
+          <div class="h-44 bg-gradient-to-br from-indigo-600 to-fuchsia-600 flex items-center justify-center text-6xl">📣</div>
+          <div class="p-7 flex flex-col flex-grow">
+            <h4 class="text-2xl font-semibold mb-2"><span class="lang-zh">Announceable Test</span><span class="lang-en">Announceable Test</span></h4>
+            <p class="text-zinc-400 mb-6 flex-grow">
+              <span class="lang-zh">测试一个消息是否满足真诚宣告条件，并观察宣告前后信念状态如何更新。</span>
+              <span class="lang-en">Test whether a message is announceable under sincerity constraints and observe how belief states update.</span>
+            </p>
+            <a href="announce/announceable.html" class="block text-center bg-white text-black font-semibold py-4 rounded-2xl hover:bg-indigo-500 hover:text-white transition-colors"><span class="lang-zh">打开工具 →</span><span class="lang-en">Open Tool →</span></a>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="mb-16">
+      <div class="flex items-end justify-between gap-4 mb-8">
+        <div>
+          <h3 class="text-3xl md:text-4xl font-bold tracking-tight flex items-center gap-3">
+            <span>🌐</span>
+            <span class="lang-zh">社交网络、信念与一致性</span>
+            <span class="lang-en">Social Networks, Belief, and Coherence</span>
+          </h3>
+          <p class="text-zinc-500 mt-2">
+            <span class="lang-zh">用于演示社交图、回音室与信念一致性。</span>
+            <span class="lang-en">Demos for social graphs, echo chambers, and coherence of belief states.</span>
+          </p>
+        </div>
+        <span class="hidden md:inline-flex text-sm text-zinc-500 bg-zinc-900 border border-zinc-800 px-4 py-2 rounded-full">
+          <span class="lang-zh">3 个工具</span><span class="lang-en">3 tools</span>
+        </span>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <article class="bg-zinc-900 rounded-3xl overflow-hidden border border-zinc-800 card-hover flex flex-col">
+          <div class="h-44 bg-gradient-to-br from-sky-600 to-blue-700 flex items-center justify-center text-6xl">🕸️</div>
+          <div class="p-7 flex flex-col flex-grow">
+            <h4 class="text-2xl font-semibold mb-2"><span class="lang-zh">Social Graph</span><span class="lang-en">Social Graph</span></h4>
+            <p class="text-zinc-400 mb-6 flex-grow">
+              <span class="lang-zh">构造和观察社交网络图，展示关注关系如何影响消息传播和信念更新。</span>
+              <span class="lang-en">Build and inspect social graphs, showing how following relations affect message flow and belief update.</span>
+            </p>
+            <a href="Social_Graph/index1.html" class="block text-center bg-white text-black font-semibold py-4 rounded-2xl hover:bg-sky-500 hover:text-white transition-colors"><span class="lang-zh">打开工具 →</span><span class="lang-en">Open Tool →</span></a>
+          </div>
+        </article>
+
+        <article class="bg-zinc-900 rounded-3xl overflow-hidden border border-zinc-800 card-hover flex flex-col">
+          <div class="h-44 bg-gradient-to-br from-amber-600 to-yellow-600 flex items-center justify-center text-6xl">⚖️</div>
+          <div class="p-7 flex flex-col flex-grow">
+            <h4 class="text-2xl font-semibold mb-2"><span class="lang-zh">Coherence</span><span class="lang-en">Coherence</span></h4>
+            <p class="text-zinc-400 mb-6 flex-grow">
+              <span class="lang-zh">比较弱一致性、全局一致性等条件，理解社交宣告逻辑中信念冲突如何出现。</span>
+              <span class="lang-en">Compare weak and global coherence and see how conflicts of belief arise in social announcement logic.</span>
+            </p>
+            <a href="Coherence/coherence.html" class="block text-center bg-white text-black font-semibold py-4 rounded-2xl hover:bg-amber-500 hover:text-white transition-colors"><span class="lang-zh">打开工具 →</span><span class="lang-en">Open Tool →</span></a>
+          </div>
+        </article>
+
+        <article class="bg-zinc-900 rounded-3xl overflow-hidden border border-zinc-800 card-hover flex flex-col">
+          <div class="h-44 bg-gradient-to-br from-pink-600 to-rose-700 flex items-center justify-center text-6xl">🔁</div>
+          <div class="p-7 flex flex-col flex-grow">
+            <h4 class="text-2xl font-semibold mb-2"><span class="lang-zh">Echo Chamber</span><span class="lang-en">Echo Chamber</span></h4>
+            <p class="text-zinc-400 mb-6 flex-grow">
+              <span class="lang-zh">通过社交网络中的重复传播和选择性接收，直观展示回音室现象的逻辑结构。</span>
+              <span class="lang-en">Visualize the logical structure of echo chambers through repeated propagation and selective reception.</span>
+            </p>
+            <a href="Echo_Chamber/Chamber.html" class="block text-center bg-white text-black font-semibold py-4 rounded-2xl hover:bg-pink-500 hover:text-white transition-colors"><span class="lang-zh">打开工具 →</span><span class="lang-en">Open Tool →</span></a>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section>
+      <div class="flex items-end justify-between gap-4 mb-8">
+        <div>
+          <h3 class="text-3xl md:text-4xl font-bold tracking-tight flex items-center gap-3">
+            <span>🧮</span>
+            <span class="lang-zh">逻辑、计算与示例</span>
+            <span class="lang-en">Logic, Computation, and Examples</span>
+          </h3>
+          <p class="text-zinc-500 mt-2">
+            <span class="lang-zh">面向逻辑教学与计算思维的小工具。</span>
+            <span class="lang-en">Small tools for logic teaching and computational thinking.</span>
+          </p>
+        </div>
+        <span class="hidden md:inline-flex text-sm text-zinc-500 bg-zinc-900 border border-zinc-800 px-4 py-2 rounded-full">
+          <span class="lang-zh">4 个入口</span><span class="lang-en">4 entries</span>
+        </span>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <article class="bg-zinc-900 rounded-3xl overflow-hidden border border-zinc-800 card-hover flex flex-col">
+          <div class="h-40 bg-gradient-to-br from-violet-600 to-indigo-700 flex items-center justify-center text-6xl">🌀</div>
+          <div class="p-6 flex flex-col flex-grow">
+            <h4 class="text-xl font-semibold mb-2"><span class="lang-zh">Logic of Paradox</span><span class="lang-en">Logic of Paradox</span></h4>
+            <p class="text-zinc-400 mb-5 flex-grow text-sm">
+              <span class="lang-zh">LP 三值语义演示，用于理解真假重叠、悖论容忍和非经典逻辑。</span>
+              <span class="lang-en">A three-valued LP semantics demo for truth-value gluts, paraconsistency, and non-classical logic.</span>
+            </p>
+            <a href="mvalue/m_index.html" class="block text-center bg-white text-black font-semibold py-3 rounded-2xl hover:bg-violet-500 hover:text-white transition-colors"><span class="lang-zh">打开 →</span><span class="lang-en">Open →</span></a>
+          </div>
+        </article>
+
+        <article class="bg-zinc-900 rounded-3xl overflow-hidden border border-zinc-800 card-hover flex flex-col">
+          <div class="h-40 bg-gradient-to-br from-lime-600 to-emerald-700 flex items-center justify-center text-6xl">🧠</div>
+          <div class="p-6 flex flex-col flex-grow">
+            <h4 class="text-xl font-semibold mb-2"><span class="lang-zh">K-map SOP</span><span class="lang-en">K-map SOP</span></h4>
+            <p class="text-zinc-400 mb-5 flex-grow text-sm">
+              <span class="lang-zh">用卡诺图生成最简与或式，适合连接布尔代数、数字电路和逻辑教学。</span>
+              <span class="lang-en">Generate simplified sum-of-products by Karnaugh maps, linking Boolean algebra, circuits, and logic teaching.</span>
+            </p>
+            <a href="Social_Graph/k_map.html" class="block text-center bg-white text-black font-semibold py-3 rounded-2xl hover:bg-lime-500 hover:text-white transition-colors"><span class="lang-zh">打开 →</span><span class="lang-en">Open →</span></a>
+          </div>
+        </article>
+
+        <article class="bg-zinc-900 rounded-3xl overflow-hidden border border-zinc-800 card-hover flex flex-col">
+          <div class="h-40 bg-gradient-to-br from-yellow-600 to-orange-600 flex items-center justify-center text-6xl">🏛️</div>
+          <div class="p-6 flex flex-col flex-grow">
+            <h4 class="text-xl font-semibold mb-2">
+              <span class="lang-zh">三段论算术语义验证器</span>
+              <span class="lang-en">Syllogistic Arithmetic Verifier</span>
+            </h4>
+            <p class="text-zinc-400 mb-5 flex-grow text-sm">
+              <span class="lang-zh">检验亚里士多德三段论在莱布尼茨式算术语义下的有效性，并自动生成反例。</span>
+              <span class="lang-en">Verify Aristotelian syllogisms under Leibnizian-style arithmetic semantics and generate counterexamples.</span>
+            </p>
+            <a href="syllogism/syllogism_verifier.html" class="block text-center bg-white text-black font-semibold py-3 rounded-2xl hover:bg-yellow-500 hover:text-white transition-colors"><span class="lang-zh">打开 →</span><span class="lang-en">Open →</span></a>
+          </div>
+        </article>
+
+        <article class="bg-zinc-900 rounded-3xl overflow-hidden border border-zinc-800 card-hover flex flex-col">
+          <div class="h-40 bg-gradient-to-br from-zinc-600 to-slate-700 flex items-center justify-center text-6xl">🧪</div>
+          <div class="p-6 flex flex-col flex-grow">
+            <h4 class="text-xl font-semibold mb-2"><span class="lang-zh">Examples</span><span class="lang-en">Examples</span></h4>
+            <p class="text-zinc-400 mb-5 flex-grow text-sm">
+              <span class="lang-zh">若干示例与实验页面，用于测试想法、展示构造或保存课堂演示材料。</span>
+              <span class="lang-en">A small collection of examples and experimental pages for testing ideas and preserving classroom demos.</span>
+            </p>
+            <a href="examples/BD_dist.html" class="block text-center bg-white text-black font-semibold py-3 rounded-2xl hover:bg-zinc-500 hover:text-white transition-colors"><span class="lang-zh">打开 →</span><span class="lang-en">Open →</span></a>
+          </div>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <footer class="text-center text-zinc-500 py-12 border-t border-zinc-800 text-sm px-6">
+    <p>
+      <span class="lang-zh">逻辑小程序、幻灯片与个人主页构成一个开放的教学与研究展示空间。</span>
+      <span class="lang-en">Logic mini-apps, slides, and the personal homepage form an open space for teaching and research communication.</span>
+    </p>
+    <p class="mt-2">
+      Powered by static HTML + GitHub Pages • Made by Ray Zhu / 祝瑞
+    </p>
+  </footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const savedLang = localStorage.getItem('preferredLanguage') || 'zh-CN';
+      document.documentElement.lang = savedLang;
+    });
+
+    function toggleLanguage() {
+      const htmlTag = document.documentElement;
+      const currentLang = htmlTag.lang;
+      const newLang = currentLang === 'zh-CN' ? 'en' : 'zh-CN';
+      htmlTag.lang = newLang;
+      localStorage.setItem('preferredLanguage', newLang);
+    }
+  </script>
+</body>
+</html>
